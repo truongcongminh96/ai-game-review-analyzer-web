@@ -4,11 +4,15 @@ import {RobotOutlined, ThunderboltOutlined} from '@ant-design/icons';
 const {Header} = Layout;
 const {Text, Title} = Typography;
 
+type AppPage = 'home' | 'source-review';
+
 type AppHeaderProps = {
     dataSourceMode: 'mock' | 'live';
+    currentPage: AppPage;
+    onNavigate: (page: AppPage) => void;
 };
 
-function AppHeader({dataSourceMode}: AppHeaderProps) {
+function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const sourceBadge =
         dataSourceMode === 'mock'
             ? {
@@ -94,6 +98,46 @@ function AppHeader({dataSourceMode}: AppHeaderProps) {
                             Steam Review Intelligence for product-minded teams
                         </Text>
                     </div>
+                </Space>
+
+                <Space
+                    size={10}
+                    style={{
+                        background: 'rgba(15,23,42,0.55)',
+                        border: '1px solid rgba(148,163,184,0.12)',
+                        borderRadius: 999,
+                        padding: 6,
+                    }}
+                >
+                    {[
+                        {key: 'home', label: 'Home'},
+                        {key: 'source-review', label: 'Source Review'},
+                    ].map((item) => {
+                        const active = currentPage === item.key;
+
+                        return (
+                            <div
+                                key={item.key}
+                                onClick={() => onNavigate(item.key as AppPage)}
+                                style={{
+                                    cursor: 'pointer',
+                                    borderRadius: 999,
+                                    padding: '10px 16px',
+                                    color: active ? '#f8fafc' : '#94a3b8',
+                                    background: active
+                                        ? 'linear-gradient(135deg, rgba(59,130,246,0.20), rgba(168,85,247,0.18))'
+                                        : 'transparent',
+                                    border: active
+                                        ? '1px solid rgba(96,165,250,0.18)'
+                                        : '1px solid transparent',
+                                    fontWeight: active ? 600 : 500,
+                                    transition: 'all 0.2s ease',
+                                }}
+                            >
+                                {item.label}
+                            </div>
+                        );
+                    })}
                 </Space>
 
                 <Space wrap size={[10, 10]} align="center">

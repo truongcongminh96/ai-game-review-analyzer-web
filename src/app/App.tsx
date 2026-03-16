@@ -3,16 +3,17 @@ import {useState} from 'react';
 import EmptyBlock from '../components/common/EmptyBlock';
 import ErrorBlock from '../components/common/ErrorBlock';
 import LoadingBlock from '../components/common/LoadingBlock';
+import {env} from '../config/env';
 import AppHeader from '../components/layout/AppHeader';
 import AppHero from '../components/layout/AppHero';
 import BackendShowcase from '../components/layout/BackendShowcase';
 import ResultGrid from '../components/results/ResultGrid';
 import SearchPanel from '../components/search/SearchPanel';
-import {env} from '../config/env';
 import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
 import {useGameSearch} from '../hooks/useGameSearch';
 import type {GameOption} from '../types/game';
 import {DEFAULT_REVIEW_LIMIT} from '../utils/constants';
+import SourceReviewPage from "../pages/SourceReviewPage.tsx";
 
 const {Content} = Layout;
 
@@ -21,7 +22,10 @@ type AnalysisContext = {
     reviewLimit: number;
 };
 
+type AppPage = 'home' | 'source-review';
+
 function App() {
+    const [currentPage, setCurrentPage] = useState<AppPage>('home');
     const [limit, setLimit] = useState(DEFAULT_REVIEW_LIMIT);
     const [analysisContext, setAnalysisContext] = useState<AnalysisContext | null>(null);
     const {query, selectedGame, suggestions, handleQueryChange, handleSelect} = useGameSearch();
@@ -39,9 +43,57 @@ function App() {
         }
     };
 
+    const homeContent = (
+        <Space orientation="vertical" size={24} style={{width: '100%'}}>
+            <AppHero/>
+
+            <SearchPanel
+                gameQuery={query}
+                gameOptions={suggestions}
+                selectedGame={selectedGame}
+                limit={limit}
+                loading={loading}
+                onGameChange={handleQueryChange}
+                onGameSelect={handleSelect}
+                onLimitChange={setLimit}
+                onAnalyze={handleAnalyze}
+            />
+
+            {error ? <ErrorBlock message={error}/> : null}
+
+            {loading ? <LoadingBlock/> : null}
+
+            {!loading && result ? (
+                <ResultGrid
+                    result={result}
+                    dataSourceMode={dataSourceMode}
+                    analysisContext={analysisContext}
+                />
+            ) : null}
+
+            {!loading && !result ? (
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} lg={16}>
+                        <EmptyBlock
+                            title="Ready to analyze player feedback"
+                            description="Search for a Steam game, choose the review sample size, and generate an AI-powered insight report in seconds."
+                        />
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <BackendShowcase/>
+                    </Col>
+                </Row>
+            ) : null}
+        </Space>
+    );
+
     return (
         <Layout className="app-shell">
-            <AppHeader dataSourceMode={dataSourceMode} />
+            <AppHeader
+                dataSourceMode={dataSourceMode}
+                currentPage={currentPage}
+                onNavigate={setCurrentPage}
+            />
 
             <Content
                 className="app-content"
@@ -52,47 +104,11 @@ function App() {
                     width: '100%',
                 }}
             >
-                <Space orientation="vertical" size={24} style={{width: '100%'}}>
-                    <AppHero />
-
-                    <SearchPanel
-                        gameQuery={query}
-                        gameOptions={suggestions}
-                        selectedGame={selectedGame}
-                        limit={limit}
-                        loading={loading}
-                        onGameChange={handleQueryChange}
-                        onGameSelect={handleSelect}
-                        onLimitChange={setLimit}
-                        onAnalyze={handleAnalyze}
-                    />
-
-                    {error ? <ErrorBlock message={error} /> : null}
-
-                    {loading ? <LoadingBlock /> : null}
-
-                    {!loading && result ? (
-                        <ResultGrid
-                            result={result}
-                            dataSourceMode={dataSourceMode}
-                            analysisContext={analysisContext}
-                        />
-                    ) : null}
-
-                    {!loading && !result ? (
-                        <Row gutter={[16, 16]}>
-                            <Col xs={24} lg={16}>
-                                <EmptyBlock
-                                    title="Ready to analyze player feedback"
-                                    description="Search for a Steam game, choose the review sample size, and generate an AI-powered insight report in seconds."
-                                />
-                            </Col>
-                            <Col xs={24} lg={8}>
-                                <BackendShowcase />
-                            </Col>
-                        </Row>
-                    ) : null}
-                </Space>
+                {currentPage === 'home' ? (
+                    homeContent
+                ) : (
+                    <SourceReviewPage />
+                )}
             </Content>
         </Layout>
     );
