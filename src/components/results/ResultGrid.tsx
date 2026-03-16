@@ -15,31 +15,37 @@ function ResultGrid({result}: ResultGridProps) {
     return (
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
             <div>
-                <Title level={3} style={{marginBottom: 8}}>
+                <Title level={3} style={{marginBottom: 8, color: '#f8fafc'}}>
                     Insights for {result.gameTitle}
                 </Title>
-                <Paragraph style={{marginBottom: 0}}>
-                    Normalized from the backend response and split into reusable result sections.
+                <Paragraph
+                    style={{
+                        marginBottom: 0,
+                        color: '#94a3b8',
+                        fontSize: 15,
+                    }}
+                >
+                    AI-generated insight report based on sampled Steam reviews and normalized backend data.
                 </Paragraph>
             </div>
 
-            <SentimentStatCards sentiment={result.sentiment} />
+            <SentimentStatCards sentiment={result.sentiment}/>
 
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={12}>
-                    <SummaryPanel gameTitle={result.gameTitle} summary={result.summary} />
+                    <SummaryPanel title={result.gameTitle} summary={result.summary} />
                 </Col>
                 <Col xs={24} lg={12}>
-                    <SentimentProgress sentiment={result.sentiment} />
+                    <SentimentProgress sentiment={result.sentiment}/>
                 </Col>
             </Row>
 
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={12}>
-                    <InsightList title="Most Praised Features" items={result.praisedFeatures} />
+                    <InsightList title="Most Praised Features" items={result.praisedFeatures}/>
                 </Col>
                 <Col xs={24} lg={12}>
-                    <InsightList title="Common Complaints" items={result.commonComplaints} />
+                    <InsightList title="Common Complaints" items={result.commonComplaints}/>
                 </Col>
             </Row>
         </Space>

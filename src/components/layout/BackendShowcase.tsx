@@ -1,42 +1,103 @@
-import {List, Space, Tag, Typography} from 'antd';
-import {mockAnalyzeResult} from '../../data/mock/mockAnalyzeResult';
-import {mockGames} from '../../data/mock/mockGames';
-import {API_BASE_URL} from '../../utils/constants';
-import SectionCard from '../common/SectionCard';
+import {Card, Space, Tag, Typography} from 'antd';
 
 function BackendShowcase() {
-    const {Paragraph, Text} = Typography;
-    const checklist = [
-        `POST ${API_BASE_URL}/steam/analyze`,
-        'Payload: { appId, limit, language }',
-        'Response supports camelCase and snake_case fields',
+    const {Paragraph, Text, Title} = Typography;
+
+    const games = [
+        {label: 'Elden Ring', appId: '1245620'},
+        {label: 'Cyberpunk 2077', appId: '1091500'},
+        {label: "Baldur's Gate 3", appId: '1086940'},
+        {label: 'Hades', appId: '1145360'},
     ];
 
     return (
-        <SectionCard title="Backend Contract">
-            <Paragraph>
-                The new source base is wired to the Steam analyze endpoint and normalizes the
-                response before rendering the UI.
-            </Paragraph>
+        <Card
+            className="soft-card"
+            title="Backend Contract"
+            style={{
+                height: '100%',
+                borderRadius: 24,
+            }}
+            styles={{
+                header: {
+                    borderBottom: '1px solid rgba(148, 163, 184, 0.10)',
+                    color: '#f8fafc',
+                },
+                body: {
+                    color: '#cbd5e1',
+                },
+            }}
+        >
+            <Space orientation="vertical" size={20} style={{width: '100%'}}>
+                <Paragraph
+                    style={{
+                        marginBottom: 0,
+                        color: '#cbd5e1',
+                        fontSize: 16,
+                        lineHeight: 1.8,
+                    }}
+                >
+                    The new source base is wired to the Steam analyze endpoint and
+                    normalizes the response before rendering the UI.
+                </Paragraph>
 
-            <Space wrap size={[8, 8]} style={{marginBottom: 16}}>
-                {mockGames.slice(0, 4).map((game) => (
-                    <Tag key={game.appId}>
-                        {game.label} #{game.appId}
-                    </Tag>
-                ))}
+                <Space wrap size={[10, 10]}>
+                    {games.map((game) => (
+                        <Tag
+                            key={game.appId}
+                            style={{
+                                marginInlineEnd: 0,
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                background: 'rgba(59,130,246,0.10)',
+                                border: '1px solid rgba(96,165,250,0.18)',
+                                color: '#dbeafe',
+                            }}
+                        >
+                            {game.label} #{game.appId}
+                        </Tag>
+                    ))}
+                </Space>
+
+                <div
+                    style={{
+                        padding: 16,
+                        borderRadius: 18,
+                        background: 'rgba(2,6,23,0.28)',
+                        border: '1px solid rgba(148,163,184,0.10)',
+                    }}
+                >
+                    <Space orientation="vertical" size={12} style={{width: '100%'}}>
+                        <div>
+                            <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
+                                Endpoint
+                            </Text>
+                            <Title level={5} style={{margin: 0, color: '#f8fafc'}}>
+                                POST /steam/analyze
+                            </Title>
+                        </div>
+
+                        <div>
+                            <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
+                                Payload
+                            </Text>
+                            <Text style={{color: '#67e8f9'}}>
+                                {`{ appId, limit, language }`}
+                            </Text>
+                        </div>
+
+                        <div>
+                            <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
+                                Output
+                            </Text>
+                            <Text style={{color: '#cbd5e1'}}>
+                                summary, sentiment, praisedFeatures, commonComplaints
+                            </Text>
+                        </div>
+                    </Space>
+                </div>
             </Space>
-
-            <List
-                size="small"
-                dataSource={checklist}
-                renderItem={(item) => <List.Item>{item}</List.Item>}
-            />
-
-            <Text type="secondary">
-                Preview fallback summary length: {mockAnalyzeResult.summary.length} characters.
-            </Text>
-        </SectionCard>
+        </Card>
     );
 }
 

@@ -10,12 +10,13 @@ function ReviewLimitInput({value, onChange}: ReviewLimitInputProps) {
         <Space orientation="vertical" size={4} style={{width: '100%'}}>
             <Typography.Text strong>Review limit</Typography.Text>
             <InputNumber
+                min={5}
+                max={100}
+                step={5}
                 size="large"
-                min={1}
-                max={1000}
-                value={value}
-                onChange={(nextValue) => onChange(typeof nextValue === 'number' ? nextValue : 0)}
                 style={{width: '100%'}}
+                value={value}
+                onChange={(nextValue) => onChange(Number(nextValue) || 0)}
             />
         </Space>
     );

@@ -9,7 +9,25 @@ type SectionCardProps = {
 
 function SectionCard({title, children, extra}: SectionCardProps) {
     return (
-        <Card title={title} extra={extra} style={{height: '100%'}}>
+        <Card
+            className="soft-card"
+            title={title}
+            extra={extra}
+            style={{
+                height: '100%',
+                borderRadius: 22,
+            }}
+            styles={{
+                header: {
+                    borderBottom: '1px solid rgba(148, 163, 184, 0.12)',
+                    color: '#f8fafc',
+                    minHeight: 64,
+                },
+                body: {
+                    color: '#cbd5e1',
+                },
+            }}
+        >
             {children}
         </Card>
     );

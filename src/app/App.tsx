@@ -24,12 +24,13 @@ function App() {
     };
 
     return (
-        <Layout style={{minHeight: '100vh', background: '#f5f7fb'}}>
+        <Layout className="app-shell">
             <AppHeader />
 
             <Content
+                className="app-content"
                 style={{
-                    padding: '32px 24px',
+                    padding: '32px 24px 56px',
                     maxWidth: 1280,
                     margin: '0 auto',
                     width: '100%',
@@ -61,7 +62,7 @@ function App() {
                             <Col xs={24} lg={16}>
                                 <EmptyBlock
                                     title="No analysis yet"
-                                    description="Pick a Steam title, choose the review limit, and run the analysis to fill the result grid."
+                                    description="Search a Steam title, choose the review sample size, and generate an AI insight report."
                                 />
                             </Col>
                             <Col xs={24} lg={8}>
