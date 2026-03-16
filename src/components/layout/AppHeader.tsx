@@ -184,20 +184,6 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     >
                         Gaming Analytics
                     </Tag>
-
-                    <Tag
-                        style={{
-                            marginInlineEnd: 0,
-                            borderRadius: 999,
-                            padding: '6px 12px',
-                            border: '1px solid rgba(96,165,250,0.20)',
-                            background: 'rgba(96,165,250,0.10)',
-                            color: '#bfdbfe',
-                            fontSize: 14,
-                        }}
-                    >
-                        Portfolio Demo
-                    </Tag>
                 </Space>
             </div>
         </Header>
