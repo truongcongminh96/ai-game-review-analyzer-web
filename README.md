@@ -29,7 +29,6 @@ The app lets users:
 - Ant Design
 - Axios
 - Recharts
-- react-syntax-highlighter
 
 ## Pages
 
@@ -45,7 +44,7 @@ The main analysis experience:
 
 A backend walkthrough page for portfolio/demo use:
 - clickable backend file tree
-- syntax-highlighted code viewer
+- formatted code viewer
 - request flow visualization
 - backend architecture section
 
@@ -190,7 +189,7 @@ src/
 - `src/services/api.ts` — live API request + mock mode handling
 - `src/utils/resultMapper.ts` — backend response normalization
 - `src/pages/SourceReviewPage.tsx` — backend walkthrough page
-- `src/components/source-review/CodeViewer.tsx` — syntax-highlighted backend source viewer
+- `src/components/source-review/CodeViewer.tsx` — backend source viewer
 - `src/data/sourceFiles.ts` — curated backend files shown in the code viewer
 
 ## Current Notes

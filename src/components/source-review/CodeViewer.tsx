@@ -1,7 +1,5 @@
 import {Card, Space, Tag, Typography} from 'antd';
 import type {SourceFileItem} from '../../data/sourceFiles';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const {Paragraph, Text, Title} = Typography;
 
@@ -9,15 +7,9 @@ type CodeViewerProps = {
     file: SourceFileItem;
 };
 
-const getSyntaxLanguage = (language: SourceFileItem['language']) => {
-    if (language === 'text') {
-        return 'text';
-    }
-
-    return language;
-};
-
 function CodeViewer({file}: CodeViewerProps) {
+    const codeLines = file.code.split('\n');
+
     return (
         <Card
             title={
@@ -101,40 +93,57 @@ function CodeViewer({file}: CodeViewerProps) {
                 <div
                     style={{
                         borderRadius: 18,
-                        overflow: 'hidden',
                         border: '1px solid rgba(148,163,184,0.10)',
                         background: '#020617',
                         minHeight: 420,
+                        overflow: 'hidden',
                     }}
                 >
-                    <SyntaxHighlighter
-                        language={getSyntaxLanguage(file.language)}
-                        style={vscDarkPlus}
-                        showLineNumbers
-                        wrapLongLines
-                        customStyle={{
+                    <div
+                        style={{
                             margin: 0,
                             padding: 20,
                             background: '#020617',
+                            color: '#cbd5e1',
                             fontSize: 13,
                             lineHeight: 1.75,
                             minHeight: 420,
                             overflowY: 'auto',
-                        }}
-                        codeTagProps={{
-                            style: {
-                                fontFamily:
-                                    'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace',
-                            },
-                        }}
-                        lineNumberStyle={{
-                            color: '#475569',
-                            minWidth: '2.25em',
-                            paddingRight: '1em',
+                            fontFamily:
+                                'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace',
                         }}
                     >
-                        {file.code}
-                    </SyntaxHighlighter>
+                        {codeLines.map((line, index) => (
+                            <div
+                                key={`${file.path}-${index}`}
+                                style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '2.5rem minmax(0, 1fr)',
+                                    columnGap: 16,
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        color: '#475569',
+                                        textAlign: 'right',
+                                        userSelect: 'none',
+                                    }}
+                                >
+                                    {index + 1}
+                                </span>
+
+                                <code
+                                    style={{
+                                        color: '#cbd5e1',
+                                        whiteSpace: 'pre-wrap',
+                                        wordBreak: 'break-word',
+                                    }}
+                                >
+                                    {line || ' '}
+                                </code>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </Space>
         </Card>
