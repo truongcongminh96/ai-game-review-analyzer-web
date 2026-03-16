@@ -4,7 +4,26 @@ import {RobotOutlined, ThunderboltOutlined} from '@ant-design/icons';
 const {Header} = Layout;
 const {Text, Title} = Typography;
 
-function AppHeader() {
+type AppHeaderProps = {
+    dataSourceMode: 'mock' | 'live';
+};
+
+function AppHeader({dataSourceMode}: AppHeaderProps) {
+    const sourceBadge =
+        dataSourceMode === 'mock'
+            ? {
+                  label: 'Mock Mode',
+                  border: '1px solid rgba(245,158,11,0.22)',
+                  background: 'rgba(245,158,11,0.10)',
+                  color: '#fcd34d',
+              }
+            : {
+                  label: 'Live API',
+                  border: '1px solid rgba(34,197,94,0.22)',
+                  background: 'rgba(34,197,94,0.10)',
+                  color: '#86efac',
+              };
+
     return (
         <Header
             style={{
@@ -78,6 +97,21 @@ function AppHeader() {
                 </Space>
 
                 <Space wrap size={[10, 10]} align="center">
+                    <Tag
+                        style={{
+                            marginInlineEnd: 0,
+                            borderRadius: 999,
+                            padding: '6px 12px',
+                            border: sourceBadge.border,
+                            background: sourceBadge.background,
+                            color: sourceBadge.color,
+                            fontSize: 14,
+                            fontWeight: 600,
+                        }}
+                    >
+                        {sourceBadge.label}
+                    </Tag>
+
                     <Tag
                         style={{
                             marginInlineEnd: 0,

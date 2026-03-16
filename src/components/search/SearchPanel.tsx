@@ -14,7 +14,7 @@ type SearchPanelProps = {
     onGameChange: (value: string) => void;
     onGameSelect: (value: string) => void;
     onLimitChange: (value: number) => void;
-    onAnalyze: () => void;
+    onAnalyze: () => void | Promise<void>;
 };
 
 function SearchPanel({

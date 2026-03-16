@@ -3,7 +3,7 @@ import {RocketOutlined} from '@ant-design/icons';
 
 type AnalyzeButtonProps = {
     loading: boolean;
-    onClick: () => void;
+    onClick: () => void | Promise<void>;
 };
 
 function AnalyzeButton({loading, onClick}: AnalyzeButtonProps) {

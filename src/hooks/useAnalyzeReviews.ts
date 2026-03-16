@@ -13,12 +13,12 @@ export const useAnalyzeReviews = () => {
     const runAnalysis = async (game: GameOption | null, limit: number) => {
         if (!game) {
             setError(VALIDATION_MESSAGES.missingGame);
-            return;
+            return null;
         }
 
         if (!Number.isFinite(limit) || limit <= 0) {
             setError(VALIDATION_MESSAGES.invalidLimit);
-            return;
+            return null;
         }
 
         try {
@@ -26,11 +26,16 @@ export const useAnalyzeReviews = () => {
             setError(null);
 
             const data = await analyzeReviews(game.appId, limit);
+            const mappedResult = mapAnalyzeResult(data, game.label);
 
-            setResult(mapAnalyzeResult(data, game.label));
+            setResult(mappedResult);
+
+            return mappedResult;
         } catch (err) {
             console.error(err);
             setError(VALIDATION_MESSAGES.backendUnavailable);
+
+            return null;
         } finally {
             setLoading(false);
         }

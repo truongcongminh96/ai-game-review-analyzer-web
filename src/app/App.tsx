@@ -8,24 +8,40 @@ import AppHero from '../components/layout/AppHero';
 import BackendShowcase from '../components/layout/BackendShowcase';
 import ResultGrid from '../components/results/ResultGrid';
 import SearchPanel from '../components/search/SearchPanel';
+import {env} from '../config/env';
 import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
 import {useGameSearch} from '../hooks/useGameSearch';
+import type {GameOption} from '../types/game';
 import {DEFAULT_REVIEW_LIMIT} from '../utils/constants';
 
 const {Content} = Layout;
 
+type AnalysisContext = {
+    game: GameOption;
+    reviewLimit: number;
+};
+
 function App() {
     const [limit, setLimit] = useState(DEFAULT_REVIEW_LIMIT);
+    const [analysisContext, setAnalysisContext] = useState<AnalysisContext | null>(null);
     const {query, selectedGame, suggestions, handleQueryChange, handleSelect} = useGameSearch();
     const {result, loading, error, runAnalysis} = useAnalyzeReviews();
+    const dataSourceMode = env.mockMode ? 'mock' : 'live';
 
-    const handleAnalyze = () => {
-        void runAnalysis(selectedGame, limit);
+    const handleAnalyze = async () => {
+        const analyzedResult = await runAnalysis(selectedGame, limit);
+
+        if (analyzedResult && selectedGame) {
+            setAnalysisContext({
+                game: selectedGame,
+                reviewLimit: limit,
+            });
+        }
     };
 
     return (
         <Layout className="app-shell">
-            <AppHeader />
+            <AppHeader dataSourceMode={dataSourceMode} />
 
             <Content
                 className="app-content"
@@ -55,7 +71,13 @@ function App() {
 
                     {loading ? <LoadingBlock /> : null}
 
-                    {!loading && result ? <ResultGrid result={result} /> : null}
+                    {!loading && result ? (
+                        <ResultGrid
+                            result={result}
+                            dataSourceMode={dataSourceMode}
+                            analysisContext={analysisContext}
+                        />
+                    ) : null}
 
                     {!loading && !result ? (
                         <Row gutter={[16, 16]}>
