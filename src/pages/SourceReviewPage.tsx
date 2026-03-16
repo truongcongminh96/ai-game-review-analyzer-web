@@ -4,8 +4,36 @@ import {CodeOutlined, FolderOpenOutlined, RocketOutlined} from '@ant-design/icon
 import {sourceFiles} from '../data/sourceFiles.ts';
 import CodeViewer from '../components/source-review/CodeViewer';
 import RepoStructure from '../components/source-review/RepoStructure';
+import {fileToFlowStep} from '../data/flowMapping';
 
 const {Title, Paragraph} = Typography;
+
+const flowSteps = [
+    {
+        title: 'Frontend',
+        desc: 'User searches and submits appId + review limit',
+    },
+    {
+        title: 'POST /steam/analyze',
+        desc: 'HTTP handler validates input and triggers the use case',
+    },
+    {
+        title: 'Use Case',
+        desc: 'Coordinates Steam client + AI client and shapes the response',
+    },
+    {
+        title: 'Steam Client',
+        desc: 'Fetches real player reviews from Steam endpoints',
+    },
+    {
+        title: 'Ollama Client',
+        desc: 'Sends curated reviews to the local LLM for summarization',
+    },
+    {
+        title: 'Insight Response',
+        desc: 'Frontend receives sentiment, summary, praises, and complaints',
+    },
+];
 
 function SourceReviewPage() {
     const [selectedKey, setSelectedKey] = useState(sourceFiles[0]?.key ?? '');
@@ -14,6 +42,7 @@ function SourceReviewPage() {
         () => sourceFiles.find((item) => item.key === selectedKey) ?? sourceFiles[0],
         [selectedKey]
     );
+    const activeStep = activeFile ? (fileToFlowStep[activeFile.path] ?? null) : null;
 
     if (!activeFile) {
         return null;
@@ -149,85 +178,75 @@ function SourceReviewPage() {
                             </div>
 
                             <Row gutter={[12, 12]}>
-                                {[
-                                    {
-                                        title: 'Frontend',
-                                        desc: 'User searches and submits appId + review limit',
-                                    },
-                                    {
-                                        title: 'POST /steam/analyze',
-                                        desc: 'HTTP handler validates input and triggers the use case',
-                                    },
-                                    {
-                                        title: 'Use Case',
-                                        desc: 'Coordinates Steam client + AI client and shapes the response',
-                                    },
-                                    {
-                                        title: 'Steam Client',
-                                        desc: 'Fetches real player reviews from Steam endpoints',
-                                    },
-                                    {
-                                        title: 'Ollama Client',
-                                        desc: 'Sends curated reviews to the local LLM for summarization',
-                                    },
-                                    {
-                                        title: 'Insight Response',
-                                        desc: 'Frontend receives sentiment, summary, praises, and complaints',
-                                    },
-                                ].map((step, index) => (
-                                    <Col xs={24} sm={12} lg={8} key={step.title}>
-                                        <div
-                                            style={{
-                                                height: '100%',
-                                                padding: 16,
-                                                borderRadius: 18,
-                                                background:
-                                                    'linear-gradient(135deg, rgba(30,41,59,0.75), rgba(15,23,42,0.86))',
-                                                border: '1px solid rgba(148,163,184,0.12)',
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    width: 30,
-                                                    height: 30,
-                                                    borderRadius: 999,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    marginBottom: 12,
-                                                    background: 'rgba(96,165,250,0.14)',
-                                                    border: '1px solid rgba(96,165,250,0.20)',
-                                                    color: '#bfdbfe',
-                                                    fontWeight: 700,
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                {index + 1}
-                                            </div>
+                                {flowSteps.map((step, index) => {
+                                    const stepIndex = index + 1;
+                                    const isActive = activeStep === stepIndex;
 
+                                    return (
+                                        <Col xs={24} sm={12} lg={8} key={step.title}>
                                             <div
                                                 style={{
-                                                    color: '#f8fafc',
-                                                    fontWeight: 700,
-                                                    fontSize: 15,
-                                                    marginBottom: 8,
+                                                    height: '100%',
+                                                    padding: 16,
+                                                    borderRadius: 18,
+                                                    background: isActive
+                                                        ? 'linear-gradient(135deg, rgba(59,130,246,0.25), rgba(168,85,247,0.22))'
+                                                        : 'linear-gradient(135deg, rgba(30,41,59,0.75), rgba(15,23,42,0.86))',
+                                                    border: isActive
+                                                        ? '1px solid rgba(96,165,250,0.45)'
+                                                        : '1px solid rgba(148,163,184,0.12)',
+                                                    boxShadow: isActive
+                                                        ? '0 0 24px rgba(96,165,250,0.24)'
+                                                        : 'none',
+                                                    transform: isActive ? 'translateY(-2px)' : 'none',
+                                                    transition: 'all 0.25s ease',
                                                 }}
                                             >
-                                                {step.title}
-                                            </div>
+                                                <div
+                                                    style={{
+                                                        width: 30,
+                                                        height: 30,
+                                                        borderRadius: 999,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginBottom: 12,
+                                                        background: isActive ? 'rgba(96,165,250,0.22)' : 'rgba(96,165,250,0.14)',
+                                                        border: isActive
+                                                            ? '1px solid rgba(147,197,253,0.45)'
+                                                            : '1px solid rgba(96,165,250,0.20)',
+                                                        color: '#bfdbfe',
+                                                        fontWeight: 700,
+                                                        fontSize: 13,
+                                                    }}
+                                                >
+                                                    {stepIndex}
+                                                </div>
 
-                                            <div
-                                                style={{
-                                                    color: '#94a3b8',
-                                                    fontSize: 13,
-                                                    lineHeight: 1.7,
-                                                }}
-                                            >
-                                                {step.desc}
+                                                <div
+                                                    style={{
+                                                        color: '#f8fafc',
+                                                        fontWeight: 700,
+                                                        fontSize: 15,
+                                                        marginBottom: 8,
+                                                    }}
+                                                >
+                                                    {step.title}
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        color: isActive ? '#cbd5e1' : '#94a3b8',
+                                                        fontSize: 13,
+                                                        lineHeight: 1.7,
+                                                    }}
+                                                >
+                                                    {step.desc}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Col>
-                                ))}
+                                        </Col>
+                                    );
+                                })}
                             </Row>
                         </Space>
                     </Card>
@@ -289,11 +308,11 @@ function SourceReviewPage() {
                 </Col>
 
                 <Col xs={24} lg={16}>
-                    <CodeViewer file={activeFile} />
+                    <CodeViewer file={activeFile}/>
                 </Col>
             </Row>
 
-            <RepoStructure />
+            <RepoStructure/>
         </Space>
     );
 }

@@ -439,3 +439,11 @@ a {
     border-color: rgba(103, 232, 249, 0.38);
     box-shadow: 0 14px 28px rgba(8, 145, 178, 0.22);
 }
+
+.flow-highlight {
+    border: 1px solid #67e8f9;
+    box-shadow: 0 0 20px rgba(103,232,249,0.4);
+    transform: translateY(-2px);
+    transition: all 0.25s ease;
+}
+
