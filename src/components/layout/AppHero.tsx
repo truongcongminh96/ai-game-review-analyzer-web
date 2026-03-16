@@ -1,5 +1,6 @@
-import {Card, Col, Row, Space, Tag, Typography} from 'antd';
-import heroImage from '../../assets/hero.png';
+import {Card, Col, Row, Space, Typography} from 'antd';
+import HeroGameShowcase from "./HeroGameShowcase.tsx";
+import {ApiOutlined, RobotOutlined, ReadOutlined} from '@ant-design/icons';
 
 function AppHero() {
     const {Paragraph, Title, Text} = Typography;
@@ -12,16 +13,27 @@ function AppHero() {
                 overflow: 'hidden',
             }}
             styles={{
-                body: { padding: 32 }
+                body: {padding: 32}
             }}
         >
             <Row gutter={[32, 32]} align="middle">
                 <Col xs={24} lg={14}>
                     <Space orientation="vertical" size={14}>
-                        <Space wrap size={[8, 8]}>
-                            <Tag color="blue">Steam Reviews</Tag>
-                            <Tag color="purple">AI Insights</Tag>
-                            <Tag color="cyan">Mock + API Ready</Tag>
+                        <Space wrap size={[10, 10]}>
+                            <div className="hero-pill hero-pill-steam">
+                                <ReadOutlined/>
+                                <span>Steam Reviews</span>
+                            </div>
+
+                            <div className="hero-pill hero-pill-ai">
+                                <RobotOutlined/>
+                                <span>AI Insights</span>
+                            </div>
+
+                            <div className="hero-pill hero-pill-api">
+                                <ApiOutlined/>
+                                <span>Mock + API Ready</span>
+                            </div>
                         </Space>
 
                         <Title
@@ -87,40 +99,7 @@ function AppHero() {
                 </Col>
 
                 <Col xs={24} lg={10}>
-                    <div
-                        style={{
-                            position: 'relative',
-                            padding: 16,
-                            borderRadius: 24,
-                            background:
-                                'linear-gradient(180deg, rgba(15,23,42,0.75), rgba(30,41,59,0.65))',
-                            border: '1px solid rgba(148,163,184,0.14)',
-                        }}
-                    >
-                        <div
-                            style={{
-                                position: 'absolute',
-                                inset: -1,
-                                borderRadius: 24,
-                                background:
-                                    'linear-gradient(135deg, rgba(59,130,246,0.18), rgba(168,85,247,0.16), transparent)',
-                                zIndex: 0,
-                            }}
-                        />
-                        <img
-                            src={heroImage}
-                            alt="Game review dashboard illustration"
-                            style={{
-                                position: 'relative',
-                                zIndex: 1,
-                                display: 'block',
-                                width: '100%',
-                                maxWidth: 360,
-                                margin: '0 auto',
-                                filter: 'drop-shadow(0 18px 40px rgba(0,0,0,0.3))',
-                            }}
-                        />
-                    </div>
+                    <HeroGameShowcase/>
                 </Col>
             </Row>
         </Card>

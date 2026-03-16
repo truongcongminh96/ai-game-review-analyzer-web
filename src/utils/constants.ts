@@ -1,7 +1,5 @@
 import type {SentimentBreakdown} from '../types/analyze';
 
-export const API_BASE_URL = 'http://localhost:8080';
-export const DEFAULT_REVIEW_LANGUAGE = 'english';
 export const DEFAULT_GAME_QUERY = 'Elden Ring';
 export const DEFAULT_REVIEW_LIMIT = 50;
 export const MAX_GAME_SUGGESTIONS = 6;
