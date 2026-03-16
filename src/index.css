@@ -192,15 +192,15 @@ a {
 }
 
 .ant-card-head {
-  background: transparent !important;
+    background: transparent !important;
 }
 
 .ant-card-body {
-  color: #e2e8f0 !important;
+    color: #e2e8f0 !important;
 }
 
 .ant-tag {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .ant-empty-description {
@@ -209,4 +209,47 @@ a {
 
 .ant-empty-normal {
     color: #94a3b8 !important;
+}
+
+.empty-state-card,
+.empty-state-card .ant-card-body {
+    background: rgba(15, 23, 42, 0.72) !important;
+}
+
+.empty-state-card {
+    border: 1px solid rgba(148, 163, 184, 0.14) !important;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28) !important;
+    backdrop-filter: blur(18px);
+}
+
+.empty-state-illustration {
+    opacity: 0.22;
+    filter: grayscale(0.15);
+}
+
+.empty-state-illustration .ant-empty-image {
+    margin-bottom: 12px !important;
+}
+
+.ant-skeleton-title,
+.ant-skeleton-paragraph > li {
+    background: linear-gradient(
+            90deg,
+            rgba(51, 65, 85, 0.35) 25%,
+            rgba(71, 85, 105, 0.55) 37%,
+            rgba(51, 65, 85, 0.35) 63%
+    ) !important;
+}
+
+.ant-alert-message {
+    color: #fee2e2 !important;
+    font-weight: 600;
+}
+
+.ant-alert-description {
+    color: #fecaca !important;
+}
+
+.ant-input-affix-wrapper input.ant-input {
+    padding-left: 12px !important;
 }

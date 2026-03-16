@@ -1,7 +1,7 @@
 import {Card, Space, Tag, Typography} from 'antd';
 
 function BackendShowcase() {
-    const {Paragraph, Text, Title} = Typography;
+    const {Paragraph, Text} = Typography;
 
     const games = [
         {label: 'Elden Ring', appId: '1245620'},
@@ -72,9 +72,15 @@ function BackendShowcase() {
                             <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
                                 Endpoint
                             </Text>
-                            <Title level={5} style={{margin: 0, color: '#f8fafc'}}>
+                            <Text
+                                style={{
+                                    color: '#67e8f9',
+                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                                    fontSize: 14,
+                                }}
+                            >
                                 POST /steam/analyze
-                            </Title>
+                            </Text>
                         </div>
 
                         <div>

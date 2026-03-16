@@ -61,8 +61,8 @@ function App() {
                         <Row gutter={[16, 16]}>
                             <Col xs={24} lg={16}>
                                 <EmptyBlock
-                                    title="No analysis yet"
-                                    description="Search a Steam title, choose the review sample size, and generate an AI insight report."
+                                    title="Ready to analyze player feedback"
+                                    description="Search for a Steam game, choose the review sample size, and generate an AI-powered insight report in seconds."
                                 />
                             </Col>
                             <Col xs={24} lg={8}>
