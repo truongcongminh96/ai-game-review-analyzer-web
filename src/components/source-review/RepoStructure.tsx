@@ -12,6 +12,7 @@ const repoTree = `ai-game-review-analyzer/
     review/
       client/
         ai/
+          client.go
           new.go
           ollama.go
 

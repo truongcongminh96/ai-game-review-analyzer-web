@@ -95,19 +95,6 @@ function CodeViewer({file}: CodeViewerProps) {
                         >
                             {file.language.toUpperCase()}
                         </Tag>
-
-                        <Tag
-                            style={{
-                                margin: 0,
-                                borderRadius: 999,
-                                padding: '4px 10px',
-                                border: '1px solid rgba(250,204,21,0.20)',
-                                background: 'rgba(250,204,21,0.10)',
-                                color: '#fcd34d',
-                            }}
-                        >
-                            Production-style structure
-                        </Tag>
                     </Space>
                 </div>
 
