@@ -4,6 +4,7 @@ import InsightList from './InsightList';
 import SentimentProgress from './SentimentProgress';
 import SentimentStatCards from './SentimentStatCards';
 import SummaryPanel from './SummaryPanel';
+import SentimentChart from './SentimentChart';
 
 type ResultGridProps = {
     result: AnalyzeResult;
@@ -36,7 +37,13 @@ function ResultGrid({result}: ResultGridProps) {
                     <SummaryPanel title={result.gameTitle} summary={result.summary} />
                 </Col>
                 <Col xs={24} lg={12}>
-                    <SentimentProgress sentiment={result.sentiment}/>
+                    <SentimentChart sentiment={result.sentiment} />
+                </Col>
+            </Row>
+
+            <Row gutter={[16, 16]}>
+                <Col xs={24}>
+                    <SentimentProgress sentiment={result.sentiment} />
                 </Col>
             </Row>
 

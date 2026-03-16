@@ -3,6 +3,7 @@ import type {GameOption} from '../../types/game';
 import AnalyzeButton from './AnalyzeButton';
 import GameAutocomplete from './GameAutocomplete';
 import ReviewLimitInput from './ReviewLimitInput';
+import {buildSteamHeaderImage} from "../../utils/steam.ts";
 
 type SearchPanelProps = {
     gameQuery: string;
@@ -37,7 +38,7 @@ function SearchPanel({
                 overflow: 'hidden',
             }}
             styles={{
-                body:{padding: 0}
+                body: {padding: 0}
             }}
         >
             <Row gutter={0}>
@@ -131,20 +132,42 @@ function SearchPanel({
                                 }}
                             >
                                 {selectedGame ? (
-                                    <Space orientation="vertical" size={4}>
-                                        <Text style={{color: '#94a3b8'}}>Selected game</Text>
-                                        <Text
+                                    <Space orientation="vertical" size={10} style={{width: '100%'}}>
+                                        <img
+                                            className="selected-game-cover"
+                                            src={selectedGame.coverUrl || buildSteamHeaderImage(selectedGame.appId)}
+                                            alt={selectedGame.label}
                                             style={{
-                                                color: '#f8fafc',
-                                                fontSize: 16,
-                                                fontWeight: 600,
+                                                width: '100%',
+                                                maxWidth: 280,
+                                                height: 132,
+                                                objectFit: 'cover',
+                                                borderRadius: 16,
+                                                border: '1px solid rgba(148,163,184,0.14)',
+                                                boxShadow: '0 12px 28px rgba(0,0,0,0.22)',
+                                                background: 'rgba(15,23,42,0.8)',
                                             }}
-                                        >
-                                            {selectedGame.label}
-                                        </Text>
-                                        <Text style={{color: '#67e8f9'}}>
-                                            Steam App ID: #{selectedGame.appId}
-                                        </Text>
+                                            onError={(event) => {
+                                                event.currentTarget.src =
+                                                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect width="460" height="215" rx="18" fill="%230f172a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-size="20" font-family="Arial">No Game Cover</text></svg>';
+                                            }}
+                                        />
+
+                                        <Space orientation="vertical" size={4}>
+                                            <Text style={{color: '#94a3b8'}}>Selected game</Text>
+                                            <Text
+                                                style={{
+                                                    color: '#f8fafc',
+                                                    fontSize: 16,
+                                                    fontWeight: 600,
+                                                }}
+                                            >
+                                                {selectedGame.label}
+                                            </Text>
+                                            <Text style={{color: '#67e8f9'}}>
+                                                Steam App ID: #{selectedGame.appId}
+                                            </Text>
+                                        </Space>
                                     </Space>
                                 ) : (
                                     <Space orientation="vertical" size={4}>
@@ -201,7 +224,7 @@ function SearchPanel({
                                 >
                                     Review sample size
                                 </Text>
-                                <ReviewLimitInput value={limit} onChange={onLimitChange} />
+                                <ReviewLimitInput value={limit} onChange={onLimitChange}/>
                             </div>
 
                             <div
@@ -224,7 +247,7 @@ function SearchPanel({
                                 </Space>
                             </div>
 
-                            <AnalyzeButton loading={loading} onClick={onAnalyze} />
+                            <AnalyzeButton loading={loading} onClick={onAnalyze}/>
                         </Space>
                     </div>
                 </Col>

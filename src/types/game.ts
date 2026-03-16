@@ -4,4 +4,5 @@ export type GameOption = {
     label: string;
     genre?: string;
     releaseYear?: number;
+    coverUrl?: string;
 };
