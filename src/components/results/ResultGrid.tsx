@@ -1,6 +1,7 @@
 import {Col, Row, Space, Tag, Typography} from 'antd';
 import type {AnalyzeResult} from '../../types/analyze';
 import type {GameOption} from '../../types/game';
+import SectionCard from '../common/SectionCard';
 import InsightList from './InsightList';
 import SentimentProgress from './SentimentProgress';
 import SentimentStatCards from './SentimentStatCards';
@@ -145,6 +146,37 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
             <Row gutter={[16, 16]}>
                 <Col xs={24}>
                     <SentimentProgress sentiment={result.sentiment} />
+                </Col>
+            </Row>
+
+            <Row gutter={[16, 16]}>
+                <Col xs={24}>
+                    <SectionCard title="Key Topics">
+                        {result.topics.length ? (
+                            <Space wrap size={[10, 10]}>
+                                {result.topics.map((topic) => (
+                                    <Tag
+                                        key={topic}
+                                        style={{
+                                            marginInlineEnd: 0,
+                                            padding: '8px 14px',
+                                            borderRadius: 999,
+                                            border: '1px solid rgba(103,232,249,0.20)',
+                                            background:
+                                                'linear-gradient(135deg, rgba(8,145,178,0.18), rgba(34,211,238,0.10))',
+                                            color: '#a5f3fc',
+                                            fontSize: 14,
+                                            boxShadow: '0 10px 22px rgba(8,145,178,0.12)',
+                                        }}
+                                    >
+                                        {topic}
+                                    </Tag>
+                                ))}
+                            </Space>
+                        ) : (
+                            <Text style={{color: '#94a3b8'}}>No topics available.</Text>
+                        )}
+                    </SectionCard>
                 </Col>
             </Row>
 

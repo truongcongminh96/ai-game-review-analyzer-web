@@ -40,9 +40,10 @@ export const mapAnalyzeResult = (
         DEFAULT_PRAISED_FEATURES
     ),
     commonComplaints: sanitizeList(
-        payload?.commonComplaints ?? payload?.common_complaints,
+        payload?.commonComplaints ?? payload?.common_complaints ?? payload?.common_issues,
         DEFAULT_COMMON_COMPLAINTS
     ),
+    topics: sanitizeList(payload?.topics, []),
     sentiment: {
         positive: normalizePercent(payload?.sentiment?.positive, DEFAULT_SENTIMENT.positive),
         neutral: normalizePercent(payload?.sentiment?.neutral, DEFAULT_SENTIMENT.neutral),

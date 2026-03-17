@@ -16,6 +16,7 @@ type AppHeaderProps = {
 function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const screens = useBreakpoint();
     const isMobile = !screens.md;
+    const isCompactDesktop = Boolean(screens.md && !screens.xl);
     const sourceBadge =
         dataSourceMode === 'mock'
             ? {
@@ -41,7 +42,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                 position: 'sticky',
                 top: 0,
                 zIndex: 100,
-                padding: isMobile ? '14px 16px' : '0 32px',
+                padding: isMobile ? '14px 16px' : isCompactDesktop ? '0 24px' : '0 32px',
                 minHeight: isMobile ? 80 : 88,
                 height: 'auto',
                 lineHeight: 'normal',
@@ -67,7 +68,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     align="center"
                     style={{
                         minWidth: 0,
-                        width: isMobile ? '100%' : 'auto',
+                        width: '100%',
+                        overflow: 'hidden',
                         justifySelf: isMobile ? undefined : 'start',
                     }}
                 >
@@ -91,13 +93,22 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                         <RobotOutlined/>
                     </div>
 
-                    <div style={{display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0}}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            minWidth: 0,
+                            flex: 1,
+                            overflow: 'hidden',
+                        }}
+                    >
                         <Title
                             level={3}
                             style={{
                                 margin: 0,
                                 color: '#f8fafc',
-                                fontSize: isMobile ? 18 : 20,
+                                fontSize: isMobile ? 18 : isCompactDesktop ? 18 : 20,
                                 lineHeight: 1.2,
                                 whiteSpace: isMobile ? 'normal' : 'nowrap',
                                 overflow: 'hidden',
@@ -107,7 +118,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                             AI Game Review Analyzer
                         </Title>
 
-                        {!isMobile ? (
+                        {!isMobile && !isCompactDesktop ? (
                             <Text
                                 style={{
                                     color: '#94a3b8',
@@ -134,6 +145,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                         justifyContent: isMobile ? 'space-between' : 'flex-start',
                         justifySelf: isMobile ? undefined : 'center',
                         boxShadow: isMobile ? 'none' : '0 10px 24px rgba(2, 6, 23, 0.18)',
+                        flexShrink: 0,
                     }}
                 >
                     {[
@@ -149,7 +161,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 style={{
                                     cursor: 'pointer',
                                     borderRadius: 999,
-                                    padding: isMobile ? '10px 14px' : '10px 16px',
+                                    padding: isMobile ? '10px 14px' : isCompactDesktop ? '10px 14px' : '10px 16px',
                                     color: active ? '#f8fafc' : '#94a3b8',
                                     background: active
                                         ? 'linear-gradient(135deg, rgba(59,130,246,0.20), rgba(168,85,247,0.18))'
@@ -161,7 +173,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     transition: 'all 0.2s ease',
                                     textAlign: 'center',
                                     flex: isMobile ? 1 : 'none',
-                                    minWidth: isMobile ? 0 : 96,
+                                    minWidth: isMobile ? 0 : isCompactDesktop ? 84 : 96,
+                                    fontSize: isCompactDesktop ? 13 : 14,
                                 }}
                             >
                                 {item.label}
@@ -177,6 +190,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                         width: isMobile ? '100%' : '100%',
                         minWidth: 0,
                         justifySelf: isMobile ? undefined : 'end',
+                        overflow: 'hidden',
                     }}
                 >
                     <Space wrap size={[10, 10]} align="center">
@@ -188,7 +202,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 border: sourceBadge.border,
                                 background: sourceBadge.background,
                                 color: sourceBadge.color,
-                                fontSize: 14,
+                                fontSize: isCompactDesktop ? 13 : 14,
                                 fontWeight: 600,
                             }}
                         >
@@ -203,26 +217,28 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 border: '1px solid rgba(34,211,238,0.20)',
                                 background: 'rgba(34,211,238,0.10)',
                                 color: '#67e8f9',
-                                fontSize: 14,
+                                fontSize: isCompactDesktop ? 13 : 14,
                             }}
                         >
                             AI Powered
                         </Tag>
 
-                        <Tag
-                            icon={<ThunderboltOutlined/>}
-                            style={{
-                                marginInlineEnd: 0,
-                                borderRadius: 999,
-                                padding: '6px 12px',
-                                border: '1px solid rgba(168,85,247,0.20)',
-                                background: 'rgba(168,85,247,0.10)',
-                                color: '#d8b4fe',
-                                fontSize: 14,
-                            }}
-                        >
-                            Gaming Analytics
-                        </Tag>
+                        {!isCompactDesktop ? (
+                            <Tag
+                                icon={<ThunderboltOutlined/>}
+                                style={{
+                                    marginInlineEnd: 0,
+                                    borderRadius: 999,
+                                    padding: '6px 12px',
+                                    border: '1px solid rgba(168,85,247,0.20)',
+                                    background: 'rgba(168,85,247,0.10)',
+                                    color: '#d8b4fe',
+                                    fontSize: 14,
+                                }}
+                            >
+                                Gaming Analytics
+                            </Tag>
+                        ) : null}
                     </Space>
                 </div>
             </div>

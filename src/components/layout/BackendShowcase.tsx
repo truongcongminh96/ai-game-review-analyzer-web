@@ -97,7 +97,7 @@ function BackendShowcase() {
                                 Output
                             </Text>
                             <Text style={{color: '#cbd5e1'}}>
-                                summary, sentiment, praisedFeatures, commonComplaints
+                                summary, sentiment, praised_features, common_issues, topics
                             </Text>
                         </div>
                     </Space>

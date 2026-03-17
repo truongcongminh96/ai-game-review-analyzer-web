@@ -9,6 +9,7 @@ export type AnalyzeResult = {
     summary: string;
     praisedFeatures: string[];
     commonComplaints: string[];
+    topics: string[];
     sentiment: SentimentBreakdown;
 };
 
@@ -16,10 +17,12 @@ export type AnalyzeApiResponse = {
     aiSummary?: string;
     commonComplaints?: string[];
     common_complaints?: string[];
+    common_issues?: string[];
     gameTitle?: string;
     game_title?: string;
     praisedFeatures?: string[];
     praised_features?: string[];
+    topics?: string[];
     sentiment?: Partial<SentimentBreakdown>;
     summary?: string;
 };

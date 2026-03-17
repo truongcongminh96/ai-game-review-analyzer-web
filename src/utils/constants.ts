@@ -24,6 +24,13 @@ export const DEFAULT_COMMON_COMPLAINTS = [
     'Repetitive side content',
 ];
 
+export const DEFAULT_TOPICS = [
+    'exploration',
+    'combat',
+    'performance',
+    'boss design',
+];
+
 export const DEFAULT_SUMMARY =
     'Elden Ring is widely praised as a masterpiece with exceptional world design, art direction, and combat systems. Players consistently commend its vast exploration, deep gameplay, and memorable boss encounters. However, the game faces criticism for performance issues, repetitive content, and enemy damage scaling that can make progression frustrating.';
 
