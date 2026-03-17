@@ -18,7 +18,7 @@ function AppHero() {
         >
             <Row gutter={[32, 32]} align="middle">
                 <Col xs={24} lg={14}>
-                    <Space orientation="vertical" size={14}>
+                    <Space orientation="vertical" size={14} style={{width: '100%'}}>
                         <Space wrap size={[10, 10]}>
                             <div className="hero-pill hero-pill-steam">
                                 <ReadOutlined/>

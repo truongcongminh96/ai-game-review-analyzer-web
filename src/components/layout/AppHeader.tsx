@@ -1,8 +1,9 @@
-import {Layout, Space, Tag, Typography} from 'antd';
+import {Grid, Layout, Space, Tag, Typography} from 'antd';
 import {RobotOutlined, ThunderboltOutlined} from '@ant-design/icons';
 
 const {Header} = Layout;
 const {Text, Title} = Typography;
+const {useBreakpoint} = Grid;
 
 type AppPage = 'home' | 'source-review';
 
@@ -13,20 +14,22 @@ type AppHeaderProps = {
 };
 
 function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
+    const screens = useBreakpoint();
+    const isMobile = !screens.md;
     const sourceBadge =
         dataSourceMode === 'mock'
             ? {
-                  label: 'Mock Mode',
-                  border: '1px solid rgba(245,158,11,0.22)',
-                  background: 'rgba(245,158,11,0.10)',
-                  color: '#fcd34d',
-              }
+                label: 'Mock Mode',
+                border: '1px solid rgba(245,158,11,0.22)',
+                background: 'rgba(245,158,11,0.10)',
+                color: '#fcd34d',
+            }
             : {
-                  label: 'Live API',
-                  border: '1px solid rgba(34,197,94,0.22)',
-                  background: 'rgba(34,197,94,0.10)',
-                  color: '#86efac',
-              };
+                label: 'Live API',
+                border: '1px solid rgba(34,197,94,0.22)',
+                background: 'rgba(34,197,94,0.10)',
+                color: '#86efac',
+            };
 
     return (
         <Header
@@ -38,8 +41,9 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                 position: 'sticky',
                 top: 0,
                 zIndex: 100,
-                padding: '0 24px',
-                height: 80,
+                padding: isMobile ? '14px 16px' : '0 32px',
+                minHeight: isMobile ? 80 : 88,
+                height: 'auto',
                 lineHeight: 'normal',
             }}
         >
@@ -48,18 +52,29 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     maxWidth: 1280,
                     margin: '0 auto',
                     width: '100%',
-                    height: '100%',
-                    display: 'flex',
+                    minHeight: isMobile ? 52 : 88,
+                    display: isMobile ? 'flex' : 'grid',
+                    gridTemplateColumns: isMobile ? undefined : 'minmax(0, 1fr) auto minmax(0, 1fr)',
+                    flexDirection: isMobile ? 'column' : undefined,
                     alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 20,
+                    justifyContent: isMobile ? 'space-between' : undefined,
+                    columnGap: isMobile ? undefined : 24,
+                    rowGap: isMobile ? 12 : undefined,
                 }}
             >
-                <Space size={16} align="center">
+                <Space
+                    size={isMobile ? 12 : 16}
+                    align="center"
+                    style={{
+                        minWidth: 0,
+                        width: isMobile ? '100%' : 'auto',
+                        justifySelf: isMobile ? undefined : 'start',
+                    }}
+                >
                     <div
                         style={{
-                            width: 48,
-                            height: 48,
+                            width: isMobile ? 44 : 48,
+                            height: isMobile ? 44 : 48,
                             borderRadius: 16,
                             display: 'flex',
                             alignItems: 'center',
@@ -73,30 +88,38 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                             flexShrink: 0,
                         }}
                     >
-                        <RobotOutlined />
+                        <RobotOutlined/>
                     </div>
 
-                    <div style={{display: 'flex', flexDirection: 'column', gap: 2}}>
+                    <div style={{display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0}}>
                         <Title
                             level={3}
                             style={{
                                 margin: 0,
                                 color: '#f8fafc',
-                                fontSize: 20,
+                                fontSize: isMobile ? 18 : 20,
                                 lineHeight: 1.2,
+                                whiteSpace: isMobile ? 'normal' : 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                             }}
                         >
                             AI Game Review Analyzer
                         </Title>
 
-                        <Text
-                            style={{
-                                color: '#94a3b8',
-                                fontSize: 14,
-                            }}
-                        >
-                            Steam Review Intelligence for product-minded teams
-                        </Text>
+                        {!isMobile ? (
+                            <Text
+                                style={{
+                                    color: '#94a3b8',
+                                    fontSize: 14,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                }}
+                            >
+                                Steam Review Intelligence for product-minded teams
+                            </Text>
+                        ) : null}
                     </div>
                 </Space>
 
@@ -107,6 +130,10 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                         border: '1px solid rgba(148,163,184,0.12)',
                         borderRadius: 999,
                         padding: 6,
+                        width: isMobile ? '100%' : 'auto',
+                        justifyContent: isMobile ? 'space-between' : 'flex-start',
+                        justifySelf: isMobile ? undefined : 'center',
+                        boxShadow: isMobile ? 'none' : '0 10px 24px rgba(2, 6, 23, 0.18)',
                     }}
                 >
                     {[
@@ -122,7 +149,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 style={{
                                     cursor: 'pointer',
                                     borderRadius: 999,
-                                    padding: '10px 16px',
+                                    padding: isMobile ? '10px 14px' : '10px 16px',
                                     color: active ? '#f8fafc' : '#94a3b8',
                                     background: active
                                         ? 'linear-gradient(135deg, rgba(59,130,246,0.20), rgba(168,85,247,0.18))'
@@ -132,6 +159,9 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         : '1px solid transparent',
                                     fontWeight: active ? 600 : 500,
                                     transition: 'all 0.2s ease',
+                                    textAlign: 'center',
+                                    flex: isMobile ? 1 : 'none',
+                                    minWidth: isMobile ? 0 : 96,
                                 }}
                             >
                                 {item.label}
@@ -140,51 +170,61 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     })}
                 </Space>
 
-                <Space wrap size={[10, 10]} align="center">
-                    <Tag
-                        style={{
-                            marginInlineEnd: 0,
-                            borderRadius: 999,
-                            padding: '6px 12px',
-                            border: sourceBadge.border,
-                            background: sourceBadge.background,
-                            color: sourceBadge.color,
-                            fontSize: 14,
-                            fontWeight: 600,
-                        }}
-                    >
-                        {sourceBadge.label}
-                    </Tag>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: isMobile ? 'flex-start' : 'flex-end',
+                        width: isMobile ? '100%' : '100%',
+                        minWidth: 0,
+                        justifySelf: isMobile ? undefined : 'end',
+                    }}
+                >
+                    <Space wrap size={[10, 10]} align="center">
+                        <Tag
+                            style={{
+                                marginInlineEnd: 0,
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                border: sourceBadge.border,
+                                background: sourceBadge.background,
+                                color: sourceBadge.color,
+                                fontSize: 14,
+                                fontWeight: 600,
+                            }}
+                        >
+                            {sourceBadge.label}
+                        </Tag>
 
-                    <Tag
-                        style={{
-                            marginInlineEnd: 0,
-                            borderRadius: 999,
-                            padding: '6px 12px',
-                            border: '1px solid rgba(34,211,238,0.20)',
-                            background: 'rgba(34,211,238,0.10)',
-                            color: '#67e8f9',
-                            fontSize: 14,
-                        }}
-                    >
-                        AI Powered
-                    </Tag>
+                        <Tag
+                            style={{
+                                marginInlineEnd: 0,
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                border: '1px solid rgba(34,211,238,0.20)',
+                                background: 'rgba(34,211,238,0.10)',
+                                color: '#67e8f9',
+                                fontSize: 14,
+                            }}
+                        >
+                            AI Powered
+                        </Tag>
 
-                    <Tag
-                        icon={<ThunderboltOutlined />}
-                        style={{
-                            marginInlineEnd: 0,
-                            borderRadius: 999,
-                            padding: '6px 12px',
-                            border: '1px solid rgba(168,85,247,0.20)',
-                            background: 'rgba(168,85,247,0.10)',
-                            color: '#d8b4fe',
-                            fontSize: 14,
-                        }}
-                    >
-                        Gaming Analytics
-                    </Tag>
-                </Space>
+                        <Tag
+                            icon={<ThunderboltOutlined/>}
+                            style={{
+                                marginInlineEnd: 0,
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                border: '1px solid rgba(168,85,247,0.20)',
+                                background: 'rgba(168,85,247,0.10)',
+                                color: '#d8b4fe',
+                                fontSize: 14,
+                            }}
+                        >
+                            Gaming Analytics
+                        </Tag>
+                    </Space>
+                </div>
             </div>
         </Header>
     );
