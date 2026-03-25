@@ -1,5 +1,5 @@
 import {Col, Layout, Row, Space} from 'antd';
-import {useState} from 'react';
+import {lazy, Suspense, useState} from 'react';
 import EmptyBlock from '../components/common/EmptyBlock';
 import ErrorBlock from '../components/common/ErrorBlock';
 import LoadingBlock from '../components/common/LoadingBlock';
@@ -13,7 +13,8 @@ import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
 import {useGameSearch} from '../hooks/useGameSearch';
 import type {GameOption} from '../types/game';
 import {DEFAULT_REVIEW_LIMIT} from '../utils/constants';
-import SourceReviewPage from "../pages/SourceReviewPage.tsx";
+
+const SourceReviewPage = lazy(() => import('../pages/SourceReviewPage.tsx'));
 
 const {Content} = Layout;
 
@@ -107,7 +108,9 @@ function App() {
                 {currentPage === 'home' ? (
                     homeContent
                 ) : (
-                    <SourceReviewPage />
+                    <Suspense fallback={<LoadingBlock/>}>
+                        <SourceReviewPage/>
+                    </Suspense>
                 )}
             </Content>
         </Layout>

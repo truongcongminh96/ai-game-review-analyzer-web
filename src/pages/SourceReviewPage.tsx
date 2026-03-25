@@ -1,48 +1,51 @@
 import {useMemo, useState} from 'react';
-import {Card, Col, Row, Space, Tag, Typography} from 'antd';
-import {CodeOutlined, FolderOpenOutlined, RocketOutlined} from '@ant-design/icons';
-import {sourceFiles} from '../data/sourceFiles.ts';
+import {Card, Col, Collapse, Row, Space, Tag, Typography} from 'antd';
+import {
+    CodeOutlined,
+    DatabaseOutlined,
+    RocketOutlined,
+} from '@ant-design/icons';
+import {
+    sourceFiles,
+    sourceSections,
+    type SourceFileItem,
+} from '../data/sourceFiles.ts';
 import CodeViewer from '../components/source-review/CodeViewer';
 import RepoStructure from '../components/source-review/RepoStructure';
 import {fileToFlowStep} from '../data/flowMapping';
 
-const {Title, Paragraph} = Typography;
-
-const flowSteps = [
-    {
-        title: 'Frontend',
-        desc: 'User searches and submits appId + review limit',
-    },
-    {
-        title: 'POST /steam/analyze',
-        desc: 'HTTP handler validates input and triggers the use case',
-    },
-    {
-        title: 'Use Case',
-        desc: 'Coordinates Steam client + AI client and shapes the response',
-    },
-    {
-        title: 'Steam Client',
-        desc: 'Fetches real player reviews from Steam endpoints',
-    },
-    {
-        title: 'Ollama Client',
-        desc: 'Sends curated reviews to the local LLM for summarization',
-    },
-    {
-        title: 'Insight Response',
-        desc: 'Frontend receives sentiment, summary, praises, and complaints',
-    },
-];
+const {Title, Paragraph, Text} = Typography;
 
 function SourceReviewPage() {
     const [selectedKey, setSelectedKey] = useState(sourceFiles[0]?.key ?? '');
+    const [openedSections, setOpenedSections] = useState<string[]>([
+        sourceFiles[0]?.sectionKey ?? sourceSections[0]?.key ?? '',
+    ].filter(Boolean));
 
     const activeFile = useMemo(
         () => sourceFiles.find((item) => item.key === selectedKey) ?? sourceFiles[0],
         [selectedKey]
     );
+
+    const sectionFiles = useMemo(() => {
+        const fileMap = new Map(sourceFiles.map((file) => [file.key, file]));
+
+        return sourceSections.map((section) => ({
+            section,
+            files: section.fileKeys
+                .map((key) => fileMap.get(key))
+                .filter((file): file is SourceFileItem => Boolean(file)),
+        }));
+    }, []);
+
     const activeStep = activeFile ? (fileToFlowStep[activeFile.path] ?? null) : null;
+
+    const handleSelectFile = (file: SourceFileItem) => {
+        setSelectedKey(file.key);
+        setOpenedSections((current) =>
+            current.includes(file.sectionKey) ? current : [...current, file.sectionKey]
+        );
+    };
 
     if (!activeFile) {
         return null;
@@ -75,7 +78,7 @@ function SourceReviewPage() {
                             fontWeight: 600,
                         }}
                     >
-                        Backend Walkthrough
+                        Backend Source Review
                     </Tag>
 
                     <Title
@@ -85,7 +88,7 @@ function SourceReviewPage() {
                             color: '#f8fafc',
                         }}
                     >
-                        Review the backend source code behind the demo
+                        Review the current backend architecture behind the demo
                     </Title>
 
                     <Paragraph
@@ -94,12 +97,13 @@ function SourceReviewPage() {
                             color: '#94a3b8',
                             fontSize: 16,
                             lineHeight: 1.8,
-                            maxWidth: 960,
+                            maxWidth: 980,
                         }}
                     >
-                        This page walks through the Go backend that powers the demo: configuration loading,
-                        HTTP delivery, route registration, Steam review fetching, use-case orchestration,
-                        and Ollama-based insight generation.
+                        This walkthrough now reflects the newer backend structure from the latest
+                        source snapshot: runtime config, health-aware HTTP delivery, use case
+                        orchestration, Steam + Ollama integrations, optional persistence, and the
+                        migration/schema layer that stores analysis runs.
                     </Paragraph>
 
                     <Space wrap size={[10, 10]}>
@@ -114,11 +118,11 @@ function SourceReviewPage() {
                                 color: '#67e8f9',
                             }}
                         >
-                            Go Backend
+                            Go Backend v2
                         </Tag>
 
                         <Tag
-                            icon={<FolderOpenOutlined/>}
+                            icon={<DatabaseOutlined/>}
                             style={{
                                 margin: 0,
                                 borderRadius: 999,
@@ -128,7 +132,7 @@ function SourceReviewPage() {
                                 color: '#d8b4fe',
                             }}
                         >
-                            Clean Structure
+                            MySQL + Postgres Ready
                         </Tag>
 
                         <Tag
@@ -142,7 +146,7 @@ function SourceReviewPage() {
                                 color: '#fcd34d',
                             }}
                         >
-                            Portfolio Ready
+                            Migration CLI Included
                         </Tag>
                     </Space>
                 </Space>
@@ -163,7 +167,7 @@ function SourceReviewPage() {
                         <Space orientation="vertical" size={18} style={{width: '100%'}}>
                             <div>
                                 <Title level={4} style={{color: '#f8fafc', margin: 0}}>
-                                    Request Flow
+                                    Layer Walkthrough
                                 </Title>
                                 <Paragraph
                                     style={{
@@ -171,19 +175,60 @@ function SourceReviewPage() {
                                         margin: '8px 0 0',
                                     }}
                                 >
-                                    A simplified walkthrough of how the frontend request travels
-                                    through the backend and comes back as an AI-generated insight
-                                    report.
+                                    Selecting a file highlights where it belongs in the updated
+                                    backend architecture. The flow below now follows the new layered
+                                    structure instead of the older single-path demo pipeline.
                                 </Paragraph>
+
+                                <Space wrap size={[8, 8]} style={{marginTop: 12}}>
+                                    <Tag
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '4px 10px',
+                                            border: '1px solid rgba(34,211,238,0.20)',
+                                            background: 'rgba(34,211,238,0.10)',
+                                            color: '#67e8f9',
+                                        }}
+                                    >
+                                        {sourceSections.length} layers
+                                    </Tag>
+
+                                    <Tag
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '4px 10px',
+                                            border: '1px solid rgba(168,85,247,0.20)',
+                                            background: 'rgba(168,85,247,0.10)',
+                                            color: '#d8b4fe',
+                                        }}
+                                    >
+                                        {sourceFiles.length} curated files
+                                    </Tag>
+
+                                    <Tag
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '4px 10px',
+                                            border: '1px solid rgba(250,204,21,0.20)',
+                                            background: 'rgba(250,204,21,0.10)',
+                                            color: '#fcd34d',
+                                        }}
+                                    >
+                                        2 database drivers
+                                    </Tag>
+                                </Space>
                             </div>
 
                             <Row gutter={[12, 12]}>
-                                {flowSteps.map((step, index) => {
+                                {sourceSections.map((section, index) => {
                                     const stepIndex = index + 1;
                                     const isActive = activeStep === stepIndex;
 
                                     return (
-                                        <Col xs={24} sm={12} lg={8} key={step.title}>
+                                        <Col xs={24} sm={12} lg={8} key={section.key}>
                                             <div
                                                 style={{
                                                     height: '100%',
@@ -231,7 +276,7 @@ function SourceReviewPage() {
                                                         marginBottom: 8,
                                                     }}
                                                 >
-                                                    {step.title}
+                                                    {section.title}
                                                 </div>
 
                                                 <div
@@ -241,7 +286,7 @@ function SourceReviewPage() {
                                                         lineHeight: 1.7,
                                                     }}
                                                 >
-                                                    {step.desc}
+                                                    {section.description}
                                                 </div>
                                             </div>
                                         </Col>
@@ -254,55 +299,125 @@ function SourceReviewPage() {
 
                 <Col xs={24} lg={8}>
                     <Card
-                        title={<span style={{color: '#f8fafc'}}>File Tree</span>}
+                        title={<span style={{color: '#f8fafc'}}>Layered File Browser</span>}
                         style={{
                             background: 'rgba(15,23,42,0.72)',
                             border: '1px solid rgba(148,163,184,0.12)',
                             borderRadius: 20,
-                            minHeight: 420,
+                            minHeight: 520,
                         }}
                         styles={{
                             body: {padding: 20}
                         }}
                     >
-                        <Space orientation="vertical" size={12} style={{width: '100%'}}>
-                            {sourceFiles.map((file) => {
-                                const isActive = file.key === activeFile.key;
+                        <Space orientation="vertical" size={16} style={{width: '100%'}}>
+                            <Paragraph
+                                style={{
+                                    margin: 0,
+                                    color: '#94a3b8',
+                                }}
+                            >
+                                Each layer can be expanded when needed. The persistence examples use
+                                MySQL snippets, while the Postgres side follows the same repository
+                                contracts.
+                            </Paragraph>
 
-                                return (
-                                    <div
-                                        key={file.key}
-                                        onClick={() => setSelectedKey(file.key)}
-                                        style={{
-                                            padding: '10px 14px',
-                                            borderRadius: 14,
-                                            background: isActive
-                                                ? 'linear-gradient(135deg, rgba(59,130,246,0.16), rgba(168,85,247,0.14))'
-                                                : 'rgba(30,41,59,0.55)',
-                                            border: isActive
-                                                ? '1px solid rgba(96,165,250,0.30)'
-                                                : '1px solid rgba(148,163,184,0.10)',
-                                            color: isActive ? '#f8fafc' : '#cbd5e1',
-                                            fontSize: 12,
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease',
-                                            boxShadow: isActive ? '0 10px 24px rgba(37,99,235,0.12)' : 'none',
-                                        }}
-                                    >
-                                        <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
-                                            <span style={{fontWeight: 600}}>{file.path}</span>
-                                            <span
+                            <Collapse
+                                ghost
+                                activeKey={openedSections}
+                                onChange={(keys) =>
+                                    setOpenedSections(
+                                        (Array.isArray(keys) ? keys : [keys])
+                                            .map((key) => String(key))
+                                            .filter(Boolean)
+                                    )
+                                }
+                                items={sectionFiles.map(({section, files}) => ({
+                                    key: section.key,
+                                    label: (
+                                        <Space size={10} wrap>
+                                            <Tag
                                                 style={{
-                                                    fontSize: 12,
-                                                    color: isActive ? 'rgba(226,232,240,0.78)' : '#94a3b8',
+                                                    margin: 0,
+                                                    borderRadius: 999,
+                                                    padding: '4px 10px',
+                                                    border: '1px solid rgba(96,165,250,0.20)',
+                                                    background: 'rgba(96,165,250,0.10)',
+                                                    color: '#bfdbfe',
                                                 }}
                                             >
-        {file.title}
-    </span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                                {section.badge}
+                                            </Tag>
+
+                                            <span
+                                                style={{
+                                                    color: '#f8fafc',
+                                                    fontWeight: 700,
+                                                }}
+                                            >
+                                                {section.title}
+                                            </span>
+
+                                            <Text style={{color: '#94a3b8'}}>
+                                                {files.length} files
+                                            </Text>
+                                        </Space>
+                                    ),
+                                    children: (
+                                        <Space orientation="vertical" size={12} style={{width: '100%'}}>
+                                            <Text style={{color: '#94a3b8'}}>
+                                                {section.description}
+                                            </Text>
+
+                                            <Space orientation="vertical" size={8} style={{width: '100%'}}>
+                                                {files.map((file) => {
+                                                    const isActive = file.key === activeFile.key;
+
+                                                    return (
+                                                        <div
+                                                            key={file.key}
+                                                            onClick={() => handleSelectFile(file)}
+                                                            style={{
+                                                                padding: '10px 14px',
+                                                                borderRadius: 14,
+                                                                background: isActive
+                                                                    ? 'linear-gradient(135deg, rgba(59,130,246,0.16), rgba(168,85,247,0.14))'
+                                                                    : 'rgba(30,41,59,0.55)',
+                                                                border: isActive
+                                                                    ? '1px solid rgba(96,165,250,0.30)'
+                                                                    : '1px solid rgba(148,163,184,0.10)',
+                                                                color: isActive ? '#f8fafc' : '#cbd5e1',
+                                                                fontSize: 12,
+                                                                cursor: 'pointer',
+                                                                transition: 'all 0.2s ease',
+                                                                boxShadow: isActive ? '0 10px 24px rgba(37,99,235,0.12)' : 'none',
+                                                            }}
+                                                        >
+                                                            <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
+                                                                <span style={{fontWeight: 600}}>{file.path}</span>
+                                                                <span
+                                                                    style={{
+                                                                        fontSize: 12,
+                                                                        color: isActive ? 'rgba(226,232,240,0.78)' : '#94a3b8',
+                                                                    }}
+                                                                >
+                                                                    {file.title}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </Space>
+                                        </Space>
+                                    ),
+                                    style: {
+                                        marginBottom: 10,
+                                        borderRadius: 18,
+                                        background: 'rgba(2,6,23,0.34)',
+                                        border: '1px solid rgba(148,163,184,0.10)',
+                                    },
+                                }))}
+                            />
                         </Space>
                     </Card>
                 </Col>

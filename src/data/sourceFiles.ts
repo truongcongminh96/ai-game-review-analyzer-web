@@ -1,830 +1,772 @@
 export type SourceFileItem = {
     key: string;
+    sectionKey: string;
     path: string;
     title: string;
     description: string;
-    language: 'go' | 'json' | 'bash' | 'text';
+    language: 'go' | 'sql';
+    highlights: string[];
     code: string;
 };
+
+export type SourceSectionItem = {
+    key: string;
+    title: string;
+    description: string;
+    badge: string;
+    fileKeys: string[];
+};
+
+export const backendRepoTree = `ai-game-review-analyzer/
+  cmd/
+    main.go
+    migrate/
+      main.go
+
+  config/
+    config.go
+
+  db/
+    migrations/
+      mysql/
+        000001_init_schema.up.sql
+        000002_remove_analysis_run_genre.up.sql
+      postgres/
+        000001_init_schema.up.sql
+        000002_remove_analysis_run_genre.up.sql
+
+  internal/
+    platform/
+      database/
+        mysql/mysql.go
+        postgres/postgres.go
+      uuid/uuid.go
+
+    prompt/
+      review_prompt.go
+
+    review/
+      client/
+        ai/
+          client.go
+          new.go
+          ollama.go
+        steam/
+          client.go
+          new.go
+          steam.go
+
+      delivery/http/
+        error_mapper.go
+        handler.go
+        middleware.go
+        new.go
+        response.go
+        routes.go
+
+      model/
+        analysis.go
+        game.go
+        insight.go
+        review.go
+        steam.go
+
+      repository/
+        mysql/
+          game_repository.go
+          analysis_repository.go
+        postgres/
+          game_repository.go
+          analysis_repository.go
+
+      usecase/
+        analyze.go
+        new.go
+        repository.go`;
+
+export const sourceSections: SourceSectionItem[] = [
+    {
+        key: 'runtime',
+        title: 'Runtime & Bootstrap',
+        description: 'Application entry points, config loading, and startup dependency selection.',
+        badge: 'Layer 1',
+        fileKeys: ['main', 'config'],
+    },
+    {
+        key: 'delivery',
+        title: 'HTTP Delivery',
+        description: 'Request decoding, health responses, and transport-layer contracts.',
+        badge: 'Layer 2',
+        fileKeys: ['http-new', 'handler'],
+    },
+    {
+        key: 'usecase',
+        title: 'Use Case Orchestration',
+        description: 'Business logic that validates input, coordinates clients, and manages analysis runs.',
+        badge: 'Layer 3',
+        fileKeys: ['usecase-new', 'usecase-repository', 'usecase-analyze'],
+    },
+    {
+        key: 'integration',
+        title: 'External Integrations',
+        description: 'Steam review fetch, prompt shaping, and Ollama inference.',
+        badge: 'Layer 4',
+        fileKeys: ['steam-client', 'prompt-review', 'ai-ollama'],
+    },
+    {
+        key: 'persistence',
+        title: 'Persistence Adapters',
+        description: 'Database client bootstrap plus repositories for games and analysis runs.',
+        badge: 'Layer 5',
+        fileKeys: ['platform-mysql', 'repo-mysql-game', 'repo-mysql-analysis'],
+    },
+    {
+        key: 'migration',
+        title: 'Migration & Schema',
+        description: 'Migration CLI and the schema that stores games, runs, and analysis results.',
+        badge: 'Layer 6',
+        fileKeys: ['migrate-main', 'mysql-init-schema'],
+    },
+];
 
 export const sourceFiles: SourceFileItem[] = [
     {
         key: 'main',
+        sectionKey: 'runtime',
         path: 'cmd/main.go',
-        title: 'Application bootstrap',
+        title: 'Server bootstrap and dependency wiring',
         description:
-            'The entry point of the backend. It loads config, wires Steam + Ollama clients, registers HTTP routes, and starts the server with CORS enabled.',
+            'The current backend no longer wires only Steam + Ollama. It now conditionally initializes MySQL or Postgres persistence, injects a health checker, and passes repositories into the use case.',
         language: 'go',
-        code: `package main
+        highlights: ['driver-aware startup', 'repository wiring', 'health-aware handler'],
+        code: `func main() {
+    cfg := config.Load()
+    mux := http.NewServeMux()
+    ctx := context.Background()
 
-import (
-	"log"
-	"net/http"
+    gameRepo, analysisRepo, healthChecker, closeDatabase, err := initializePersistence(ctx, cfg)
+    if err != nil {
+        log.Fatalf("failed to initialize database: %v", err)
+    }
+    defer closeDatabase()
 
-	"github.com/truongcongminh96/ai-game-review-analyzer/config"
-	aiClient "github.com/truongcongminh96/ai-game-review-analyzer/internal/review/client/ai"
-	steamClient "github.com/truongcongminh96/ai-game-review-analyzer/internal/review/client/steam"
-	reviewHTTP "github.com/truongcongminh96/ai-game-review-analyzer/internal/review/delivery/http"
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/usecase"
-)
+    ollama := aiClient.NewOllamaClient(cfg)
+    steam := steamClient.NewClient()
+    analyzeUseCase := usecase.NewAnalyzeUseCase(ollama, steam, gameRepo, analysisRepo)
 
-func main() {
-	cfg := config.Load()
-	mux := http.NewServeMux()
+    handler := reviewHTTP.NewHandler(analyzeUseCase, healthChecker)
+    reviewHTTP.RegisterRoutes(mux, handler)
 
-	ollama := aiClient.NewOllamaClient(cfg)
-	steam := steamClient.NewClient()
-	analyzeUseCase := usecase.NewAnalyzeUseCase(ollama, steam)
+    addr := ":" + cfg.ServerPort
+    log.Printf("server running at %s", addr)
 
-	handler := reviewHTTP.NewHandler(analyzeUseCase)
-	reviewHTTP.RegisterRoutes(mux, handler)
-
-	addr := ":" + cfg.ServerPort
-	log.Printf("server running at %s", addr)
-
-	if err := http.ListenAndServe(addr, reviewHTTP.WithCORS(mux)); err != nil {
-		log.Fatal(err)
-	}
+    if err := http.ListenAndServe(addr, reviewHTTP.WithCORS(mux)); err != nil {
+        log.Fatal(err)
+    }
 }
-`,
+
+func initializePersistence(
+    ctx context.Context,
+    cfg config.Config,
+) (usecase.GameRepository, usecase.AnalysisRepository, reviewHTTP.HealthChecker, func(), error) {
+    switch cfg.DatabaseDriver {
+    case config.DatabaseDriverPostgres:
+        client, err := platformpostgres.New(ctx, cfg)
+        if err != nil {
+            return nil, nil, nil, func() {}, err
+        }
+        return reviewpostgres.NewGameRepository(client), reviewpostgres.NewAnalysisRepository(client), client, func() {
+            if client != nil {
+                client.Close()
+            }
+        }, nil
+
+    case config.DatabaseDriverMySQL:
+        client, err := platformmysql.New(ctx, cfg)
+        if err != nil {
+            return nil, nil, nil, func() {}, err
+        }
+        return reviewmysql.NewGameRepository(client), reviewmysql.NewAnalysisRepository(client), client, func() {
+            if client != nil {
+                client.Close()
+            }
+        }, nil
+    }
+
+    return nil, nil, nil, func() {}, nil
+}`,
     },
     {
         key: 'config',
+        sectionKey: 'runtime',
         path: 'config/config.go',
-        title: 'Environment configuration',
+        title: 'Environment and database config resolution',
         description:
-            'Loads environment variables with fallback defaults for server port, Ollama base URL, and model name.',
+            'Configuration now supports DATABASE_* variables, legacy Supabase/MySQL compatibility, and automatic driver detection from the connection string.',
         language: 'go',
-        code: `package config
-
-import (
-	"log"
-	"os"
-	"strconv"
-
-	"github.com/joho/godotenv"
-)
-
-type Config struct {
-	ServerPort       string
-	OllamaBaseURL    string
-	OllamaModel      string
-	OllamaTimeoutSec int
+        highlights: ['DATABASE_DRIVER inference', 'legacy env compatibility', 'pool sizing config'],
+        code: `type Config struct {
+    ServerPort               string
+    OllamaBaseURL            string
+    OllamaModel              string
+    OllamaTimeoutSec         int
+    DatabaseDriver           string
+    DatabaseURL              string
+    DatabaseMaxConns         int
+    DatabaseMinConns         int
+    DatabaseHealthTimeoutSec int
 }
 
 func Load() Config {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("warning: .env file not found, using system env")
-	}
+    databaseDriver := resolveDatabaseDriver()
 
-	return Config{
-		ServerPort:       getEnv("SERVER_PORT", "8080"),
-		OllamaBaseURL:    getEnv("OLLAMA_BASE_URL", "http://localhost:11434"),
-		OllamaModel:      getEnv("OLLAMA_MODEL", "llama3.2:3b"),
-		OllamaTimeoutSec: getEnvAsInt("OLLAMA_TIMEOUT_SEC", 300),
-	}
+    return Config{
+        ServerPort:               getEnv("SERVER_PORT", "8080"),
+        OllamaBaseURL:            getEnv("OLLAMA_BASE_URL", "http://localhost:11434"),
+        OllamaModel:              getEnv("OLLAMA_MODEL", "llama3.2:3b"),
+        OllamaTimeoutSec:         getEnvAsInt("OLLAMA_TIMEOUT_SEC", 300),
+        DatabaseDriver:           databaseDriver,
+        DatabaseURL:              resolveDatabaseURL(databaseDriver),
+        DatabaseMaxConns:         resolveDatabaseInt(databaseDriver, 5, "DATABASE_MAX_CONNS"),
+        DatabaseMinConns:         resolveDatabaseInt(databaseDriver, 0, "DATABASE_MIN_CONNS"),
+        DatabaseHealthTimeoutSec: resolveDatabaseInt(databaseDriver, 5, "DATABASE_HEALTH_TIMEOUT_SEC"),
+    }
 }
 
-func getEnv(key, fallback string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		return fallback
-	}
-	return value
-}
+func resolveDatabaseDriver() string {
+    if driver := normalizeDatabaseDriver(getFirstEnv("", "DATABASE_DRIVER", "DB_DRIVER")); driver != "" {
+        return driver
+    }
 
-func getEnvAsInt(key string, fallback int) int {
-	value := os.Getenv(key)
-	if value == "" {
-		return fallback
-	}
+    if databaseURL := strings.TrimSpace(os.Getenv("DATABASE_URL")); databaseURL != "" {
+        return inferDriverFromURL(databaseURL)
+    }
 
-	intValue, err := strconv.Atoi(value)
-	if err != nil {
-		return fallback
-	}
+    if strings.TrimSpace(os.Getenv("SUPABASE_DB_URL")) != "" {
+        return DatabaseDriverPostgres
+    }
 
-	return intValue
-}
-`,
-    },
-    {
-        key: 'prompt-review',
-        path: 'internal/prompt/review_prompt.go',
-        title: 'Review analysis prompt builder',
-        description:
-            'Builds the LLM prompt from normalized Steam reviews and enforces the exact JSON output shape expected by the backend.',
-        language: 'go',
-        code: `package prompt
+    if strings.TrimSpace(os.Getenv("MYSQL_DB_URL")) != "" {
+        return DatabaseDriverMySQL
+    }
 
-import (
-	"fmt"
-	"strings"
-)
-
-func BuildReviewAnalysisPrompt(reviews []string) string {
-	var reviewLines []string
-	for i, review := range reviews {
-		reviewLines = append(reviewLines, fmt.Sprintf("%d. %s", i+1, review))
-	}
-
-	return fmt.Sprintf(\`You are a game analytics AI.
-
-Analyze the following player reviews and return ONLY valid JSON.
-Do not add markdown.
-Do not wrap the JSON in backticks.
-
-Rules:
-- Count sentiment across all reviews.
-- Extract up to 5 praised features.
-- Extract up to 5 common issues.
-- Extract up to 6 key topics about gameplay systems or player experience.
-- Topics should be short noun phrases like: combat, progression, performance, story, quest design, balance, UI/UX, monetization, matchmaking, exploration.
-- Write a professional 2-3 sentence summary.
-
-Return this exact JSON shape:
-{
-  "praised_features": [],
-  "common_issues": [],
-  "topics": [],
-  "sentiment": {
-    "positive": 0,
-    "neutral": 0,
-    "negative": 0
-  },
-  "summary": ""
-}
-
-Reviews:
-%s
-\`, strings.Join(reviewLines, "\\n"))
-}
-`,
-    },
-    {
-        key: 'handler',
-        path: 'internal/review/delivery/http/handler.go',
-        title: 'HTTP handlers',
-        description:
-            'Handles /health, /analyze, and /steam/analyze requests. It validates method + input, calls the use case, and returns JSON responses.',
-        language: 'go',
-        code: `package http
-
-import (
-	"encoding/json"
-	nethttp "net/http"
-
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-)
-
-func (h Handler) HealthHandler(w nethttp.ResponseWriter, r *nethttp.Request) {
-	if r.Method != nethttp.MethodGet {
-		writeError(w, nethttp.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	writeJSON(w, nethttp.StatusOK, map[string]string{
-		"status": "ok",
-	})
-}
-
-func (h Handler) AnalyzeHandler(w nethttp.ResponseWriter, r *nethttp.Request) {
-	if r.Method != nethttp.MethodPost {
-		writeError(w, nethttp.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	var req model.AnalyzeReviewRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, nethttp.StatusBadRequest, "invalid request body")
-		return
-	}
-
-	result, err := h.useCase.AnalyzeReviews(req.Reviews)
-	if err != nil {
-		writeError(w, mapErrorToStatus(err), err.Error())
-		return
-	}
-
-	writeJSON(w, nethttp.StatusOK, result)
-}
-
-func (h Handler) AnalyzeSteamHandler(w nethttp.ResponseWriter, r *nethttp.Request) {
-	if r.Method != nethttp.MethodPost {
-		writeError(w, nethttp.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	var req model.AnalyzeSteamRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, nethttp.StatusBadRequest, "invalid request body")
-		return
-	}
-
-	result, err := h.useCase.AnalyzeSteamReviews(req.AppID, req.Limit, req.Language)
-	if err != nil {
-		writeError(w, mapErrorToStatus(err), err.Error())
-		return
-	}
-
-	writeJSON(w, nethttp.StatusOK, result)
-}
-`,
+    return ""
+}`,
     },
     {
         key: 'http-new',
+        sectionKey: 'delivery',
         path: 'internal/review/delivery/http/new.go',
-        title: 'HTTP handler contract',
+        title: 'HTTP contracts and health checker wiring',
         description:
-            'Defines the use case interface expected by the delivery layer and wires it into the HTTP handler.',
+            'The delivery layer now expects context-aware use case methods and can optionally expose database health via a shared interface.',
         language: 'go',
-        code: `package http
+        highlights: ['context-aware contract', 'optional health checker', 'transport isolation'],
+        code: `type AnalyzeUseCase interface {
+    AnalyzeReviews(ctx context.Context, reviews []string) (*model.Insight, error)
+    AnalyzeSteamReviews(ctx context.Context, appID string, limit int, language string) (*model.Insight, error)
+}
 
-import "github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-
-type AnalyzeUseCase interface {
-	AnalyzeReviews(reviews []string) (*model.Insight, error)
-	AnalyzeSteamReviews(appID string, limit int, language string) (*model.Insight, error)
+type HealthChecker interface {
+    Enabled() bool
+    CheckHealth(ctx context.Context) error
 }
 
 type Handler struct {
-	useCase AnalyzeUseCase
+    useCase       AnalyzeUseCase
+    healthChecker HealthChecker
 }
 
-func NewHandler(useCase AnalyzeUseCase) *Handler {
-	return &Handler{useCase: useCase}
-}
-`,
+func NewHandler(useCase AnalyzeUseCase, healthChecker ...HealthChecker) *Handler {
+    var checker HealthChecker = noopHealthChecker{}
+    if len(healthChecker) > 0 && healthChecker[0] != nil {
+        checker = healthChecker[0]
+    }
+
+    return &Handler{
+        useCase:       useCase,
+        healthChecker: checker,
+    }
+}`,
     },
     {
-        key: 'http-error-mapper',
-        path: 'internal/review/delivery/http/error_mapper.go',
-        title: 'HTTP error mapping',
+        key: 'handler',
+        sectionKey: 'delivery',
+        path: 'internal/review/delivery/http/handler.go',
+        title: 'Health, manual analyze, and Steam analyze handlers',
         description:
-            'Maps domain and infrastructure failures into appropriate HTTP status codes for the API response.',
+            'Health responses now report database status, while both analysis endpoints forward the incoming request context to the use case.',
         language: 'go',
-        code: `package http
+        highlights: ['/health with DB status', 'POST /analyze', 'POST /steam/analyze'],
+        code: `func (h Handler) HealthHandler(w nethttp.ResponseWriter, r *nethttp.Request) {
+    if h.healthChecker != nil && h.healthChecker.Enabled() {
+        if err := h.healthChecker.CheckHealth(r.Context()); err != nil {
+            writeJSON(w, nethttp.StatusServiceUnavailable, map[string]string{
+                "status":   "degraded",
+                "database": "unreachable",
+            })
+            return
+        }
 
-import (
-	"errors"
-	"net/http"
-	"strings"
-)
+        writeJSON(w, nethttp.StatusOK, map[string]string{
+            "status":   "ok",
+            "database": "connected",
+        })
+        return
+    }
 
-func mapErrorToStatus(err error) int {
-	if err == nil {
-		return http.StatusOK
-	}
-
-	msg := err.Error()
-
-	switch {
-	case strings.Contains(msg, "invalid request"),
-		strings.Contains(msg, "required"),
-		strings.Contains(msg, "cannot be empty"):
-		return http.StatusBadRequest
-	case strings.Contains(msg, "steam returned status"),
-		strings.Contains(msg, "failed to call steam"),
-		strings.Contains(msg, "ollama returned status"),
-		strings.Contains(msg, "failed to call ollama"):
-		return http.StatusBadGateway
-	default:
-		var target interface{ Temporary() bool }
-		if errors.As(err, &target) {
-			return http.StatusBadGateway
-		}
-		return http.StatusInternalServerError
-	}
-}
-`,
-    },
-    {
-        key: 'http-response',
-        path: 'internal/review/delivery/http/response.go',
-        title: 'HTTP response helpers',
-        description:
-            'Provides small helpers for sending JSON payloads and standardized error responses back to the frontend.',
-        language: 'go',
-        code: `package http
-
-import (
-	"encoding/json"
-	nethttp "net/http"
-)
-
-type errorResponse struct {
-	Error string \`json:"error"\`
+    writeJSON(w, nethttp.StatusOK, map[string]string{
+        "status":   "ok",
+        "database": "disabled",
+    })
 }
 
-func writeJSON(w nethttp.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(data)
-}
+func (h Handler) AnalyzeSteamHandler(w nethttp.ResponseWriter, r *nethttp.Request) {
+    var req model.AnalyzeSteamRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        writeError(w, nethttp.StatusBadRequest, "invalid request body")
+        return
+    }
 
-func writeError(w nethttp.ResponseWriter, status int, message string) {
-	writeJSON(w, status, errorResponse{
-		Error: message,
-	})
-}
-`,
-    },
-    {
-        key: 'http-middleware',
-        path: 'internal/review/delivery/http/middleware.go',
-        title: 'CORS middleware',
-        description:
-            'Wraps the HTTP mux with CORS headers so the frontend can call the backend during local development.',
-        language: 'go',
-        code: `package http
+    result, err := h.useCase.AnalyzeSteamReviews(r.Context(), req.AppID, req.Limit, req.Language)
+    if err != nil {
+        writeError(w, mapErrorToStatus(err), err.Error())
+        return
+    }
 
-import nethttp "net/http"
-
-func WithCORS(next nethttp.Handler) nethttp.Handler {
-	return nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == nethttp.MethodOptions {
-			w.WriteHeader(nethttp.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-`,
-    },
-    {
-        key: 'routes',
-        path: 'internal/review/delivery/http/routes.go',
-        title: 'Route registration',
-        description:
-            'Central place for binding handler methods to backend endpoints.',
-        language: 'go',
-        code: `package http
-
-import nethttp "net/http"
-
-func RegisterRoutes(mux *nethttp.ServeMux, handler *Handler) {
-	mux.HandleFunc("/health", handler.HealthHandler)
-	mux.HandleFunc("/analyze", handler.AnalyzeHandler)
-	mux.HandleFunc("/steam/analyze", handler.AnalyzeSteamHandler)
-}
-`,
+    writeJSON(w, nethttp.StatusOK, result)
+}`,
     },
     {
         key: 'usecase-new',
+        sectionKey: 'usecase',
         path: 'internal/review/usecase/new.go',
-        title: 'Use case dependency wiring',
+        title: 'Use case dependency container',
         description:
-            'Defines the AnalyzeUseCase structure and injects the AI client and Steam client.',
+            'The analyze use case now carries repository dependencies in addition to the AI and Steam clients, allowing persistence to stay optional but fully injectable.',
         language: 'go',
-        code: `package usecase
-
-import (
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/client/ai"
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/client/steam"
-)
-
-type AnalyzeUseCase struct {
-	aiClient    ai.Client
-	steamClient steam.Client
+        highlights: ['constructor upgrade', 'repository injection', 'optional persistence'],
+        code: `type AnalyzeUseCase struct {
+    aiClient     ai.Client
+    steamClient  steam.Client
+    gameRepo     GameRepository
+    analysisRepo AnalysisRepository
 }
 
-func NewAnalyzeUseCase(aiClient ai.Client, steamClient steam.Client) *AnalyzeUseCase {
-	return &AnalyzeUseCase{
-		aiClient:    aiClient,
-		steamClient: steamClient,
-	}
+func NewAnalyzeUseCase(
+    aiClient ai.Client,
+    steamClient steam.Client,
+    gameRepo GameRepository,
+    analysisRepo AnalysisRepository,
+) *AnalyzeUseCase {
+    return &AnalyzeUseCase{
+        aiClient:     aiClient,
+        steamClient:  steamClient,
+        gameRepo:     gameRepo,
+        analysisRepo: analysisRepo,
+    }
+}`,
+    },
+    {
+        key: 'usecase-repository',
+        sectionKey: 'usecase',
+        path: 'internal/review/usecase/repository.go',
+        title: 'Repository interfaces for persistence',
+        description:
+            'The use case remains storage-agnostic by depending on small contracts instead of concrete MySQL or Postgres implementations.',
+        language: 'go',
+        highlights: ['GameRepository', 'AnalysisRepository', 'clean architecture boundary'],
+        code: `type GameRepository interface {
+    UpsertBySteamAppID(ctx context.Context, input model.GameUpsertInput) (*model.Game, error)
 }
-`,
+
+type AnalysisRepository interface {
+    CreateRun(ctx context.Context, input model.CreateAnalysisRunInput) (*model.AnalysisRun, error)
+    CompleteRun(ctx context.Context, input model.CompleteAnalysisRunInput) error
+    MarkFailed(ctx context.Context, input model.FailAnalysisRunInput) error
+}`,
     },
     {
         key: 'usecase-analyze',
+        sectionKey: 'usecase',
         path: 'internal/review/usecase/analyze.go',
-        title: 'Core review analysis flow',
+        title: 'Review orchestration with persistence hooks',
         description:
-            'This is the main business logic: validate appId, fetch Steam reviews, normalize review text, call the AI client, and enrich the final insight response.',
+            'This is the biggest change in the new backend: the flow can create a pending analysis run, enrich game metadata from Steam, and persist success or failure around the AI call.',
         language: 'go',
-        code: `package usecase
+        highlights: ['prepareAnalysisRun', 'markRunFailed', 'completeRun'],
+        code: `func (u *AnalyzeUseCase) AnalyzeSteamReviews(ctx context.Context, appID string, limit int, language string) (*model.Insight, error) {
+    if strings.TrimSpace(appID) == "" {
+        return nil, fmt.Errorf("appId required")
+    }
 
-import (
-	"fmt"
-	"strings"
+    var persistedRun *model.AnalysisRun
+    if u.persistenceEnabled() {
+        run, err := u.prepareAnalysisRun(ctx, appID, limit, language)
+        if err != nil {
+            return nil, err
+        }
+        persistedRun = run
+    }
 
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-)
+    steamReviews, err := u.steamClient.GetReviews(appID, limit, language)
+    if err != nil {
+        _ = u.markRunFailed(ctx, persistedRun, 0, err)
+        return nil, err
+    }
 
-// AnalyzeReviews analyzes player reviews using the AI client
-// and returns a summarized Insight.
-func (u *AnalyzeUseCase) AnalyzeReviews(reviews []string) (*model.Insight, error) {
-	reviews = normalizeReviews(reviews)
-	if len(reviews) == 0 {
-		return nil, fmt.Errorf("reviews cannot be empty")
-	}
+    insight, err := u.AnalyzeReviews(ctx, reviews)
+    if err != nil {
+        _ = u.markRunFailed(ctx, persistedRun, len(reviews), err)
+        return nil, err
+    }
 
-	insight, err := u.aiClient.AnalyzeReviews(reviews)
-	if err != nil {
-		return nil, err
-	}
+    if err := u.completeRun(ctx, persistedRun, insight); err != nil {
+        return nil, err
+    }
 
-	return sanitizeInsight(insight, len(reviews)), nil
+    return insight, nil
 }
 
-func (u *AnalyzeUseCase) AnalyzeSteamReviews(appID string, limit int, language string) (*model.Insight, error) {
-	if strings.TrimSpace(appID) == "" {
-		return nil, fmt.Errorf("appId required")
-	}
+func (u *AnalyzeUseCase) prepareAnalysisRun(ctx context.Context, appID string, limit int, language string) (*model.AnalysisRun, error) {
+    gameInput := buildGameUpsertInput(appID)
 
-	if limit <= 0 {
-		limit = 30
-	}
+    details, err := u.steamClient.GetGameDetails(appID)
+    if err == nil && details != nil {
+        gameInput = applyGameDetails(gameInput, details)
+    }
 
-	if strings.TrimSpace(language) == "" {
-		language = "english"
-	}
+    game, err := u.gameRepo.UpsertBySteamAppID(ctx, gameInput)
+    if err != nil {
+        return nil, fmt.Errorf("failed to upsert game: %w", err)
+    }
 
-	steamReviews, err := u.steamClient.GetReviews(appID, limit, language)
-	if err != nil {
-		return nil, err
-	}
-
-	reviews := make([]string, 0, len(steamReviews))
-	sentiment := model.SentimentBreakdown{}
-
-	for _, r := range steamReviews {
-		trimmed := strings.TrimSpace(r.Review)
-		if trimmed == "" {
-			continue
-		}
-
-		reviews = append(reviews, trimmed)
-
-		if r.VotedUp {
-			sentiment.Positive++
-		} else {
-			sentiment.Negative++
-		}
-	}
-
-	insight, err := u.AnalyzeReviews(reviews)
-	if err != nil {
-		return nil, err
-	}
-
-	insight.Sentiment = sentiment
-	insight.ReviewCount = len(reviews)
-
-	return insight, nil
-}
-
-func normalizeReviews(reviews []string) []string {
-	normalized := make([]string, 0, len(reviews))
-	for _, review := range reviews {
-		trimmed := strings.TrimSpace(review)
-		if trimmed != "" {
-			normalized = append(normalized, trimmed)
-		}
-	}
-	return normalized
-}
-
-func sanitizeInsight(insight *model.Insight, reviewCount int) *model.Insight {
-	if insight == nil {
-		return &model.Insight{ReviewCount: reviewCount}
-	}
-
-	insight.PraisedFeatures = cleanStringList(insight.PraisedFeatures)
-	insight.CommonIssues = cleanStringList(insight.CommonIssues)
-	insight.Topics = cleanStringList(insight.Topics)
-	insight.Summary = strings.TrimSpace(insight.Summary)
-	insight.ReviewCount = reviewCount
-
-	total := insight.Sentiment.Positive + insight.Sentiment.Neutral + insight.Sentiment.Negative
-	if total < 0 {
-		insight.Sentiment.Positive = 0
-		insight.Sentiment.Neutral = 0
-		insight.Sentiment.Negative = 0
-	}
-
-	return insight
-}
-
-func cleanStringList(items []string) []string {
-	seen := make(map[string]struct{})
-	result := make([]string, 0, len(items))
-
-	for _, item := range items {
-		trimmed := strings.TrimSpace(item)
-		if trimmed == "" {
-			continue
-		}
-		key := strings.ToLower(trimmed)
-		if _, ok := seen[key]; ok {
-			continue
-		}
-		seen[key] = struct{}{}
-		result = append(result, trimmed)
-	}
-
-	return result
-}
-`,
+    return u.analysisRepo.CreateRun(ctx, model.CreateAnalysisRunInput{
+        GameID:      game.ID,
+        ReviewLimit: limit,
+        Language:    language,
+    })
+}`,
     },
     {
         key: 'steam-client',
-        path: 'internal/review/client/steam/client.go',
-        title: 'Steam client contract',
-        description:
-            'Defines the Steam client interface so the use case depends on abstraction instead of a concrete implementation.',
-        language: 'go',
-        code: `package steam
-
-import "github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-
-type Client interface {
-	GetReviews(appID string, limit int, language string) ([]model.ReviewSteam, error)
-}
-`,
-    },
-    {
-        key: 'steam-new',
-        path: 'internal/review/client/steam/new.go',
-        title: 'Steam client setup',
-        description:
-            'Creates the concrete Steam client with an HTTP timeout used for fetching review data from Steam.',
-        language: 'go',
-        code: `package steam
-
-import (
-	"net/http"
-	"time"
-)
-
-type ClientSteam struct {
-	httpClient *http.Client
-}
-
-func NewClient() ClientSteam {
-	return ClientSteam{
-		httpClient: &http.Client{
-			Timeout: 15 * time.Second,
-		},
-	}
-}
-`,
-    },
-    {
-        key: 'steam-api',
+        sectionKey: 'integration',
         path: 'internal/review/client/steam/steam.go',
-        title: 'Steam review fetcher',
+        title: 'Steam review and game-detail client',
         description:
-            'Calls the Steam app reviews endpoint, validates the response, decodes JSON, and filters empty review entries.',
+            'The Steam client now does more than fetch review bodies. It also pulls title, cover image, genres, and release year so those values can be stored before the run completes.',
         language: 'go',
-        code: `package steam
+        highlights: ['GetReviews', 'GetGameDetails', 'metadata enrichment'],
+        code: `func (c ClientSteam) GetReviews(appID string, limit int, language string) ([]model.ReviewSteam, error) {
+    url := fmt.Sprintf(
+        "https://store.steampowered.com/appreviews/%s?json=1&num_per_page=%d&language=%s",
+        appID,
+        limit,
+        language,
+    )
 
-import (
-	"encoding/json"
-	"fmt"
-	"io"
+    resp, err := c.httpClient.Get(url)
+    if err != nil {
+        return nil, fmt.Errorf("failed to call steam: %w", err)
+    }
 
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-)
+    var data model.ResponseSteam
+    if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+        return nil, fmt.Errorf("failed to decode steam response: %w", err)
+    }
 
-func (c ClientSteam) GetReviews(appID string, limit int, language string) ([]model.ReviewSteam, error) {
-	url := fmt.Sprintf(
-		"https://store.steampowered.com/appreviews/%s?json=1&num_per_page=%d&language=%s",
-		appID,
-		limit,
-		language,
-	)
-
-	resp, err := c.httpClient.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call steam: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode >= 300 {
-		raw, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("steam returned status %d: %s", resp.StatusCode, string(raw))
-	}
-
-	var data model.ResponseSteam
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return nil, fmt.Errorf("failed to decode steam response: %w", err)
-	}
-
-	reviews := make([]model.ReviewSteam, 0, len(data.Reviews))
-	for _, r := range data.Reviews {
-		if r.Review == "" {
-			continue
-		}
-		reviews = append(reviews, r)
-	}
-
-	return reviews, nil
+    return data.Reviews, nil
 }
-`,
+
+func (c ClientSteam) GetGameDetails(appID string) (*model.SteamGameDetails, error) {
+    url := fmt.Sprintf(
+        "https://store.steampowered.com/api/appdetails?appids=%s&l=english",
+        appID,
+    )
+
+    resp, err := c.httpClient.Get(url)
+    if err != nil {
+        return nil, fmt.Errorf("failed to fetch steam game details: %w", err)
+    }
+
+    details := &model.SteamGameDetails{
+        AppID:       appID,
+        Title:       title,
+        CoverURL:    strings.TrimSpace(entry.Data.HeaderImage),
+        Genre:       joinGenres(entry.Data.Genres),
+        ReleaseYear: parseReleaseYear(entry.Data.ReleaseDate.Date),
+    }
+
+    return details, nil
+}`,
     },
     {
-        key: 'ai-client',
-        path: 'internal/review/client/ai/client.go',
-        title: 'AI client contract',
+        key: 'prompt-review',
+        sectionKey: 'integration',
+        path: 'internal/prompt/review_prompt.go',
+        title: 'Structured JSON prompt for Ollama',
         description:
-            'Defines the abstraction that the use case depends on for turning raw reviews into an insight response.',
+            'The prompt contract stays strict so the backend can safely parse the model output and persist structured insights.',
         language: 'go',
-        code: `package ai
+        highlights: ['strict JSON output', 'topic extraction rules', 'summary instructions'],
+        code: `func BuildReviewAnalysisPrompt(reviews []string) string {
+    var reviewLines []string
+    for i, review := range reviews {
+        reviewLines = append(reviewLines, fmt.Sprintf("%d. %s", i+1, review))
+    }
 
-import "github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-
-type Client interface {
-	AnalyzeReviews(reviews []string) (*model.Insight, error)
-}
-`,
-    },
-    {
-        key: 'ai-new',
-        path: 'internal/review/client/ai/new.go',
-        title: 'Ollama client setup',
-        description:
-            'Creates the Ollama client with model, base URL, and HTTP timeout configuration.',
-        language: 'go',
-        code: `package ai
-
-import (
-	"net/http"
-	"time"
-
-	"github.com/truongcongminh96/ai-game-review-analyzer/config"
-)
-
-type ollamaGenerateRequest struct {
-	Model  string \`json:"model"\`
-	Prompt string \`json:"prompt"\`
-	Stream bool   \`json:"stream"\`
-}
-
-type ollamaGenerateResponse struct {
-	Response string \`json:"response"\`
-}
-
-type OllamaClient struct {
-	BaseURL string
-	Model   string
-	Client  *http.Client
-}
-
-func NewOllamaClient(cfg config.Config) OllamaClient {
-	return OllamaClient{
-		BaseURL: cfg.OllamaBaseURL,
-		Model:   cfg.OllamaModel,
-		Client:  &http.Client{Timeout: time.Duration(cfg.OllamaTimeoutSec) * time.Second},
-	}
-}
-`,
+    return fmt.Sprintf("You are a game analytics AI.\\n\\n"+
+        "Analyze the following player reviews and return ONLY valid JSON.\\n"+
+        "Do not add markdown.\\n"+
+        "Rules:\\n"+
+        "- Count sentiment across all reviews.\\n"+
+        "- Extract up to 5 praised features.\\n"+
+        "- Extract up to 5 common issues.\\n"+
+        "- Extract up to 6 key topics.\\n"+
+        "- Write a professional 2-3 sentence summary.\\n\\n"+
+        "Reviews:\\n%s\\n",
+        strings.Join(reviewLines, "\\n"),
+    )
+}`,
     },
     {
         key: 'ai-ollama',
+        sectionKey: 'integration',
         path: 'internal/review/client/ai/ollama.go',
-        title: 'Ollama inference call',
+        title: 'Ollama client and JSON cleanup',
         description:
-            'Builds the review analysis prompt, calls /api/generate, parses the LLM output, strips markdown fences, and converts the JSON string into a typed Insight object.',
+            'The AI adapter still calls Ollama directly, but it now also exposes the active model name so successful runs can persist which model produced the insight.',
         language: 'go',
-        code: `package ai
+        highlights: ['POST /api/generate', 'cleanJSONText', 'ModelName exposure'],
+        code: `func (o OllamaClient) AnalyzeReviews(reviews []string) (*model.Insight, error) {
+    reqBody := ollamaGenerateRequest{
+        Model:  o.Model,
+        Prompt: prompt.BuildReviewAnalysisPrompt(reviews),
+        Stream: false,
+    }
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"strings"
+    resp, err := o.Client.Post(o.BaseURL+"/api/generate", "application/json", bytes.NewBuffer(bodyBytes))
+    if err != nil {
+        return nil, fmt.Errorf("failed to call ollama: %w", err)
+    }
 
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/prompt"
-	"github.com/truongcongminh96/ai-game-review-analyzer/internal/review/model"
-)
+    cleaned := cleanJSONText(ollamaResp.Response)
 
-func (o OllamaClient) AnalyzeReviews(reviews []string) (*model.Insight, error) {
-	if len(reviews) == 0 {
-		return nil, fmt.Errorf("reviews cannot be empty")
-	}
+    var insight model.Insight
+    if err := json.Unmarshal([]byte(cleaned), &insight); err != nil {
+        return nil, fmt.Errorf("failed to parse insight JSON: %w, llm_output=%s", err, cleaned)
+    }
 
-	reqBody := ollamaGenerateRequest{
-		Model:  o.Model,
-		Prompt: prompt.BuildReviewAnalysisPrompt(reviews),
-		Stream: false,
-	}
-
-	bodyBytes, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := o.Client.Post(o.BaseURL+"/api/generate", "application/json", bytes.NewBuffer(bodyBytes))
-	if err != nil {
-		return nil, fmt.Errorf("failed to call ollama: %w", err)
-	}
-	defer func(body io.ReadCloser) { _ = body.Close() }(resp.Body)
-
-	raw, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("ollama returned status %d: %s", resp.StatusCode, string(raw))
-	}
-
-	var ollamaResp ollamaGenerateResponse
-	if err := json.Unmarshal(raw, &ollamaResp); err != nil {
-		return nil, fmt.Errorf("failed to parse ollama response: %w, raw=%s", err, string(raw))
-	}
-
-	cleaned := cleanJSONText(ollamaResp.Response)
-
-	var insight model.Insight
-	if err := json.Unmarshal([]byte(cleaned), &insight); err != nil {
-		return nil, fmt.Errorf("failed to parse insight JSON: %w, llm_output=%s", err, cleaned)
-	}
-
-	return &insight, nil
+    return &insight, nil
 }
 
-func cleanJSONText(s string) string {
-	s = strings.TrimSpace(s)
-	s = strings.TrimPrefix(s, "\`\`\`json")
-	s = strings.TrimPrefix(s, "\`\`\`")
-	s = strings.TrimSuffix(s, "\`\`\`")
-	return strings.TrimSpace(s)
-}
-`,
+func (o OllamaClient) ModelName() string {
+    return strings.TrimSpace(o.Model)
+}`,
     },
     {
-        key: 'model-review',
-        path: 'internal/review/model/review.go',
-        title: 'Review request models',
+        key: 'platform-mysql',
+        sectionKey: 'persistence',
+        path: 'internal/platform/database/mysql/mysql.go',
+        title: 'MySQL client bootstrap and health checks',
         description:
-            'Defines the request payloads accepted by the API for direct review analysis and Steam-based review analysis.',
+            'This concrete adapter shows how the backend manages sql.DB pooling and health checks when DATABASE_DRIVER=mysql. A matching Postgres adapter exists with the same shape.',
         language: 'go',
-        code: `package model
-
-type AnalyzeReviewRequest struct {
-	Reviews []string \`json:"reviews"\`
+        highlights: ['sql.DB setup', 'pool sizing', 'ping health check'],
+        code: `type Client struct {
+    db                 *sql.DB
+    healthCheckTimeout time.Duration
 }
 
-type AnalyzeSteamRequest struct {
-	AppID    string \`json:"appId"\`
-	Limit    int    \`json:"limit"\`
-	Language string \`json:"language"\`
-}
-`,
+func New(ctx context.Context, cfg config.Config) (*Client, error) {
+    if cfg.DatabaseURL == "" {
+        return nil, nil
+    }
+
+    db, err := sql.Open(config.DatabaseDriverMySQL, cfg.DatabaseURL)
+    if err != nil {
+        return nil, fmt.Errorf("failed to open mysql connection: %w", err)
+    }
+
+    if cfg.DatabaseMaxConns > 0 {
+        db.SetMaxOpenConns(cfg.DatabaseMaxConns)
+    }
+
+    client := &Client{
+        db:                 db,
+        healthCheckTimeout: time.Duration(cfg.DatabaseHealthTimeoutSec) * time.Second,
+    }
+
+    if err := client.CheckHealth(ctx); err != nil {
+        _ = db.Close()
+        return nil, fmt.Errorf("failed to connect to mysql: %w", err)
+    }
+
+    return client, nil
+}`,
     },
     {
-        key: 'model-steam',
-        path: 'internal/review/model/steam.go',
-        title: 'Steam response models',
+        key: 'repo-mysql-game',
+        sectionKey: 'persistence',
+        path: 'internal/review/repository/mysql/game_repository.go',
+        title: 'Game upsert repository',
         description:
-            'Represents the subset of Steam review response fields needed by the backend during analysis.',
+            'Before a run is created, the backend persists the Steam game itself so repeated analyses can share one canonical game record.',
         language: 'go',
-        code: `package model
+        highlights: ['UpsertBySteamAppID', 'Steam app uniqueness', 'title preservation'],
+        code: `func (r *GameRepository) UpsertBySteamAppID(ctx context.Context, input model.GameUpsertInput) (*model.Game, error) {
+    if r == nil || r.db == nil {
+        return nil, fmt.Errorf("game repository is not configured")
+    }
 
-type ResponseSteam struct {
-	Reviews []ReviewSteam \`json:"reviews"\`
-}
+    gameID, err := platformuuid.NewString()
+    if err != nil {
+        return nil, fmt.Errorf("generate game id: %w", err)
+    }
 
-type ReviewSteam struct {
-	Review   string \`json:"review"\`
-	VotedUp  bool   \`json:"voted_up"\`
-	Language string \`json:"language"\`
-}
-`,
+    _, err = r.db.ExecContext(ctx, "... insert into games ... on duplicate key update ...",
+        gameID,
+        input.SteamAppID,
+        input.Title,
+        input.CoverURL,
+        input.Genre,
+        input.ReleaseYear,
+        input.PreferExistingTitle,
+    )
+    if err != nil {
+        return nil, fmt.Errorf("upsert game by steam_app_id: %w", err)
+    }
+
+    return r.findBySteamAppID(ctx, input.SteamAppID)
+}`,
     },
     {
-        key: 'model-insight',
-        path: 'internal/review/model/insight.go',
-        title: 'Insight response model',
+        key: 'repo-mysql-analysis',
+        sectionKey: 'persistence',
+        path: 'internal/review/repository/mysql/analysis_repository.go',
+        title: 'Analysis run lifecycle repository',
         description:
-            'Defines the final structured insight returned to the frontend, including sentiment, topics, and summarized findings.',
+            'The persistence layer records pending runs, stores AI output transactionally, and marks failures with explicit review counts and error messages.',
         language: 'go',
-        code: `package model
+        highlights: ['CreateRun', 'CompleteRun transaction', 'MarkFailed'],
+        code: `func (r *AnalysisRepository) CreateRun(ctx context.Context, input model.CreateAnalysisRunInput) (*model.AnalysisRun, error) {
+    runID, err := platformuuid.NewString()
+    if err != nil {
+        return nil, fmt.Errorf("generate analysis run id: %w", err)
+    }
 
-type SentimentBreakdown struct {
-	Positive int \`json:"positive"\`
-	Neutral  int \`json:"neutral"\`
-	Negative int \`json:"negative"\`
+    _, err = r.db.ExecContext(ctx, "... insert into analysis_runs ...", runID, input.GameID, input.ReviewLimit, input.Language)
+    if err != nil {
+        return nil, fmt.Errorf("create analysis run: %w", err)
+    }
+
+    return &model.AnalysisRun{ID: runID, GameID: input.GameID}, nil
 }
 
-type Insight struct {
-	PraisedFeatures []string           \`json:"praised_features"\`
-	CommonIssues    []string           \`json:"common_issues"\`
-	Topics          []string           \`json:"topics"\`
-	ReviewCount     int                \`json:"review_count"\`
-	Sentiment       SentimentBreakdown \`json:"sentiment"\`
-	Summary         string             \`json:"summary"\`
+func (r *AnalysisRepository) CompleteRun(ctx context.Context, input model.CompleteAnalysisRunInput) error {
+    tx, err := r.db.BeginTx(ctx, nil)
+    if err != nil {
+        return fmt.Errorf("begin complete analysis run transaction: %w", err)
+    }
+    defer func() { _ = tx.Rollback() }()
+
+    if err := saveAnalysisResult(ctx, tx, input); err != nil {
+        return err
+    }
+
+    if _, err := tx.ExecContext(ctx, "... mark analysis run as success ...", input.ReviewCount, input.RunID); err != nil {
+        return fmt.Errorf("mark analysis run as success: %w", err)
+    }
+
+    return tx.Commit()
+}`,
+    },
+    {
+        key: 'migrate-main',
+        sectionKey: 'migration',
+        path: 'cmd/migrate/main.go',
+        title: 'Migration CLI for MySQL and Postgres',
+        description:
+            'A new dedicated command handles migration lifecycle tasks and automatically points to the correct folder depending on the active database driver.',
+        language: 'go',
+        highlights: ['up/down/goto/force/version', 'driver normalization', 'folder selection'],
+        code: `func main() {
+    cfg := config.Load()
+    if cfg.DatabaseURL == "" {
+        log.Fatal("DATABASE_URL is required to run migrations")
+    }
+
+    m, err := newMigrator(cfg.DatabaseDriver, cfg.DatabaseURL)
+    if err != nil {
+        log.Fatalf("failed to initialize migrator: %v", err)
+    }
+    defer closeMigrator(m)
+
+    message, err := run(m, os.Args[1], os.Args[2:])
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if message != "" {
+        fmt.Println(message)
+    }
 }
-`,
+
+func newMigrator(databaseDriver string, databaseURL string) (*migrate.Migrate, error) {
+    driverName, err := normalizeMigrationDriver(databaseDriver)
+    if err != nil {
+        return nil, err
+    }
+
+    migrationsDir := filepath.Join("db", "migrations", "postgres")
+    if driverName == config.DatabaseDriverMySQL {
+        migrationsDir = filepath.Join("db", "migrations", "mysql")
+    }
+
+    return migrate.New(sourceURL, databaseURL)
+}`,
+    },
+    {
+        key: 'mysql-init-schema',
+        sectionKey: 'migration',
+        path: 'db/migrations/mysql/000001_init_schema.up.sql',
+        title: 'Initial MySQL schema for games and analysis runs',
+        description:
+            'The schema now stores game metadata, pending/completed analysis runs, and the final insight payload in dedicated tables. Postgres mirrors the same design.',
+        language: 'sql',
+        highlights: ['games table', 'analysis_runs lifecycle', 'analysis_results JSON payloads'],
+        code: `create table if not exists games (
+  id char(36) not null primary key,
+  steam_app_id varchar(50) not null,
+  title varchar(255) not null,
+  cover_url text null,
+  genre varchar(255) null,
+  release_year int null,
+  constraint uq_games_steam_app_id unique (steam_app_id)
+);
+
+create table if not exists analysis_runs (
+  id char(36) not null primary key,
+  game_id char(36) not null,
+  review_limit int not null default 30,
+  language varchar(50) not null default 'english',
+  review_count int not null default 0,
+  status enum('pending', 'success', 'failed') not null default 'pending',
+  completed_at datetime(6) null,
+  error_message text null
+);
+
+create table if not exists analysis_results (
+  id char(36) not null primary key,
+  analysis_run_id char(36) not null,
+  summary text not null,
+  praised_features json not null,
+  common_issues json not null,
+  topics json not null,
+  sentiment_positive int not null default 0,
+  sentiment_neutral int not null default 0,
+  sentiment_negative int not null default 0,
+  model_name varchar(100) null
+);`,
     },
 ];
