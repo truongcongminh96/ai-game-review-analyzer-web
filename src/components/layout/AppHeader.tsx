@@ -1,7 +1,7 @@
 import {Grid, Layout, Tag, Typography} from 'antd';
 import {ThunderboltOutlined} from '@ant-design/icons';
-import {motion} from 'framer-motion';
-import {useEffect, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
+import {useEffect, useRef, useState} from 'react';
 import {hoverLiftTransition} from '../../motion/animations';
 
 const {Header} = Layout;
@@ -103,6 +103,7 @@ function BrandGlyph({size}: BrandGlyphProps) {
 function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const screens = useBreakpoint();
     const [isScrolled, setIsScrolled] = useState(false);
+    const compactTriggerRef = useRef<HTMLDivElement | null>(null);
     const isMobile = !screens.md;
     const isCompactDesktop = Boolean(screens.md && !screens.xl);
     const showInlineBadges = Boolean(screens.xl);
@@ -229,301 +230,336 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     );
 
     useEffect(() => {
-        const compactThreshold = isMobile ? 24 : 56;
+        const trigger = compactTriggerRef.current;
 
-        const syncScrollState = () => {
-            setIsScrolled(window.scrollY > compactThreshold);
-        };
+        if (!trigger) {
+            return undefined;
+        }
 
-        syncScrollState();
-        window.addEventListener('scroll', syncScrollState, {passive: true});
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsScrolled(!entry.isIntersecting);
+            },
+            {
+                threshold: 0,
+                rootMargin: `${isMobile ? '-12px' : '-18px'} 0px 0px 0px`,
+            },
+        );
+
+        observer.observe(trigger);
 
         return () => {
-            window.removeEventListener('scroll', syncScrollState);
+            observer.disconnect();
         };
     }, [isMobile]);
 
-    return (
-        <Header
+    const renderNavRail = (compact: boolean, overlay = false) => (
+        <div
             style={{
-                background: isStickyCompact
-                    ? 'linear-gradient(180deg, rgba(6,9,15,0.98), rgba(10,15,24,0.92))'
-                    : 'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(18px)',
-                WebkitBackdropFilter: 'blur(18px)',
-                position: 'sticky',
-                top: 0,
-                zIndex: 100,
-                minHeight: isStickyCompact ? (isMobile ? 82 : 96) : isMobile ? 134 : 174,
-                padding: isStickyCompact
-                    ? isMobile
-                        ? '10px 12px 12px'
-                        : '12px 18px 14px'
-                    : isMobile
-                        ? '16px 16px 18px'
-                        : isCompactDesktop
-                            ? '18px 24px 20px'
-                            : '20px 32px 24px',
-                height: 'auto',
-                lineHeight: 'normal',
-                transition: 'padding 0.24s ease, min-height 0.24s ease, background 0.24s ease',
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%',
+                paddingTop: compact ? 0 : isMobile ? 2 : 0,
             }}
         >
             <div
                 style={{
-                    maxWidth: 1280,
-                    margin: '0 auto',
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: isStickyCompact ? 0 : isMobile ? 14 : 18,
+                    width: overlay || isMobile ? '100%' : 'auto',
+                    maxWidth: '100%',
+                    padding: 1,
+                    borderRadius: 999,
+                    background:
+                        'linear-gradient(135deg, rgba(255,90,54,0.38), rgba(28,38,50,0.48) 32%, rgba(94,231,255,0.24))',
+                    boxShadow: compact
+                        ? '0 10px 26px rgba(0, 0, 0, 0.26), 0 0 0 1px rgba(94,231,255,0.08)'
+                        : isMobile
+                            ? 'none'
+                            : '0 16px 40px rgba(0, 0, 0, 0.34)',
+                    transition: 'box-shadow 0.24s ease',
                 }}
             >
-                {!isStickyCompact ? (
-                    <>
-                        <div
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: showInlineBadges ? 'minmax(0, 1fr) auto' : '1fr',
-                                alignItems: 'start',
-                                gap: isMobile ? 14 : 24,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    minWidth: 0,
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: isMobile ? 'flex-start' : 'center',
-                                    gap: brandGap,
-                                }}
-                            >
-                                <BrandGlyph size={iconSize}/>
-
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 4,
-                                        minWidth: 0,
-                                        flex: 1,
-                                        overflow: 'hidden',
-                                    }}
-                                >
-                                    <Title
-                                        className="ui-title-tight"
-                                        level={2}
-                                        style={{
-                                            margin: 0,
-                                            color: '#f8fafc',
-                                            fontSize: titleFontSize,
-                                            fontFamily: 'var(--font-display)',
-                                            fontWeight: 800,
-                                            lineHeight: 1,
-                                            letterSpacing: '0.012em',
-                                            textShadow: '0 0 26px rgba(255,90,54,0.12)',
-                                            whiteSpace: 'normal',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}
-                                    >
-                                        AI Game Review Analyzer
-                                    </Title>
-
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 10,
-                                            minWidth: 0,
-                                            flexWrap: 'wrap',
-                                        }}
-                                    >
-                                        <Text
-                                            className="ui-copy-muted"
-                                            style={{
-                                                color: '#cbd5e1',
-                                                fontSize: subtitleFontSize,
-                                                fontWeight: 500,
-                                                lineHeight: 1.5,
-                                                whiteSpace: 'normal',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                maxWidth: isMobile ? '100%' : isCompactDesktop ? 520 : 680,
-                                            }}
-                                        >
-                                            Turn raw player feedback into actionable game insight.
-                                        </Text>
-                                    </div>
-
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 10,
-                                            minWidth: 0,
-                                            flexWrap: 'wrap',
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                width: 8,
-                                                height: 8,
-                                                borderRadius: 999,
-                                                background: '#ff5a36',
-                                                boxShadow: '0 0 14px rgba(255,90,54,0.52)',
-                                                flexShrink: 0,
-                                            }}
-                                        />
-                                        <Text
-                                            className="ui-kicker"
-                                            style={{
-                                                color: '#fec2b3',
-                                                fontSize: isMobile ? 12 : 14,
-                                                fontWeight: 700,
-                                                fontFamily: 'var(--font-display)',
-                                                letterSpacing: '0.1em',
-                                                textTransform: 'uppercase',
-                                            }}
-                                        >
-                                            Steam-ready demo
-                                        </Text>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {showInlineBadges ? (
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        minWidth: 0,
-                                        paddingTop: 8,
-                                    }}
-                                >
-                                    {badgeCluster}
-                                </div>
-                            ) : null}
-                        </div>
-
-                        {!showInlineBadges ? <div>{badgeCluster}</div> : null}
-                    </>
-                ) : null}
-
                 <div
                     style={{
                         display: 'flex',
-                        justifyContent: 'center',
+                        gap: 8,
                         width: '100%',
-                        paddingTop: isStickyCompact ? 0 : isMobile ? 2 : 0,
+                        maxWidth: '100%',
+                        padding: compact ? (isMobile ? 5 : 6) : isMobile ? 6 : 8,
+                        borderRadius: 999,
+                        background:
+                            'linear-gradient(180deg, rgba(8,12,19,0.98), rgba(13,19,29,0.88))',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        justifyContent: isMobile ? 'space-between' : 'flex-start',
+                        overflowX: 'auto',
+                    }}
+                >
+                    {navItems.map((item) => {
+                        const active = currentPage === item.key;
+
+                        return (
+                            <motion.button
+                                key={item.key}
+                                type="button"
+                                onClick={() => onNavigate(item.key)}
+                                aria-pressed={active}
+                                whileHover={
+                                    active
+                                        ? {
+                                            y: -2,
+                                            scale: 1.01,
+                                            boxShadow:
+                                                'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 28px rgba(255,90,54,0.24)',
+                                        }
+                                        : {
+                                            y: -2,
+                                            scale: 1.01,
+                                            background: 'rgba(24,32,45,0.92)',
+                                            borderColor: 'rgba(255,255,255,0.12)',
+                                            color: '#e2e8f0',
+                                        }
+                                }
+                                whileTap={{scale: 0.985}}
+                                transition={hoverLiftTransition}
+                                style={{
+                                    cursor: 'pointer',
+                                    appearance: 'none',
+                                    outline: 'none',
+                                    borderRadius: 999,
+                                    padding: isMobile
+                                        ? compact
+                                            ? '10px 10px'
+                                            : '11px 10px'
+                                        : isCompactDesktop
+                                            ? compact
+                                                ? '10px 16px'
+                                                : '12px 18px'
+                                            : compact
+                                                ? '11px 18px'
+                                                : '13px 22px',
+                                    color: active ? '#f8fafc' : '#94a3b8',
+                                    background: active
+                                        ? 'linear-gradient(135deg, rgba(255,90,54,0.72), rgba(255,122,24,0.42), rgba(94,231,255,0.22))'
+                                        : 'transparent',
+                                    border: active
+                                        ? '1px solid rgba(255,90,54,0.32)'
+                                        : '1px solid transparent',
+                                    boxShadow: active
+                                        ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 22px rgba(255,90,54,0.24)'
+                                        : 'none',
+                                    fontFamily: 'var(--font-display)',
+                                    fontWeight: active ? 700 : 600,
+                                    transition: 'all 0.2s ease',
+                                    textAlign: 'center',
+                                    flex: isMobile ? 1 : 'none',
+                                    minWidth: isMobile ? 0 : compact ? 160 : isCompactDesktop ? 164 : 182,
+                                    fontSize: compact ? (isMobile ? 14 : 16) : isMobile ? 15 : 18,
+                                    letterSpacing: active ? '0.07em' : '0.06em',
+                                    textTransform: 'uppercase',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {item.label}
+                            </motion.button>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+
+    return (
+        <>
+            <Header
+                style={{
+                    background:
+                        'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                    backdropFilter: 'blur(18px)',
+                    WebkitBackdropFilter: 'blur(18px)',
+                    position: 'relative',
+                    zIndex: 2,
+                    minHeight: isMobile ? 134 : 174,
+                    padding: isMobile
+                        ? '16px 16px 18px'
+                        : isCompactDesktop
+                            ? '18px 24px 20px'
+                            : '20px 32px 24px',
+                    height: 'auto',
+                    lineHeight: 'normal',
+                }}
+            >
+                <div
+                    style={{
+                        maxWidth: 1280,
+                        margin: '0 auto',
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: isMobile ? 14 : 18,
                     }}
                 >
                     <div
                         style={{
-                            width: isMobile ? '100%' : 'auto',
-                            maxWidth: '100%',
-                            padding: 1,
-                            borderRadius: 999,
-                            background:
-                                'linear-gradient(135deg, rgba(255,90,54,0.38), rgba(28,38,50,0.48) 32%, rgba(94,231,255,0.24))',
-                            boxShadow: isStickyCompact
-                                ? '0 10px 24px rgba(0, 0, 0, 0.22)'
-                                : isMobile
-                                    ? 'none'
-                                    : '0 16px 40px rgba(0, 0, 0, 0.34)',
-                            transition: 'box-shadow 0.24s ease',
+                            display: 'grid',
+                            gridTemplateColumns: showInlineBadges ? 'minmax(0, 1fr) auto' : '1fr',
+                            alignItems: 'start',
+                            gap: isMobile ? 14 : 24,
                         }}
                     >
                         <div
                             style={{
-                                display: 'flex',
-                                gap: 8,
+                                minWidth: 0,
                                 width: '100%',
-                                maxWidth: '100%',
-                                padding: isStickyCompact ? (isMobile ? 5 : 6) : isMobile ? 6 : 8,
-                                borderRadius: 999,
-                                background:
-                                    'linear-gradient(180deg, rgba(8,12,19,0.98), rgba(13,19,29,0.88))',
-                                border: '1px solid rgba(255,255,255,0.08)',
-                                justifyContent: isMobile ? 'space-between' : 'flex-start',
-                                overflowX: 'auto',
+                                display: 'flex',
+                                alignItems: isMobile ? 'flex-start' : 'center',
+                                gap: brandGap,
                             }}
                         >
-                            {navItems.map((item) => {
-                                const active = currentPage === item.key;
+                            <BrandGlyph size={iconSize}/>
 
-                                return (
-                                    <motion.button
-                                        key={item.key}
-                                        type="button"
-                                        onClick={() => onNavigate(item.key)}
-                                        aria-pressed={active}
-                                        whileHover={
-                                            active
-                                                ? {
-                                                    y: -2,
-                                                    scale: 1.01,
-                                                    boxShadow:
-                                                        'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 28px rgba(255,90,54,0.24)',
-                                                }
-                                                : {
-                                                    y: -2,
-                                                    scale: 1.01,
-                                                    background: 'rgba(24,32,45,0.92)',
-                                                    borderColor: 'rgba(255,255,255,0.12)',
-                                                    color: '#e2e8f0',
-                                                }
-                                        }
-                                        whileTap={{scale: 0.985}}
-                                        transition={hoverLiftTransition}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 4,
+                                    minWidth: 0,
+                                    flex: 1,
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <Title
+                                    className="ui-title-tight"
+                                    level={2}
+                                    style={{
+                                        margin: 0,
+                                        color: '#f8fafc',
+                                        fontSize: titleFontSize,
+                                        fontFamily: 'var(--font-display)',
+                                        fontWeight: 800,
+                                        lineHeight: 1,
+                                        letterSpacing: '0.012em',
+                                        textShadow: '0 0 26px rgba(255,90,54,0.12)',
+                                        whiteSpace: 'normal',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                    }}
+                                >
+                                    AI Game Review Analyzer
+                                </Title>
+
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 10,
+                                        minWidth: 0,
+                                        flexWrap: 'wrap',
+                                    }}
+                                >
+                                    <Text
+                                        className="ui-copy-muted"
                                         style={{
-                                            cursor: 'pointer',
-                                            appearance: 'none',
-                                            outline: 'none',
-                                            borderRadius: 999,
-                                            padding: isMobile
-                                                ? isStickyCompact
-                                                    ? '10px 10px'
-                                                    : '11px 10px'
-                                                : isCompactDesktop
-                                                    ? isStickyCompact
-                                                        ? '10px 16px'
-                                                        : '12px 18px'
-                                                    : isStickyCompact
-                                                        ? '11px 18px'
-                                                        : '13px 22px',
-                                            color: active ? '#f8fafc' : '#94a3b8',
-                                            background: active
-                                                ? 'linear-gradient(135deg, rgba(255,90,54,0.72), rgba(255,122,24,0.42), rgba(94,231,255,0.22))'
-                                                : 'transparent',
-                                            border: active
-                                                ? '1px solid rgba(255,90,54,0.32)'
-                                                : '1px solid transparent',
-                                            boxShadow: active
-                                                ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 22px rgba(255,90,54,0.24)'
-                                                : 'none',
-                                            fontFamily: 'var(--font-display)',
-                                            fontWeight: active ? 700 : 600,
-                                            transition: 'all 0.2s ease',
-                                            textAlign: 'center',
-                                            flex: isMobile ? 1 : 'none',
-                                            minWidth: isMobile ? 0 : isStickyCompact ? 160 : isCompactDesktop ? 164 : 182,
-                                            fontSize: isStickyCompact ? (isMobile ? 14 : 16) : isMobile ? 15 : 18,
-                                            letterSpacing: active ? '0.07em' : '0.06em',
-                                            textTransform: 'uppercase',
-                                            whiteSpace: 'nowrap',
+                                            color: '#cbd5e1',
+                                            fontSize: subtitleFontSize,
+                                            fontWeight: 500,
+                                            lineHeight: 1.5,
+                                            whiteSpace: 'normal',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            maxWidth: isMobile ? '100%' : isCompactDesktop ? 520 : 680,
                                         }}
                                     >
-                                        {item.label}
-                                    </motion.button>
-                                );
-                            })}
+                                        Turn raw player feedback into actionable game insight.
+                                    </Text>
+                                </div>
+
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 10,
+                                        minWidth: 0,
+                                        flexWrap: 'wrap',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: 8,
+                                            height: 8,
+                                            borderRadius: 999,
+                                            background: '#ff5a36',
+                                            boxShadow: '0 0 14px rgba(255,90,54,0.52)',
+                                            flexShrink: 0,
+                                        }}
+                                    />
+                                    <Text
+                                        className="ui-kicker"
+                                        style={{
+                                            color: '#fec2b3',
+                                            fontSize: isMobile ? 12 : 14,
+                                            fontWeight: 700,
+                                            fontFamily: 'var(--font-display)',
+                                            letterSpacing: '0.1em',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        Steam-ready demo
+                                    </Text>
+                                </div>
+                            </div>
                         </div>
+
+                        {showInlineBadges ? (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    minWidth: 0,
+                                    paddingTop: 8,
+                                }}
+                            >
+                                {badgeCluster}
+                            </div>
+                        ) : null}
                     </div>
+
+                    {!showInlineBadges ? <div>{badgeCluster}</div> : null}
+
+                    {renderNavRail(false)}
                 </div>
-            </div>
-        </Header>
+            </Header>
+
+            <div
+                ref={compactTriggerRef}
+                aria-hidden="true"
+                style={{height: 1, pointerEvents: 'none'}}
+            />
+
+            <AnimatePresence>
+                {isStickyCompact ? (
+                    <motion.div
+                        initial={{opacity: 0, y: -18, scale: 0.985}}
+                        animate={{opacity: 1, y: 0, scale: 1}}
+                        exit={{opacity: 0, y: -14, scale: 0.985}}
+                        transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}
+                        style={{
+                            position: 'fixed',
+                            top: isMobile ? 8 : 10,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: 'min(980px, calc(100vw - 24px))',
+                            maxWidth: 'calc(100vw - 24px)',
+                            zIndex: 120,
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        <div style={{pointerEvents: 'auto'}}>
+                            {renderNavRail(true, true)}
+                        </div>
+                    </motion.div>
+                ) : null}
+            </AnimatePresence>
+        </>
     );
 }
 
