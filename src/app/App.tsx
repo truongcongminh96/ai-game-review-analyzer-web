@@ -8,6 +8,7 @@ import AppHeader from '../components/layout/AppHeader';
 import AppHero from '../components/layout/AppHero';
 import BackendShowcase from '../components/layout/BackendShowcase';
 import AmbientBackdrop from '../components/motion/AmbientBackdrop';
+import CinematicIntro from '../components/motion/CinematicIntro';
 import {MotionReveal} from '../components/motion/Reveal';
 import SearchPanel from '../components/search/SearchPanel';
 import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
@@ -112,6 +113,7 @@ function App() {
     return (
         <Layout className="app-shell">
             <AmbientBackdrop/>
+            <CinematicIntro/>
 
             <AppHeader
                 dataSourceMode={dataSourceMode}

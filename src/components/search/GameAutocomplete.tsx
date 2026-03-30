@@ -1,5 +1,7 @@
+import {useEffect, useState} from 'react';
 import {AutoComplete, Input} from 'antd';
 import {SearchOutlined} from '@ant-design/icons';
+import {useReducedMotion} from 'framer-motion';
 import type {GameOption} from '../../types/game';
 import {buildSteamCapsuleImage} from '../../utils/steam';
 
@@ -16,6 +18,39 @@ function GameAutocomplete({
                               onChange,
                               onSelect,
                           }: GameAutocompleteProps) {
+    const reduceMotion = useReducedMotion();
+    const basePlaceholder = 'Search a Steam game...';
+    const [typedLength, setTypedLength] = useState(reduceMotion ? basePlaceholder.length : 0);
+    const [cursorVisible, setCursorVisible] = useState(true);
+
+    useEffect(() => {
+        if (reduceMotion || typedLength >= basePlaceholder.length) {
+            return;
+        }
+
+        const timer = window.setTimeout(() => {
+            setTypedLength((current) => Math.min(current + 1, basePlaceholder.length));
+        }, 58);
+
+        return () => window.clearTimeout(timer);
+    }, [basePlaceholder.length, reduceMotion, typedLength]);
+
+    useEffect(() => {
+        if (reduceMotion || value) {
+            return;
+        }
+
+        const timer = window.setInterval(() => {
+            setCursorVisible((current) => !current);
+        }, 520);
+
+        return () => window.clearInterval(timer);
+    }, [reduceMotion, value]);
+
+    const placeholder = reduceMotion
+        ? `${basePlaceholder} or paste the app id`
+        : `${basePlaceholder.slice(0, typedLength)}${cursorVisible ? '|' : ' '}`;
+
     return (
         <AutoComplete
             size="large"
@@ -82,7 +117,7 @@ function GameAutocomplete({
             <Input
                 size="large"
                 prefix={<SearchOutlined style={{color: '#60a5fa'}} />}
-                placeholder="Search a Steam game or paste the app id"
+                placeholder={value ? '' : placeholder}
                 style={{
                     height: 54,
                     borderRadius: 18,

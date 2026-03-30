@@ -8,6 +8,7 @@ import {hoverLiftTransition, revealVariant} from '../../motion/animations';
 
 function AppHero() {
     const {Paragraph, Title, Text} = Typography;
+    const heroHeadline = 'Turn raw player reviews into actionable game insight';
 
     return (
         <Card
@@ -81,7 +82,9 @@ function AppHero() {
                                                 lineHeight: 1.1,
                                             }}
                                         >
-                                            Turn raw player reviews into actionable game insight
+                                            <span className="hero-glitch-text" data-text={heroHeadline}>
+                                                {heroHeadline}
+                                            </span>
                                         </Title>
                                     </div>
                                 </div>

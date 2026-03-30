@@ -6,6 +6,10 @@ function AmbientBackdrop() {
 
     return (
         <div className="ambient-backdrop" aria-hidden="true">
+            <div className="ambient-backdrop-noise" />
+            <div className="ambient-backdrop-scanlines" />
+            <div className="ambient-backdrop-particles" />
+
             <motion.div
                 className="ambient-backdrop-orb ambient-backdrop-orb-primary"
                 animate={

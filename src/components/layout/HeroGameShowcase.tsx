@@ -1,4 +1,4 @@
-import {type PointerEvent, useEffect, useMemo, useState} from 'react';
+import {type PointerEvent, useEffect, useMemo, useRef, useState} from 'react';
 import {Space, Tag, Typography} from 'antd';
 import {
     AnimatePresence,
@@ -6,7 +6,9 @@ import {
     useMotionTemplate,
     useMotionValue,
     useReducedMotion,
+    useScroll,
     useSpring,
+    useTransform,
 } from 'framer-motion';
 import {heroSlides} from '../../data/heroSlides';
 import heroImage from '../../assets/hero.png';
@@ -23,10 +25,16 @@ function HeroGameShowcase() {
     const slides = useMemo(() => heroSlides, []);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
+    const showcaseRef = useRef<HTMLDivElement | null>(null);
     const reduceMotion = useReducedMotion();
     const rotateX = useSpring(0, parallaxSpring);
     const rotateY = useSpring(0, parallaxSpring);
     const imageScale = useSpring(1.02, parallaxSpring);
+    const {scrollYProgress} = useScroll({
+        target: showcaseRef,
+        offset: ['start end', 'end start'],
+    });
+    const scrollImageY = useTransform(scrollYProgress, [0, 1], [-26, 26]);
     const glowX = useMotionValue(50);
     const glowY = useMotionValue(50);
     const glowOpacity = useSpring(0, {
@@ -46,7 +54,7 @@ function HeroGameShowcase() {
 
         const interval = window.setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % slides.length);
-        }, 3500);
+        }, 6200);
 
         return () => window.clearInterval(interval);
     }, [slides]);
@@ -98,6 +106,7 @@ function HeroGameShowcase() {
 
     return (
         <motion.div
+            ref={showcaseRef}
             className="hero-showcase hud-angled-shell"
             onPointerMove={handlePointerMove}
             onPointerLeave={resetParallax}
@@ -115,30 +124,90 @@ function HeroGameShowcase() {
         >
             <AnimatePresence mode="wait">
                 {!hasImageError ? (
-                    <motion.img
+                    <motion.div
                         key={currentSlide.appId}
-                        src={currentSlide.imageUrl}
-                        alt={currentSlide.title}
-                        className="hero-showcase-image"
-                        onError={handleImageError}
+                        className="hero-showcase-frame"
                         initial={{opacity: 0}}
                         animate={{opacity: 1}}
                         exit={{opacity: 0}}
                         transition={{duration: 0.42, ease: motionEase}}
-                        style={reduceMotion ? undefined : {scale: imageScale}}
-                    />
+                    >
+                        <motion.div
+                            className="hero-showcase-kenburns"
+                            animate={
+                                reduceMotion
+                                    ? undefined
+                                    : {
+                                        scale: [1.01, 1.07],
+                                        x: [0, -10],
+                                        y: [0, 12],
+                                    }
+                            }
+                            transition={{
+                                duration: 8,
+                                repeat: Infinity,
+                                repeatType: 'mirror',
+                                ease: 'easeInOut',
+                            }}
+                        >
+                            <motion.img
+                                src={currentSlide.imageUrl}
+                                alt={currentSlide.title}
+                                className="hero-showcase-image"
+                                onError={handleImageError}
+                                style={
+                                    reduceMotion
+                                        ? undefined
+                                        : {
+                                            scale: imageScale,
+                                            y: scrollImageY,
+                                        }
+                                }
+                            />
+                        </motion.div>
+                    </motion.div>
                 ) : (
-                    <motion.img
+                    <motion.div
                         key={`fallback-${currentSlide.appId}`}
-                        src={heroImage}
-                        alt="AI game review illustration"
-                        className="hero-showcase-fallback"
+                        className="hero-showcase-frame"
                         initial={{opacity: 0}}
                         animate={{opacity: 1}}
                         exit={{opacity: 0}}
                         transition={{duration: 0.42, ease: motionEase}}
-                        style={reduceMotion ? undefined : {scale: imageScale}}
-                    />
+                    >
+                        <motion.div
+                            className="hero-showcase-kenburns"
+                            animate={
+                                reduceMotion
+                                    ? undefined
+                                    : {
+                                        scale: [1.01, 1.06],
+                                        x: [0, -8],
+                                        y: [0, 10],
+                                    }
+                            }
+                            transition={{
+                                duration: 8,
+                                repeat: Infinity,
+                                repeatType: 'mirror',
+                                ease: 'easeInOut',
+                            }}
+                        >
+                            <motion.img
+                                src={heroImage}
+                                alt="AI game review illustration"
+                                className="hero-showcase-fallback"
+                                style={
+                                    reduceMotion
+                                        ? undefined
+                                        : {
+                                            scale: imageScale,
+                                            y: scrollImageY,
+                                        }
+                                }
+                            />
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

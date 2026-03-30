@@ -1,12 +1,22 @@
+import type {ReactElement} from 'react';
+import {
+    CalendarOutlined,
+    CompassOutlined,
+    DashboardOutlined,
+    DatabaseOutlined,
+    ProfileOutlined,
+    TagsOutlined,
+} from '@ant-design/icons';
 import {Col, Row, Space, Tag, Typography} from 'antd';
 import type {AnalyzeResult} from '../../types/analyze';
 import type {GameOption} from '../../types/game';
 import SectionCard from '../common/SectionCard';
+import HudOverlay from '../motion/HudOverlay';
 import InsightList from './InsightList';
+import SentimentChart from './SentimentChart';
 import SentimentProgress from './SentimentProgress';
 import SentimentStatCards from './SentimentStatCards';
 import SummaryPanel from './SummaryPanel';
-import SentimentChart from './SentimentChart';
 
 type AnalysisContext = {
     game: GameOption;
@@ -19,118 +29,195 @@ type ResultGridProps = {
     analysisContext: AnalysisContext | null;
 };
 
+type MetadataItem = {
+    label: string;
+    value: string;
+    icon: ReactElement;
+};
+
 function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) {
     const {Paragraph, Text, Title} = Typography;
+
+    const sentimentEntries = [
+        {label: 'Positive', value: result.sentiment.positive},
+        {label: 'Neutral', value: result.sentiment.neutral},
+        {label: 'Negative', value: result.sentiment.negative},
+    ];
+    const dominantSentiment = sentimentEntries.reduce((highest, entry) =>
+        entry.value > highest.value ? entry : highest
+    );
+
     const sourceBadge =
         dataSourceMode === 'mock'
             ? {
                   label: 'Mock Mode',
-                  border: '1px solid rgba(245,158,11,0.22)',
-                  background: 'rgba(245,158,11,0.10)',
-                  color: '#fcd34d',
+                  border: '1px solid rgba(214,176,96,0.24)',
+                  background: 'rgba(122,92,38,0.22)',
+                  color: '#e8c98a',
               }
             : {
                   label: 'Live API',
-                  border: '1px solid rgba(34,197,94,0.22)',
-                  background: 'rgba(34,197,94,0.10)',
-                  color: '#86efac',
+                  border: '1px solid rgba(153,176,112,0.24)',
+                  background: 'rgba(70,88,44,0.22)',
+                  color: '#d9e3b4',
               };
 
     const metadataItems = [
         analysisContext?.game.genre
-            ? {label: 'Genre', value: analysisContext.game.genre}
+            ? {
+                  label: 'Genre',
+                  value: analysisContext.game.genre,
+                  icon: <CompassOutlined />,
+              }
             : null,
         analysisContext?.game.releaseYear
-            ? {label: 'Release Year', value: String(analysisContext.game.releaseYear)}
+            ? {
+                  label: 'Release Year',
+                  value: String(analysisContext.game.releaseYear),
+                  icon: <CalendarOutlined />,
+              }
             : null,
         analysisContext
-            ? {label: 'Steam App ID', value: `#${analysisContext.game.appId}`}
+            ? {
+                  label: 'Steam App ID',
+                  value: `#${analysisContext.game.appId}`,
+                  icon: <DatabaseOutlined />,
+              }
             : null,
         analysisContext
-            ? {label: 'Review Sample', value: `${analysisContext.reviewLimit} reviews`}
+            ? {
+                  label: 'Review Sample',
+                  value: `${analysisContext.reviewLimit} reviews`,
+                  icon: <ProfileOutlined />,
+              }
             : null,
-    ].filter((item): item is {label: string; value: string} => item !== null);
+    ].filter((item): item is MetadataItem => item !== null);
+
+    const telemetryItems = [
+        {
+            label: 'Primary signal',
+            value: `${dominantSentiment.label} ${dominantSentiment.value}%`,
+            border: '1px solid rgba(153,176,112,0.22)',
+            background: 'rgba(70,88,44,0.22)',
+            color: '#d9e3b4',
+        },
+        {
+            label: 'Topic grid',
+            value: `${result.topics.length || 0} detected`,
+            border: '1px solid rgba(117,148,144,0.20)',
+            background: 'rgba(41,58,57,0.22)',
+            color: '#bdd2cc',
+        },
+        {
+            label: 'Praise lanes',
+            value: `${result.praisedFeatures.length} tracked`,
+            border: '1px solid rgba(191,151,83,0.20)',
+            background: 'rgba(94,67,28,0.22)',
+            color: '#e2c88e',
+        },
+        {
+            label: 'Pain lanes',
+            value: `${result.commonComplaints.length} tracked`,
+            border: '1px solid rgba(176,104,88,0.20)',
+            background: 'rgba(78,40,35,0.24)',
+            color: '#e3b0a3',
+        },
+    ];
 
     return (
-        <Space orientation="vertical" size={24} style={{width: '100%'}}>
-            <Space
-                align="start"
-                style={{
-                    width: '100%',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    rowGap: 12,
-                }}
-            >
-                <div>
-                    <Title level={3} style={{marginBottom: 8, color: '#f8fafc'}}>
-                        Insights for {result.gameTitle}
-                    </Title>
-                    <Paragraph
-                        style={{
-                            marginBottom: 0,
-                            color: '#94a3b8',
-                            fontSize: 15,
-                        }}
-                    >
-                        AI-generated insight report based on sampled Steam reviews and normalized
-                        backend data.
-                    </Paragraph>
-                </div>
+        <Space orientation="vertical" size={22} style={{width: '100%'}} className="result-grid-stack">
+            <div className="result-hero-shell hud-shell hud-angled-shell">
+                <HudOverlay reticlePosition="bottom-left" scanDelay={0.48}/>
 
-                <Tag
-                    style={{
-                        marginInlineEnd: 0,
-                        borderRadius: 999,
-                        padding: '7px 14px',
-                        border: sourceBadge.border,
-                        background: sourceBadge.background,
-                        color: sourceBadge.color,
-                        fontSize: 14,
-                        fontWeight: 600,
-                    }}
-                >
-                    {sourceBadge.label}
-                </Tag>
-            </Space>
+                <Space orientation="vertical" size={18} style={{width: '100%'}}>
+                    <div className="result-hero-head">
+                        <div className="result-hero-copy">
+                            <div className="ui-title-row" style={{alignItems: 'center'}}>
+                                <span className="ui-icon-badge ui-icon-badge-cyan">
+                                    <DashboardOutlined />
+                                </span>
+                                <div className="ui-title-stack">
+                                    <span className="ui-kicker">Tactical Console</span>
+                                    <Title
+                                        className="ui-title-tight"
+                                        level={2}
+                                        style={{margin: 0, fontSize: 'clamp(2rem, 3.2vw, 2.8rem)'}}
+                                    >
+                                        Insights for {result.gameTitle}
+                                    </Title>
+                                </div>
+                            </div>
 
-            {metadataItems.length > 0 ? (
-                <Space wrap size={[12, 12]}>
-                    {metadataItems.map((item) => (
-                        <div
-                            key={item.label}
+                            <Paragraph
+                                className="ui-copy-muted"
+                                style={{
+                                    margin: '14px 0 0',
+                                    fontSize: 16,
+                                    maxWidth: 820,
+                                }}
+                            >
+                                AI-generated insight report based on sampled Steam reviews and
+                                normalized backend data.
+                            </Paragraph>
+                        </div>
+
+                        <Tag
+                            className="hud-chip result-mode-tag"
                             style={{
-                                minWidth: 140,
-                                padding: '12px 14px',
-                                borderRadius: 16,
-                                background: 'rgba(15,23,42,0.42)',
-                                border: '1px solid rgba(148,163,184,0.12)',
-                                boxShadow: '0 10px 24px rgba(0,0,0,0.12)',
+                                marginInlineEnd: 0,
+                                borderRadius: 999,
+                                padding: '9px 16px',
+                                border: sourceBadge.border,
+                                background: sourceBadge.background,
+                                color: sourceBadge.color,
+                                fontSize: 14,
+                                fontWeight: 700,
                             }}
                         >
-                            <Text
-                                style={{
-                                    display: 'block',
-                                    color: '#94a3b8',
-                                    fontSize: 12,
-                                    marginBottom: 4,
-                                }}
-                            >
-                                {item.label}
-                            </Text>
-                            <Text
-                                style={{
-                                    color: '#f8fafc',
-                                    fontSize: 15,
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {item.value}
-                            </Text>
+                            {sourceBadge.label}
+                        </Tag>
+                    </div>
+
+                    <div className="hud-panel hud-angled-panel result-hero-telemetry">
+                        <Space wrap size={[10, 10]}>
+                                        {telemetryItems.map((item) => (
+                                            <Tag
+                                                className="hud-chip"
+                                    key={item.label}
+                                    style={{
+                                        margin: 0,
+                                        borderRadius: 999,
+                                        padding: '7px 12px',
+                                        border: item.border,
+                                        background: item.background,
+                                        color: item.color,
+                                    }}
+                                >
+                                    {item.label}: {item.value}
+                                </Tag>
+                            ))}
+                        </Space>
+                    </div>
+
+                    {metadataItems.length > 0 ? (
+                        <div className="result-hero-meta">
+                            {metadataItems.map((item, index) => (
+                                <div
+                                    key={item.label}
+                                    className="result-meta-card hud-panel hud-angled-panel"
+                                >
+                                    <Text className="result-meta-node">{`NODE 0${index + 1}`}</Text>
+                                    <Text className="ui-field-label" style={{marginBottom: 10}}>
+                                        {item.icon}
+                                        {item.label}
+                                    </Text>
+                                    <Text className="result-meta-value">{item.value}</Text>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    ) : null}
                 </Space>
-            ) : null}
+            </div>
 
             <SentimentStatCards sentiment={result.sentiment}/>
 
@@ -151,31 +238,43 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
 
             <Row gutter={[16, 16]}>
                 <Col xs={24}>
-                    <SectionCard title="Key Topics">
-                        {result.topics.length ? (
-                            <Space wrap size={[10, 10]}>
-                                {result.topics.map((topic) => (
-                                    <Tag
-                                        key={topic}
-                                        style={{
-                                            marginInlineEnd: 0,
-                                            padding: '8px 14px',
-                                            borderRadius: 999,
-                                            border: '1px solid rgba(103,232,249,0.20)',
-                                            background:
-                                                'linear-gradient(135deg, rgba(8,145,178,0.18), rgba(34,211,238,0.10))',
-                                            color: '#a5f3fc',
-                                            fontSize: 14,
-                                            boxShadow: '0 10px 22px rgba(8,145,178,0.12)',
-                                        }}
-                                    >
-                                        {topic}
-                                    </Tag>
-                                ))}
-                            </Space>
-                        ) : (
-                            <Text style={{color: '#94a3b8'}}>No topics available.</Text>
-                        )}
+                    <SectionCard
+                        title="Key Topics"
+                        kicker="Recon Tags"
+                        icon={<TagsOutlined />}
+                        iconTone="hot"
+                        className="result-section-tone-hot"
+                    >
+                        <Space orientation="vertical" size={18} style={{width: '100%'}}>
+                            <Text className="ui-copy-muted" style={{marginBottom: 0}}>
+                                Recurring discussion clusters extracted from the sampled review set.
+                            </Text>
+
+                            {result.topics.length ? (
+                                <div className="result-topic-wrap">
+                                    {result.topics.map((topic) => (
+                                        <Tag
+                                            className="hud-chip result-topic-chip"
+                                            key={topic}
+                                            style={{
+                                                marginInlineEnd: 0,
+                                                padding: '10px 16px',
+                                                borderRadius: 999,
+                                                border: '1px solid rgba(126,145,99,0.22)',
+                                                background:
+                                                    'linear-gradient(135deg, rgba(74,88,48,0.30), rgba(112,87,42,0.18))',
+                                                color: '#d8e1b1',
+                                                boxShadow: '0 10px 22px rgba(58,69,36,0.18)',
+                                            }}
+                                        >
+                                            {topic}
+                                        </Tag>
+                                    ))}
+                                </div>
+                            ) : (
+                                <Text style={{color: '#94a3b8'}}>No topics available.</Text>
+                            )}
+                        </Space>
                     </SectionCard>
                 </Col>
             </Row>

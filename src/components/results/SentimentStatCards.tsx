@@ -14,27 +14,38 @@ type StatCardProps = {
     color: string;
     background: string;
     border: string;
+    className: string;
+    descriptor: string;
 };
 
-function StatCard({label, value, color, background, border}: StatCardProps) {
+function StatCard({label, value, color, background, border, className, descriptor}: StatCardProps) {
     const {Text, Title} = Typography;
 
     return (
         <Card
+            className={`hud-stat-card hud-angled-stat result-stat-card ${className}`}
             style={{
-                borderRadius: 20,
+                borderRadius: 24,
                 background,
                 border,
-                boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
+                boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
             }}
             styles={{
-                body: {padding: 20}
+                body: {padding: 22}
             }}
         >
-            <Text style={{color: '#94a3b8'}}>{label}</Text>
-            <Title level={2} style={{margin: '8px 0 0', color}}>
+            <Text className="result-stat-kicker">Signal ratio</Text>
+
+            <div className="result-stat-head">
+                <Text className="result-stat-label">{label}</Text>
+                <div className="result-stat-pill">{descriptor}</div>
+            </div>
+
+            <Title className="result-stat-value" level={2} style={{margin: 0, color}}>
                 {value}%
             </Title>
+
+            <Text className="result-stat-footnote">of the sampled Steam review set</Text>
         </Card>
     );
 }
@@ -48,9 +59,11 @@ function SentimentStatCards({sentiment}: SentimentStatCardsProps) {
                 <StatCard
                     label="Positive"
                     value={positive}
-                    color="#86efac"
-                    background="rgba(34,197,94,0.10)"
-                    border="1px solid rgba(34,197,94,0.18)"
+                    color="#d9e3b4"
+                    background="linear-gradient(180deg, rgba(54,68,34,0.78), rgba(16,24,20,0.92))"
+                    border="1px solid rgba(153,176,112,0.18)"
+                    className="result-stat-card-positive"
+                    descriptor="Field praise"
                 />
             </Col>
 
@@ -58,9 +71,11 @@ function SentimentStatCards({sentiment}: SentimentStatCardsProps) {
                 <StatCard
                     label="Neutral"
                     value={neutral}
-                    color="#fcd34d"
-                    background="rgba(245,158,11,0.10)"
-                    border="1px solid rgba(245,158,11,0.18)"
+                    color="#e2c88e"
+                    background="linear-gradient(180deg, rgba(72,54,26,0.78), rgba(20,18,15,0.92))"
+                    border="1px solid rgba(191,151,83,0.18)"
+                    className="result-stat-card-neutral"
+                    descriptor="Mixed chatter"
                 />
             </Col>
 
@@ -68,9 +83,11 @@ function SentimentStatCards({sentiment}: SentimentStatCardsProps) {
                 <StatCard
                     label="Negative"
                     value={negative}
-                    color="#fda4af"
-                    background="rgba(239,68,68,0.10)"
-                    border="1px solid rgba(239,68,68,0.18)"
+                    color="#e3b0a3"
+                    background="linear-gradient(180deg, rgba(78,40,35,0.80), rgba(22,16,16,0.94))"
+                    border="1px solid rgba(176,104,88,0.18)"
+                    className="result-stat-card-negative"
+                    descriptor="Threat flag"
                 />
             </Col>
         </Row>

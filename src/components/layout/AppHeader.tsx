@@ -1,6 +1,7 @@
 import {Grid, Layout, Tag, Typography} from 'antd';
 import {ThunderboltOutlined} from '@ant-design/icons';
 import {motion} from 'framer-motion';
+import {useEffect, useState} from 'react';
 import {hoverLiftTransition} from '../../motion/animations';
 
 const {Header} = Layout;
@@ -101,9 +102,11 @@ function BrandGlyph({size}: BrandGlyphProps) {
 
 function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const screens = useBreakpoint();
+    const [isScrolled, setIsScrolled] = useState(false);
     const isMobile = !screens.md;
     const isCompactDesktop = Boolean(screens.md && !screens.xl);
     const showInlineBadges = Boolean(screens.xl);
+    const isStickyCompact = isScrolled;
     const contextBadge =
         currentPage === 'learning-journey'
             ? {
@@ -225,21 +228,46 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
         </div>
     );
 
+    useEffect(() => {
+        const compactThreshold = isMobile ? 24 : 56;
+
+        const syncScrollState = () => {
+            setIsScrolled(window.scrollY > compactThreshold);
+        };
+
+        syncScrollState();
+        window.addEventListener('scroll', syncScrollState, {passive: true});
+
+        return () => {
+            window.removeEventListener('scroll', syncScrollState);
+        };
+    }, [isMobile]);
+
     return (
         <Header
             style={{
-                background:
-                    'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
+                background: isStickyCompact
+                    ? 'linear-gradient(180deg, rgba(6,9,15,0.98), rgba(10,15,24,0.92))'
+                    : 'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(18px)',
                 WebkitBackdropFilter: 'blur(18px)',
                 position: 'sticky',
                 top: 0,
                 zIndex: 100,
-                minHeight: isMobile ? 134 : 174,
-                padding: isMobile ? '16px 16px 18px' : isCompactDesktop ? '18px 24px 20px' : '20px 32px 24px',
+                minHeight: isStickyCompact ? (isMobile ? 82 : 96) : isMobile ? 134 : 174,
+                padding: isStickyCompact
+                    ? isMobile
+                        ? '10px 12px 12px'
+                        : '12px 18px 14px'
+                    : isMobile
+                        ? '16px 16px 18px'
+                        : isCompactDesktop
+                            ? '18px 24px 20px'
+                            : '20px 32px 24px',
                 height: 'auto',
                 lineHeight: 'normal',
+                transition: 'padding 0.24s ease, min-height 0.24s ease, background 0.24s ease',
             }}
         >
             <div
@@ -249,142 +277,146 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: isMobile ? 14 : 18,
+                    gap: isStickyCompact ? 0 : isMobile ? 14 : 18,
                 }}
             >
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: showInlineBadges ? 'minmax(0, 1fr) auto' : '1fr',
-                        alignItems: 'start',
-                        gap: isMobile ? 14 : 24,
-                    }}
-                >
-                    <div
-                        style={{
-                            minWidth: 0,
-                            width: '100%',
-                            display: 'flex',
-                            alignItems: isMobile ? 'flex-start' : 'center',
-                            gap: brandGap,
-                        }}
-                    >
-                        <BrandGlyph size={iconSize}/>
-
+                {!isStickyCompact ? (
+                    <>
                         <div
                             style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 4,
-                                minWidth: 0,
-                                flex: 1,
-                                overflow: 'hidden',
+                                display: 'grid',
+                                gridTemplateColumns: showInlineBadges ? 'minmax(0, 1fr) auto' : '1fr',
+                                alignItems: 'start',
+                                gap: isMobile ? 14 : 24,
                             }}
                         >
-                            <Title
-                                className="ui-title-tight"
-                                level={2}
-                                style={{
-                                    margin: 0,
-                                    color: '#f8fafc',
-                                    fontSize: titleFontSize,
-                                    fontFamily: 'var(--font-display)',
-                                    fontWeight: 800,
-                                    lineHeight: 1,
-                                    letterSpacing: '0.012em',
-                                    textShadow: '0 0 26px rgba(255,90,54,0.12)',
-                                    whiteSpace: 'normal',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                }}
-                            >
-                                AI Game Review Analyzer
-                            </Title>
-
                             <div
                                 style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 10,
                                     minWidth: 0,
-                                    flexWrap: 'wrap',
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: isMobile ? 'flex-start' : 'center',
+                                    gap: brandGap,
                                 }}
                             >
-                                <Text
-                                    className="ui-copy-muted"
-                                    style={{
-                                        color: '#cbd5e1',
-                                        fontSize: subtitleFontSize,
-                                        fontWeight: 500,
-                                        lineHeight: 1.5,
-                                        whiteSpace: 'normal',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        maxWidth: isMobile ? '100%' : isCompactDesktop ? 520 : 680,
-                                    }}
-                                >
-                                    Turn raw player feedback into actionable game insight.
-                                </Text>
-                            </div>
+                                <BrandGlyph size={iconSize}/>
 
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 10,
-                                    minWidth: 0,
-                                    flexWrap: 'wrap',
-                                }}
-                            >
                                 <div
                                     style={{
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: 999,
-                                        background: '#ff5a36',
-                                        boxShadow: '0 0 14px rgba(255,90,54,0.52)',
-                                        flexShrink: 0,
-                                    }}
-                                />
-                                <Text
-                                    className="ui-kicker"
-                                    style={{
-                                        color: '#fec2b3',
-                                        fontSize: isMobile ? 12 : 14,
-                                        fontWeight: 700,
-                                        fontFamily: 'var(--font-display)',
-                                        letterSpacing: '0.1em',
-                                        textTransform: 'uppercase',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 4,
+                                        minWidth: 0,
+                                        flex: 1,
+                                        overflow: 'hidden',
                                     }}
                                 >
-                                    Steam-ready demo
-                                </Text>
+                                    <Title
+                                        className="ui-title-tight"
+                                        level={2}
+                                        style={{
+                                            margin: 0,
+                                            color: '#f8fafc',
+                                            fontSize: titleFontSize,
+                                            fontFamily: 'var(--font-display)',
+                                            fontWeight: 800,
+                                            lineHeight: 1,
+                                            letterSpacing: '0.012em',
+                                            textShadow: '0 0 26px rgba(255,90,54,0.12)',
+                                            whiteSpace: 'normal',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                    >
+                                        AI Game Review Analyzer
+                                    </Title>
+
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 10,
+                                            minWidth: 0,
+                                            flexWrap: 'wrap',
+                                        }}
+                                    >
+                                        <Text
+                                            className="ui-copy-muted"
+                                            style={{
+                                                color: '#cbd5e1',
+                                                fontSize: subtitleFontSize,
+                                                fontWeight: 500,
+                                                lineHeight: 1.5,
+                                                whiteSpace: 'normal',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                maxWidth: isMobile ? '100%' : isCompactDesktop ? 520 : 680,
+                                            }}
+                                        >
+                                            Turn raw player feedback into actionable game insight.
+                                        </Text>
+                                    </div>
+
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 10,
+                                            minWidth: 0,
+                                            flexWrap: 'wrap',
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                width: 8,
+                                                height: 8,
+                                                borderRadius: 999,
+                                                background: '#ff5a36',
+                                                boxShadow: '0 0 14px rgba(255,90,54,0.52)',
+                                                flexShrink: 0,
+                                            }}
+                                        />
+                                        <Text
+                                            className="ui-kicker"
+                                            style={{
+                                                color: '#fec2b3',
+                                                fontSize: isMobile ? 12 : 14,
+                                                fontWeight: 700,
+                                                fontFamily: 'var(--font-display)',
+                                                letterSpacing: '0.1em',
+                                                textTransform: 'uppercase',
+                                            }}
+                                        >
+                                            Steam-ready demo
+                                        </Text>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    {showInlineBadges ? (
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                minWidth: 0,
-                                paddingTop: 8,
-                            }}
-                        >
-                            {badgeCluster}
+                            {showInlineBadges ? (
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        minWidth: 0,
+                                        paddingTop: 8,
+                                    }}
+                                >
+                                    {badgeCluster}
+                                </div>
+                            ) : null}
                         </div>
-                    ) : null}
-                </div>
 
-                {!showInlineBadges ? <div>{badgeCluster}</div> : null}
+                        {!showInlineBadges ? <div>{badgeCluster}</div> : null}
+                    </>
+                ) : null}
 
                 <div
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
                         width: '100%',
-                        paddingTop: isMobile ? 2 : 0,
+                        paddingTop: isStickyCompact ? 0 : isMobile ? 2 : 0,
                     }}
                 >
                     <div
@@ -395,7 +427,12 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                             borderRadius: 999,
                             background:
                                 'linear-gradient(135deg, rgba(255,90,54,0.38), rgba(28,38,50,0.48) 32%, rgba(94,231,255,0.24))',
-                            boxShadow: isMobile ? 'none' : '0 16px 40px rgba(0, 0, 0, 0.34)',
+                            boxShadow: isStickyCompact
+                                ? '0 10px 24px rgba(0, 0, 0, 0.22)'
+                                : isMobile
+                                    ? 'none'
+                                    : '0 16px 40px rgba(0, 0, 0, 0.34)',
+                            transition: 'box-shadow 0.24s ease',
                         }}
                     >
                         <div
@@ -404,7 +441,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 gap: 8,
                                 width: '100%',
                                 maxWidth: '100%',
-                                padding: isMobile ? 6 : 8,
+                                padding: isStickyCompact ? (isMobile ? 5 : 6) : isMobile ? 6 : 8,
                                 borderRadius: 999,
                                 background:
                                     'linear-gradient(180deg, rgba(8,12,19,0.98), rgba(13,19,29,0.88))',
@@ -446,10 +483,16 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                             outline: 'none',
                                             borderRadius: 999,
                                             padding: isMobile
-                                                ? '11px 10px'
+                                                ? isStickyCompact
+                                                    ? '10px 10px'
+                                                    : '11px 10px'
                                                 : isCompactDesktop
-                                                    ? '12px 18px'
-                                                    : '13px 22px',
+                                                    ? isStickyCompact
+                                                        ? '10px 16px'
+                                                        : '12px 18px'
+                                                    : isStickyCompact
+                                                        ? '11px 18px'
+                                                        : '13px 22px',
                                             color: active ? '#f8fafc' : '#94a3b8',
                                             background: active
                                                 ? 'linear-gradient(135deg, rgba(255,90,54,0.72), rgba(255,122,24,0.42), rgba(94,231,255,0.22))'
@@ -465,8 +508,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                             transition: 'all 0.2s ease',
                                             textAlign: 'center',
                                             flex: isMobile ? 1 : 'none',
-                                            minWidth: isMobile ? 0 : isCompactDesktop ? 164 : 182,
-                                            fontSize: isMobile ? 15 : 18,
+                                            minWidth: isMobile ? 0 : isStickyCompact ? 160 : isCompactDesktop ? 164 : 182,
+                                            fontSize: isStickyCompact ? (isMobile ? 14 : 16) : isMobile ? 15 : 18,
                                             letterSpacing: active ? '0.07em' : '0.06em',
                                             textTransform: 'uppercase',
                                             whiteSpace: 'nowrap',

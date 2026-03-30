@@ -1,3 +1,4 @@
+import {LineChartOutlined} from '@ant-design/icons';
 import {Space, Typography} from 'antd';
 import SectionCard from '../common/SectionCard';
 
@@ -17,37 +18,24 @@ type SentimentRowProps = {
 
 function SentimentRow({label, value, variant}: SentimentRowProps) {
     return (
-        <div>
+        <div className={`result-progress-row hud-panel hud-angled-panel result-progress-row-${variant}`}>
             <div
                 style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: 8,
+                    marginBottom: 10,
                     gap: 12,
+                    flexWrap: 'wrap',
                 }}
             >
-                <span
-                    style={{
-                        color: '#e2e8f0',
-                        fontSize: 15,
-                        fontWeight: 600,
-                    }}
-                >
-                    {label}
-                </span>
+                <div>
+                    <span className="result-progress-label">{label}</span>
+                    <span className="result-progress-kicker">channel track</span>
+                </div>
 
                 <span
-                    style={{
-                        color:
-                            variant === 'positive'
-                                ? '#86efac'
-                                : variant === 'neutral'
-                                    ? '#fcd34d'
-                                    : '#fda4af',
-                        fontSize: 14,
-                        fontWeight: 700,
-                    }}
+                    className={`result-progress-value result-progress-value-${variant}`}
                 >
                     {value}%
                 </span>
@@ -68,9 +56,15 @@ function SentimentProgress({sentiment}: SentimentProgressProps) {
     const {Text} = Typography;
 
     return (
-        <SectionCard title="Sentiment Overview">
+        <SectionCard
+            title="Sentiment Overview"
+            kicker="Channel Matrix"
+            icon={<LineChartOutlined />}
+            iconTone="hot"
+            className="result-section-tone-hot"
+        >
             <Space orientation="vertical" size={18} style={{width: '100%'}}>
-                <Text style={{color: '#94a3b8'}}>
+                <Text className="ui-copy-muted" style={{marginBottom: 0}}>
                     Distribution of sampled review sentiment from the analyzed dataset.
                 </Text>
 

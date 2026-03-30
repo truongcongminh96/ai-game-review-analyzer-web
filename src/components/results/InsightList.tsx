@@ -1,3 +1,4 @@
+import {LikeOutlined, WarningOutlined} from '@ant-design/icons';
 import {Space, Tag, Typography} from 'antd';
 import SectionCard from '../common/SectionCard';
 
@@ -35,65 +36,71 @@ function InsightList({title, items, variant}: InsightListProps) {
     const isLoveVariant = variant === 'love';
     const tagStyle = isLoveVariant
         ? {
-              background: 'rgba(34,197,94,0.12)',
-              border: '1px solid rgba(74,222,128,0.22)',
-              color: '#bbf7d0',
+              background: 'rgba(70,88,44,0.22)',
+              border: '1px solid rgba(153,176,112,0.24)',
+              color: '#d9e3b4',
           }
         : {
-              background: 'rgba(239,68,68,0.12)',
-              border: '1px solid rgba(251,113,133,0.22)',
-              color: '#fecdd3',
+              background: 'rgba(78,40,35,0.24)',
+              border: '1px solid rgba(176,104,88,0.22)',
+              color: '#e3b0a3',
           };
     const spotlightStyle = isLoveVariant
         ? {
               background:
-                  'radial-gradient(circle at top right, rgba(74,222,128,0.18), transparent 34%), linear-gradient(135deg, rgba(20,83,45,0.88), rgba(15,23,42,0.96))',
-              border: '1px solid rgba(74,222,128,0.18)',
-              boxShadow: '0 18px 42px rgba(34,197,94,0.16)',
+                  'radial-gradient(circle at top right, rgba(153,176,112,0.14), transparent 34%), linear-gradient(135deg, rgba(46,58,30,0.92), rgba(15,23,42,0.98))',
+              border: '1px solid rgba(153,176,112,0.18)',
+              boxShadow: '0 18px 42px rgba(62,74,39,0.18)',
           }
         : {
               background:
-                  'radial-gradient(circle at top right, rgba(251,113,133,0.18), transparent 34%), linear-gradient(135deg, rgba(127,29,29,0.88), rgba(15,23,42,0.96))',
-              border: '1px solid rgba(251,113,133,0.18)',
-              boxShadow: '0 18px 42px rgba(239,68,68,0.16)',
+                  'radial-gradient(circle at top right, rgba(176,104,88,0.16), transparent 34%), linear-gradient(135deg, rgba(77,37,33,0.92), rgba(15,23,42,0.98))',
+              border: '1px solid rgba(176,104,88,0.18)',
+              boxShadow: '0 18px 42px rgba(79,40,35,0.18)',
           };
     const iconStyle = isLoveVariant
         ? {
               background:
-                  'linear-gradient(135deg, rgba(34,197,94,0.26), rgba(74,222,128,0.14))',
-              border: '1px solid rgba(134,239,172,0.18)',
-              boxShadow: '0 14px 28px rgba(34,197,94,0.18)',
+                  'linear-gradient(135deg, rgba(90,110,54,0.34), rgba(54,68,34,0.16))',
+              border: '1px solid rgba(153,176,112,0.18)',
+              boxShadow: '0 14px 28px rgba(62,74,39,0.18)',
           }
         : {
               background:
-                  'linear-gradient(135deg, rgba(239,68,68,0.26), rgba(251,113,133,0.14))',
-              border: '1px solid rgba(254,205,211,0.18)',
-              boxShadow: '0 14px 28px rgba(239,68,68,0.18)',
+                  'linear-gradient(135deg, rgba(114,56,46,0.34), rgba(78,40,35,0.16))',
+              border: '1px solid rgba(176,104,88,0.18)',
+              boxShadow: '0 14px 28px rgba(79,40,35,0.18)',
           };
     const scoreStyle = isLoveVariant
         ? {
-              background: 'rgba(34,197,94,0.10)',
-              border: '1px solid rgba(134,239,172,0.16)',
-              color: '#dcfce7',
+              background: 'rgba(70,88,44,0.22)',
+              border: '1px solid rgba(153,176,112,0.18)',
+              color: '#d9e3b4',
           }
         : {
-              background: 'rgba(239,68,68,0.10)',
-              border: '1px solid rgba(254,205,211,0.16)',
-              color: '#ffe4e6',
+              background: 'rgba(78,40,35,0.24)',
+              border: '1px solid rgba(176,104,88,0.18)',
+              color: '#e3b0a3',
           };
     const listIndexStyle = isLoveVariant
         ? {
-              background: 'rgba(34,197,94,0.14)',
-              color: '#86efac',
+              background: 'rgba(70,88,44,0.26)',
+              color: '#d9e3b4',
           }
         : {
-              background: 'rgba(239,68,68,0.14)',
-              color: '#fda4af',
+              background: 'rgba(78,40,35,0.26)',
+              color: '#e3b0a3',
           };
 
     if (!items.length) {
         return (
-            <SectionCard title={title}>
+            <SectionCard
+                title={title}
+                kicker={isLoveVariant ? 'Field Signal' : 'Threat Signal'}
+                icon={isLoveVariant ? <LikeOutlined /> : <WarningOutlined />}
+                iconTone={isLoveVariant ? 'cyan' : 'ember'}
+                className={isLoveVariant ? 'result-section-tone-love' : 'result-section-tone-complaint'}
+            >
                 <Text style={{color: '#94a3b8'}}>No insights available.</Text>
             </SectionCard>
         );
@@ -102,22 +109,32 @@ function InsightList({title, items, variant}: InsightListProps) {
     return (
         <SectionCard
             title={title}
+            kicker={isLoveVariant ? 'Field Signal' : 'Threat Signal'}
+            icon={isLoveVariant ? <LikeOutlined /> : <WarningOutlined />}
+            iconTone={isLoveVariant ? 'cyan' : 'ember'}
+            className={isLoveVariant ? 'result-section-tone-love' : 'result-section-tone-complaint'}
             extra={
                 <Tag
+                    className="hud-chip"
                     style={{
                         marginInlineEnd: 0,
                         borderRadius: 999,
-                        padding: '4px 10px',
+                        padding: '6px 12px',
                         fontWeight: 600,
                         ...tagStyle,
                     }}
                 >
-                    {isLoveVariant ? 'Player Favorite' : 'Recurring Issue'}
+                    {isLoveVariant ? 'Priority Asset' : 'Recurring Fault'}
                 </Tag>
             }
         >
             <Space orientation="vertical" size={16} style={{width: '100%'}}>
                 <div
+                    className={`hud-panel hud-angled-panel result-insight-highlight ${
+                        isLoveVariant
+                            ? 'result-insight-highlight-love'
+                            : 'result-insight-highlight-complaint'
+                    }`}
                     style={{
                         position: 'relative',
                         overflow: 'hidden',
@@ -157,7 +174,7 @@ function InsightList({title, items, variant}: InsightListProps) {
                                 ...scoreStyle,
                             }}
                         >
-                            {isLoveVariant ? 'Strongest positive signal' : 'Biggest pain point'}
+                            {isLoveVariant ? 'Primary favorable lane' : 'Primary threat lane'}
                         </div>
                     </div>
 
@@ -170,19 +187,24 @@ function InsightList({title, items, variant}: InsightListProps) {
                         }}
                     >
                         <div
+                            className={`result-insight-icon-shell ${
+                                isLoveVariant
+                                    ? 'result-insight-icon-shell-love'
+                                    : 'result-insight-icon-shell-complaint'
+                            }`}
                             style={{
                                 width: 56,
                                 height: 56,
-                                borderRadius: 18,
+                                borderRadius: 16,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: 26,
+                                fontSize: 22,
                                 flexShrink: 0,
                                 ...iconStyle,
                             }}
                         >
-                            {isLoveVariant ? '❤️' : '🔥'}
+                            {isLoveVariant ? <LikeOutlined /> : <WarningOutlined />}
                         </div>
 
                         <div style={{flex: 1, minWidth: 220}}>
@@ -198,10 +220,12 @@ function InsightList({title, items, variant}: InsightListProps) {
                             </Text>
 
                             <Title
+                                className="ui-title-tight"
                                 level={4}
                                 style={{
                                     margin: 0,
                                     color: '#f8fafc',
+                                    fontSize: 'clamp(1.85rem, 3vw, 2.35rem)',
                                 }}
                             >
                                 {highlightItem.label}
@@ -224,6 +248,7 @@ function InsightList({title, items, variant}: InsightListProps) {
 
                         {highlightItem.percent ? (
                             <div
+                                className="result-insight-share"
                                 style={{
                                     minWidth: 110,
                                     borderRadius: 18,
@@ -270,13 +295,18 @@ function InsightList({title, items, variant}: InsightListProps) {
 
                         {secondaryItems.map((item, index) => (
                             <div
+                                className={`result-insight-item ${
+                                    isLoveVariant
+                                        ? 'result-insight-item-love'
+                                        : 'result-insight-item-complaint'
+                                }`}
                                 key={`${item.label}-${index}`}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 12,
-                                    padding: '12px 14px',
-                                    borderRadius: 16,
+                                    padding: '14px 16px',
+                                    borderRadius: 18,
                                     background: 'rgba(15,23,42,0.36)',
                                     border: '1px solid rgba(148,163,184,0.08)',
                                 }}

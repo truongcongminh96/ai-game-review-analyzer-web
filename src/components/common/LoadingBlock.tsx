@@ -16,7 +16,14 @@ function LoadingBlock() {
         >
             <HudOverlay reticlePosition="bottom-left" scanDelay={0.32} />
             <Space orientation="vertical" size={20} style={{width: '100%'}}>
-                <div className="analyze-orb" />
+                <div className="analyze-radar" aria-hidden="true">
+                    <div className="analyze-radar-ring analyze-radar-ring-outer" />
+                    <div className="analyze-radar-ring analyze-radar-ring-inner" />
+                    <div className="analyze-radar-crosshair analyze-radar-crosshair-x" />
+                    <div className="analyze-radar-crosshair analyze-radar-crosshair-y" />
+                    <div className="analyze-radar-sweep" />
+                    <div className="analyze-radar-core" />
+                </div>
 
                 <Tag
                     className="hud-chip"
