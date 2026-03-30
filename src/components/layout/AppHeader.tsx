@@ -5,7 +5,7 @@ const {Header} = Layout;
 const {Text, Title} = Typography;
 const {useBreakpoint} = Grid;
 
-type AppPage = 'home' | 'source-review';
+type AppPage = 'home' | 'source-review' | 'learning-journey';
 
 type AppHeaderProps = {
     dataSourceMode: 'mock' | 'live';
@@ -17,6 +17,20 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const screens = useBreakpoint();
     const isMobile = !screens.md;
     const isCompactDesktop = Boolean(screens.md && !screens.xl);
+    const contextBadge =
+        currentPage === 'learning-journey'
+            ? {
+                label: 'Portfolio Journey',
+                border: '1px solid rgba(45,212,191,0.20)',
+                background: 'rgba(45,212,191,0.10)',
+                color: '#99f6e4',
+            }
+            : {
+                label: 'Gaming Analytics',
+                border: '1px solid rgba(168,85,247,0.20)',
+                background: 'rgba(168,85,247,0.10)',
+                color: '#d8b4fe',
+            };
     const sourceBadge =
         dataSourceMode === 'mock'
             ? {
@@ -128,7 +142,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     textOverflow: 'ellipsis',
                                 }}
                             >
-                                Steam Review Intelligence for product-minded teams
+                                AI product experiments, source review, and continuous learning
                             </Text>
                         ) : null}
                     </div>
@@ -151,15 +165,20 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     {[
                         {key: 'home', label: 'Home'},
                         {key: 'source-review', label: 'Source Review'},
+                        {key: 'learning-journey', label: 'My AI Journey'},
                     ].map((item) => {
                         const active = currentPage === item.key;
 
                         return (
-                            <div
+                            <button
                                 key={item.key}
+                                type="button"
                                 onClick={() => onNavigate(item.key as AppPage)}
+                                aria-pressed={active}
                                 style={{
                                     cursor: 'pointer',
+                                    appearance: 'none',
+                                    outline: 'none',
                                     borderRadius: 999,
                                     padding: isMobile ? '10px 14px' : isCompactDesktop ? '10px 14px' : '10px 16px',
                                     color: active ? '#f8fafc' : '#94a3b8',
@@ -173,12 +192,12 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     transition: 'all 0.2s ease',
                                     textAlign: 'center',
                                     flex: isMobile ? 1 : 'none',
-                                    minWidth: isMobile ? 0 : isCompactDesktop ? 84 : 96,
+                                    minWidth: isMobile ? 0 : isCompactDesktop ? 92 : 110,
                                     fontSize: isCompactDesktop ? 13 : 14,
                                 }}
                             >
                                 {item.label}
-                            </div>
+                            </button>
                         );
                     })}
                 </Space>
@@ -230,13 +249,13 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     marginInlineEnd: 0,
                                     borderRadius: 999,
                                     padding: '6px 12px',
-                                    border: '1px solid rgba(168,85,247,0.20)',
-                                    background: 'rgba(168,85,247,0.10)',
-                                    color: '#d8b4fe',
+                                    border: contextBadge.border,
+                                    background: contextBadge.background,
+                                    color: contextBadge.color,
                                     fontSize: 14,
                                 }}
                             >
-                                Gaming Analytics
+                                {contextBadge.label}
                             </Tag>
                         ) : null}
                     </Space>

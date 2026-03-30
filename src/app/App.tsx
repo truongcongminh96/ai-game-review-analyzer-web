@@ -7,7 +7,6 @@ import {env} from '../config/env';
 import AppHeader from '../components/layout/AppHeader';
 import AppHero from '../components/layout/AppHero';
 import BackendShowcase from '../components/layout/BackendShowcase';
-import ResultGrid from '../components/results/ResultGrid';
 import SearchPanel from '../components/search/SearchPanel';
 import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
 import {useGameSearch} from '../hooks/useGameSearch';
@@ -15,6 +14,8 @@ import type {GameOption} from '../types/game';
 import {DEFAULT_REVIEW_LIMIT} from '../utils/constants';
 
 const SourceReviewPage = lazy(() => import('../pages/SourceReviewPage.tsx'));
+const ResultGrid = lazy(() => import('../components/results/ResultGrid'));
+const LearningJourneyPage = lazy(() => import('../pages/LearningJourneyPage.tsx'));
 
 const {Content} = Layout;
 
@@ -23,7 +24,7 @@ type AnalysisContext = {
     reviewLimit: number;
 };
 
-type AppPage = 'home' | 'source-review';
+type AppPage = 'home' | 'source-review' | 'learning-journey';
 
 function App() {
     const [currentPage, setCurrentPage] = useState<AppPage>('home');
@@ -65,11 +66,13 @@ function App() {
             {loading ? <LoadingBlock/> : null}
 
             {!loading && result ? (
-                <ResultGrid
-                    result={result}
-                    dataSourceMode={dataSourceMode}
-                    analysisContext={analysisContext}
-                />
+                <Suspense fallback={<LoadingBlock/>}>
+                    <ResultGrid
+                        result={result}
+                        dataSourceMode={dataSourceMode}
+                        analysisContext={analysisContext}
+                    />
+                </Suspense>
             ) : null}
 
             {!loading && !result ? (
@@ -107,9 +110,13 @@ function App() {
             >
                 {currentPage === 'home' ? (
                     homeContent
-                ) : (
+                ) : currentPage === 'source-review' ? (
                     <Suspense fallback={<LoadingBlock/>}>
                         <SourceReviewPage/>
+                    </Suspense>
+                ) : (
+                    <Suspense fallback={<LoadingBlock/>}>
+                        <LearningJourneyPage/>
                     </Suspense>
                 )}
             </Content>
