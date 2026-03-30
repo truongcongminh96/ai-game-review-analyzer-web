@@ -16,13 +16,17 @@ function AnalyzeButton({loading, onClick}: AnalyzeButtonProps) {
             onClick={onClick}
             style={{
                 width: '100%',
-                height: 52,
-                borderRadius: 16,
-                border: '1px solid rgba(96,165,250,0.22)',
-                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                boxShadow: '0 12px 30px rgba(37, 99, 235, 0.30)',
-                fontSize: 16,
-                fontWeight: 600,
+                height: 56,
+                borderRadius: 18,
+                border: '1px solid rgba(255,90,54,0.28)',
+                background:
+                    'linear-gradient(135deg, rgba(255,90,54,1), rgba(255,122,24,0.94) 58%, rgba(94,231,255,0.78))',
+                boxShadow:
+                    '0 18px 34px rgba(255, 90, 54, 0.28), inset 0 1px 0 rgba(255,255,255,0.14)',
+                fontSize: 18,
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
             }}
         >
             Generate AI Insight Report

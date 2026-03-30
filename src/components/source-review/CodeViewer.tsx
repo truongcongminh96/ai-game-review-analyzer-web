@@ -1,5 +1,6 @@
 import {Card, Grid, Space, Tag, Typography} from 'antd';
 import {type ReactNode} from 'react';
+import HudOverlay from '../motion/HudOverlay';
 import {sourceSections, type SourceFileItem} from '../../data/sourceFiles';
 
 const {Paragraph, Text, Title} = Typography;
@@ -241,6 +242,7 @@ function buildMiniMap(lines: string[], accent: string) {
 function InfoPill({children}: { children: ReactNode }) {
     return (
         <Tag
+            className="hud-chip"
             style={{
                 margin: 0,
                 borderRadius: 999,
@@ -265,6 +267,7 @@ function CodeViewer({file}: CodeViewerProps) {
 
     return (
         <Card
+            className="hud-shell hud-angled-shell"
             title={
                 <div
                     style={{
@@ -304,6 +307,7 @@ function CodeViewer({file}: CodeViewerProps) {
                 body: {padding: 20},
             }}
         >
+            <HudOverlay reticlePosition="bottom-left" scanDelay={0.95} />
             <Space orientation="vertical" size={14} style={{width: '100%'}}>
                 <div>
                     <Text style={{color: '#67e8f9', fontSize: 13}}>{file.path}</Text>

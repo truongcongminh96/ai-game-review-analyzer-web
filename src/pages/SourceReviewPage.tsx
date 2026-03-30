@@ -11,6 +11,7 @@ import {
     type SourceFileItem,
 } from '../data/sourceFiles.ts';
 import CodeViewer from '../components/source-review/CodeViewer';
+import HudOverlay from '../components/motion/HudOverlay';
 import RepoStructure from '../components/source-review/RepoStructure';
 import {fileToFlowStep} from '../data/flowMapping';
 
@@ -54,6 +55,7 @@ function SourceReviewPage() {
     return (
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
             <Card
+                className="hud-shell hud-angled-shell"
                 style={{
                     background: 'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(17,24,39,0.88))',
                     border: '1px solid rgba(148,163,184,0.12)',
@@ -65,8 +67,10 @@ function SourceReviewPage() {
                     body: {padding: 28}
                 }}
             >
+                <HudOverlay scanDelay={0.18} />
                 <Space orientation="vertical" size={14} style={{width: '100%'}}>
                     <Tag
+                        className="hud-chip"
                         style={{
                             width: 'fit-content',
                             margin: 0,
@@ -108,6 +112,7 @@ function SourceReviewPage() {
 
                     <Space wrap size={[10, 10]}>
                         <Tag
+                            className="hud-chip"
                             icon={<CodeOutlined/>}
                             style={{
                                 margin: 0,
@@ -122,6 +127,7 @@ function SourceReviewPage() {
                         </Tag>
 
                         <Tag
+                            className="hud-chip"
                             icon={<DatabaseOutlined/>}
                             style={{
                                 margin: 0,
@@ -136,6 +142,7 @@ function SourceReviewPage() {
                         </Tag>
 
                         <Tag
+                            className="hud-chip"
                             icon={<RocketOutlined/>}
                             style={{
                                 margin: 0,
@@ -155,6 +162,7 @@ function SourceReviewPage() {
             <Row gutter={[16, 16]}>
                 <Col xs={24}>
                     <Card
+                        className="hud-shell hud-angled-shell"
                         style={{
                             background: 'rgba(15,23,42,0.72)',
                             border: '1px solid rgba(148,163,184,0.12)',
@@ -164,6 +172,7 @@ function SourceReviewPage() {
                             body: {padding: 20},
                         }}
                     >
+                        <HudOverlay reticlePosition="bottom-left" scanDelay={0.52} />
                         <Space orientation="vertical" size={18} style={{width: '100%'}}>
                             <div>
                                 <Title level={4} style={{color: '#f8fafc', margin: 0}}>
@@ -182,6 +191,7 @@ function SourceReviewPage() {
 
                                 <Space wrap size={[8, 8]} style={{marginTop: 12}}>
                                     <Tag
+                                        className="hud-chip"
                                         style={{
                                             margin: 0,
                                             borderRadius: 999,
@@ -195,6 +205,7 @@ function SourceReviewPage() {
                                     </Tag>
 
                                     <Tag
+                                        className="hud-chip"
                                         style={{
                                             margin: 0,
                                             borderRadius: 999,
@@ -208,6 +219,7 @@ function SourceReviewPage() {
                                     </Tag>
 
                                     <Tag
+                                        className="hud-chip"
                                         style={{
                                             margin: 0,
                                             borderRadius: 999,
@@ -230,6 +242,7 @@ function SourceReviewPage() {
                                     return (
                                         <Col xs={24} sm={12} lg={8} key={section.key}>
                                             <div
+                                                className="hud-step-card hud-angled-panel"
                                                 style={{
                                                     height: '100%',
                                                     padding: 16,
@@ -299,6 +312,7 @@ function SourceReviewPage() {
 
                 <Col xs={24} lg={8}>
                     <Card
+                        className="hud-shell hud-angled-shell"
                         title={<span style={{color: '#f8fafc'}}>Layered File Browser</span>}
                         style={{
                             background: 'rgba(15,23,42,0.72)',
@@ -310,6 +324,7 @@ function SourceReviewPage() {
                             body: {padding: 20}
                         }}
                     >
+                        <HudOverlay scanDelay={0.8} />
                         <Space orientation="vertical" size={16} style={{width: '100%'}}>
                             <Paragraph
                                 style={{
@@ -337,6 +352,7 @@ function SourceReviewPage() {
                                     label: (
                                         <Space size={10} wrap>
                                             <Tag
+                                                className="hud-chip"
                                                 style={{
                                                     margin: 0,
                                                     borderRadius: 999,
@@ -375,6 +391,7 @@ function SourceReviewPage() {
 
                                                     return (
                                                         <div
+                                                            className="hud-panel hud-angled-panel"
                                                             key={file.key}
                                                             onClick={() => handleSelectFile(file)}
                                                             style={{

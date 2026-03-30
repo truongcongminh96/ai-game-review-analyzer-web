@@ -31,10 +31,10 @@ function BrandGlyph({size}: BrandGlyphProps) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 background:
-                    'radial-gradient(circle at 28% 20%, rgba(34,211,238,0.32), transparent 34%), radial-gradient(circle at 78% 20%, rgba(168,85,247,0.30), transparent 36%), linear-gradient(135deg, rgba(15,23,42,0.98), rgba(49,46,129,0.96))',
-                border: '1px solid rgba(125,211,252,0.18)',
+                    'radial-gradient(circle at 24% 18%, rgba(255,90,54,0.34), transparent 34%), radial-gradient(circle at 78% 18%, rgba(94,231,255,0.28), transparent 34%), linear-gradient(135deg, rgba(5,7,13,0.98), rgba(19,29,45,0.96))',
+                border: '1px solid rgba(255,255,255,0.10)',
                 boxShadow:
-                    '0 18px 42px rgba(37,99,235,0.22), 0 22px 54px rgba(76,29,149,0.28), inset 0 1px 0 rgba(255,255,255,0.08)',
+                    '0 18px 42px rgba(255,90,54,0.18), 0 22px 54px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08)',
                 overflow: 'hidden',
                 flexShrink: 0,
             }}
@@ -66,22 +66,22 @@ function BrandGlyph({size}: BrandGlyphProps) {
                 />
                 <path
                     d="M24.5 29.5v7M21 33h7"
-                    stroke="#67e8f9"
+                    stroke="#5ee7ff"
                     strokeWidth="2.4"
                     strokeLinecap="round"
                 />
-                <circle cx="39.5" cy="30.5" r="2.5" fill="#c084fc"/>
-                <circle cx="45" cy="35" r="2.5" fill="#22d3ee"/>
+                <circle cx="39.5" cy="30.5" r="2.5" fill="#ff7a18"/>
+                <circle cx="45" cy="35" r="2.5" fill="#5ee7ff"/>
                 <path
                     d="M18.5 19.5c3.2-1.8 6.3-2.8 9.4-2.8"
-                    stroke="#22d3ee"
+                    stroke="#ff5a36"
                     strokeWidth="1.9"
                     strokeLinecap="round"
                     opacity="0.8"
                 />
                 <path
                     d="M36.5 16.8c3 .1 6.3 1.2 9.2 3.1"
-                    stroke="#a78bfa"
+                    stroke="#5ee7ff"
                     strokeWidth="1.9"
                     strokeLinecap="round"
                     opacity="0.8"
@@ -108,29 +108,29 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
         currentPage === 'learning-journey'
             ? {
                 label: 'Portfolio Journey',
-                border: '1px solid rgba(45,212,191,0.20)',
-                background: 'rgba(45,212,191,0.10)',
-                color: '#99f6e4',
+                border: '1px solid rgba(94,231,255,0.22)',
+                background: 'rgba(94,231,255,0.10)',
+                color: '#a5f3fc',
             }
             : {
                 label: 'Gaming Analytics',
-                border: '1px solid rgba(168,85,247,0.20)',
-                background: 'rgba(168,85,247,0.10)',
-                color: '#d8b4fe',
+                border: '1px solid rgba(255,90,54,0.22)',
+                background: 'rgba(255,90,54,0.10)',
+                color: '#fec2b3',
             };
     const sourceBadge =
         dataSourceMode === 'mock'
             ? {
                 label: 'Mock Mode',
-                border: '1px solid rgba(245,158,11,0.22)',
-                background: 'rgba(245,158,11,0.10)',
-                color: '#fcd34d',
+                border: '1px solid rgba(255,122,24,0.24)',
+                background: 'rgba(255,122,24,0.12)',
+                color: '#fdba74',
             }
             : {
                 label: 'Live API',
-                border: '1px solid rgba(34,197,94,0.22)',
-                background: 'rgba(34,197,94,0.10)',
-                color: '#86efac',
+                border: '1px solid rgba(94,231,255,0.22)',
+                background: 'rgba(94,231,255,0.10)',
+                color: '#a5f3fc',
             };
     const titleFontSize = isMobile ? 24 : isCompactDesktop ? 30 : 38;
     const subtitleFontSize = isMobile ? 14 : isCompactDesktop ? 15 : 17;
@@ -229,8 +229,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
         <Header
             style={{
                 background:
-                    'radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 24%), radial-gradient(circle at top right, rgba(168,85,247,0.12), transparent 28%), linear-gradient(180deg, rgba(4,9,20,0.96), rgba(8,13,25,0.92) 58%, rgba(9,14,26,0.84))',
-                borderBottom: '1px solid rgba(148, 163, 184, 0.10)',
+                    'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(18px)',
                 WebkitBackdropFilter: 'blur(18px)',
                 position: 'sticky',
@@ -291,7 +291,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     fontWeight: 800,
                                     lineHeight: 1.02,
                                     letterSpacing: '0.015em',
-                                    textShadow: '0 0 26px rgba(59,130,246,0.10)',
+                                    textShadow: '0 0 26px rgba(255,90,54,0.12)',
                                     whiteSpace: 'normal',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
@@ -338,14 +338,14 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         width: 8,
                                         height: 8,
                                         borderRadius: 999,
-                                        background: '#22d3ee',
-                                        boxShadow: '0 0 14px rgba(34,211,238,0.52)',
+                                        background: '#ff5a36',
+                                        boxShadow: '0 0 14px rgba(255,90,54,0.52)',
                                         flexShrink: 0,
                                     }}
                                 />
                                 <Text
                                     style={{
-                                        color: '#7dd3fc',
+                                        color: '#fec2b3',
                                         fontSize: isMobile ? 12 : 14,
                                         fontWeight: 700,
                                         fontFamily: 'var(--font-display)',
@@ -390,8 +390,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                             padding: 1,
                             borderRadius: 999,
                             background:
-                                'linear-gradient(135deg, rgba(59,130,246,0.24), rgba(30,41,59,0.42) 36%, rgba(168,85,247,0.22))',
-                            boxShadow: isMobile ? 'none' : '0 16px 40px rgba(2, 6, 23, 0.28)',
+                                'linear-gradient(135deg, rgba(255,90,54,0.38), rgba(28,38,50,0.48) 32%, rgba(94,231,255,0.24))',
+                            boxShadow: isMobile ? 'none' : '0 16px 40px rgba(0, 0, 0, 0.34)',
                         }}
                     >
                         <div
@@ -403,8 +403,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 padding: isMobile ? 6 : 8,
                                 borderRadius: 999,
                                 background:
-                                    'linear-gradient(180deg, rgba(9,15,29,0.96), rgba(12,18,33,0.82))',
-                                border: '1px solid rgba(148,163,184,0.12)',
+                                    'linear-gradient(180deg, rgba(8,12,19,0.98), rgba(13,19,29,0.88))',
+                                border: '1px solid rgba(255,255,255,0.08)',
                                 justifyContent: isMobile ? 'space-between' : 'flex-start',
                                 overflowX: 'auto',
                             }}
@@ -424,13 +424,13 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                                     y: -2,
                                                     scale: 1.01,
                                                     boxShadow:
-                                                        'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 28px rgba(59,130,246,0.20)',
+                                                        'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 28px rgba(255,90,54,0.24)',
                                                 }
                                                 : {
                                                     y: -2,
                                                     scale: 1.01,
-                                                    background: 'rgba(30,41,59,0.82)',
-                                                    borderColor: 'rgba(148,163,184,0.18)',
+                                                    background: 'rgba(24,32,45,0.92)',
+                                                    borderColor: 'rgba(255,255,255,0.12)',
                                                     color: '#e2e8f0',
                                                 }
                                         }
@@ -448,13 +448,13 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                                     : '13px 22px',
                                             color: active ? '#f8fafc' : '#94a3b8',
                                             background: active
-                                                ? 'linear-gradient(135deg, rgba(59,130,246,0.34), rgba(99,102,241,0.22), rgba(168,85,247,0.30))'
+                                                ? 'linear-gradient(135deg, rgba(255,90,54,0.72), rgba(255,122,24,0.42), rgba(94,231,255,0.22))'
                                                 : 'transparent',
                                             border: active
-                                                ? '1px solid rgba(96,165,250,0.26)'
+                                                ? '1px solid rgba(255,90,54,0.32)'
                                                 : '1px solid transparent',
                                             boxShadow: active
-                                                ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 22px rgba(37,99,235,0.18)'
+                                                ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 22px rgba(255,90,54,0.24)'
                                                 : 'none',
                                             fontFamily: 'var(--font-display)',
                                             fontWeight: active ? 700 : 600,

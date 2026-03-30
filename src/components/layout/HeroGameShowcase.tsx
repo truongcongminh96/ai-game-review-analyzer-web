@@ -10,6 +10,7 @@ import {
 } from 'framer-motion';
 import {heroSlides} from '../../data/heroSlides';
 import heroImage from '../../assets/hero.png';
+import HudOverlay from '../motion/HudOverlay';
 import {
     hoverLiftTransition,
     motionEase,
@@ -78,9 +79,9 @@ function HeroGameShowcase() {
         const relativeX = (event.clientX - bounds.left) / bounds.width;
         const relativeY = (event.clientY - bounds.top) / bounds.height;
 
-        rotateY.set((relativeX - 0.5) * 10);
-        rotateX.set((0.5 - relativeY) * 10);
-        imageScale.set(1.05);
+        rotateY.set((relativeX - 0.5) * 12);
+        rotateX.set((0.5 - relativeY) * 12);
+        imageScale.set(1.06);
         glowX.set(relativeX * 100);
         glowY.set(relativeY * 100);
         glowOpacity.set(1);
@@ -97,7 +98,7 @@ function HeroGameShowcase() {
 
     return (
         <motion.div
-            className="hero-showcase"
+            className="hero-showcase hud-angled-shell"
             onPointerMove={handlePointerMove}
             onPointerLeave={resetParallax}
             style={
@@ -109,7 +110,7 @@ function HeroGameShowcase() {
                         transformPerspective: 1400,
                     }
             }
-            whileHover={reduceMotion ? undefined : {y: -4}}
+            whileHover={reduceMotion ? undefined : {y: -6}}
             transition={hoverLiftTransition}
         >
             <AnimatePresence mode="wait">
@@ -153,18 +154,20 @@ function HeroGameShowcase() {
                         }
                 }
             />
+            <HudOverlay reticlePosition="bottom-left" scanDelay={0.55} zIndex={1} />
 
             <div className="hero-showcase-content">
                 <Space orientation="vertical" size={10} style={{width: '100%'}}>
                     <Tag
+                        className="hud-chip"
                         style={{
                             width: 'fit-content',
                             marginInlineEnd: 0,
                             borderRadius: 999,
                             padding: '6px 12px',
-                            border: '1px solid rgba(103,232,249,0.20)',
-                            background: 'rgba(34,211,238,0.10)',
-                            color: '#cffafe',
+                            border: '1px solid rgba(255,90,54,0.24)',
+                            background: 'rgba(255,90,54,0.12)',
+                            color: '#ffd7c9',
                         }}
                     >
                         Featured mock game

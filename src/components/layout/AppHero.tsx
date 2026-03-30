@@ -2,6 +2,7 @@ import {Card, Col, Row, Space, Typography} from 'antd';
 import {motion} from 'framer-motion';
 import HeroGameShowcase from "./HeroGameShowcase.tsx";
 import {ApiOutlined, RobotOutlined, ReadOutlined} from '@ant-design/icons';
+import HudOverlay from '../motion/HudOverlay';
 import {MotionReveal, MotionStagger} from '../motion/Reveal';
 import {hoverLiftTransition, revealVariant} from '../../motion/animations';
 
@@ -10,15 +11,18 @@ function AppHero() {
 
     return (
         <Card
-            className="glass-card"
+            className="glass-card hud-shell hud-angled-shell"
             style={{
                 borderRadius: 28,
                 overflow: 'hidden',
+                background:
+                    'radial-gradient(circle at top right, rgba(255,90,54,0.14), transparent 26%), radial-gradient(circle at 0 100%, rgba(94,231,255,0.10), transparent 28%), linear-gradient(180deg, rgba(8,11,18,0.92), rgba(13,18,29,0.82))',
             }}
             styles={{
                 body: {padding: 32}
             }}
         >
+            <HudOverlay scanDelay={0.2} />
             <Row gutter={[32, 32]} align="middle">
                 <Col xs={24} lg={14}>
                     <MotionStagger staggerChildren={0.08}>
@@ -96,14 +100,15 @@ function AppHero() {
                                         transition={hoverLiftTransition}
                                     >
                                         <div
+                                            className="hud-chip"
                                             style={{
                                                 padding: '10px 14px',
                                                 borderRadius: 14,
-                                                background: 'rgba(59, 130, 246, 0.12)',
-                                                border: '1px solid rgba(96, 165, 250, 0.22)',
+                                                background: 'rgba(94, 231, 255, 0.10)',
+                                                border: '1px solid rgba(94, 231, 255, 0.24)',
                                             }}
                                         >
-                                            <Text style={{color: '#dbeafe'}}>Sentiment detection</Text>
+                                            <Text style={{color: '#d6f9ff'}}>Sentiment detection</Text>
                                         </div>
                                     </motion.div>
 
@@ -112,14 +117,15 @@ function AppHero() {
                                         transition={hoverLiftTransition}
                                     >
                                         <div
+                                            className="hud-chip"
                                             style={{
                                                 padding: '10px 14px',
                                                 borderRadius: 14,
-                                                background: 'rgba(168, 85, 247, 0.12)',
-                                                border: '1px solid rgba(192, 132, 252, 0.22)',
+                                                background: 'rgba(255, 90, 54, 0.10)',
+                                                border: '1px solid rgba(255, 90, 54, 0.22)',
                                             }}
                                         >
-                                            <Text style={{color: '#f3e8ff'}}>Praise & complaint mining</Text>
+                                            <Text style={{color: '#ffd7c9'}}>Praise & complaint mining</Text>
                                         </div>
                                     </motion.div>
 
@@ -128,14 +134,15 @@ function AppHero() {
                                         transition={hoverLiftTransition}
                                     >
                                         <div
+                                            className="hud-chip"
                                             style={{
                                                 padding: '10px 14px',
                                                 borderRadius: 14,
-                                                background: 'rgba(34, 211, 238, 0.12)',
-                                                border: '1px solid rgba(103, 232, 249, 0.22)',
+                                                background: 'rgba(255, 122, 24, 0.10)',
+                                                border: '1px solid rgba(255, 122, 24, 0.22)',
                                             }}
                                         >
-                                            <Text style={{color: '#cffafe'}}>Insight-ready report</Text>
+                                            <Text style={{color: '#fed7aa'}}>Insight-ready report</Text>
                                         </div>
                                     </motion.div>
                                 </Space>

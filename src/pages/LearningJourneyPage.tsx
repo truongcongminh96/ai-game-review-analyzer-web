@@ -2,6 +2,7 @@ import {Button, Card, Col, Progress, Row, Space, Tag, Typography} from 'antd';
 import {useState} from 'react';
 import {motion} from 'framer-motion';
 import {MotionReveal} from '../components/motion/Reveal';
+import HudOverlay from '../components/motion/HudOverlay';
 import {
     learningCourses,
     portfolioProjects,
@@ -34,6 +35,25 @@ type ProjectCardProps = {
 
 const storyFlowSteps = ['Problem', 'Research', 'Idea', 'Build', 'Test', 'Impact'];
 
+const journeyCardBackground =
+    'radial-gradient(circle at top left, rgba(255,90,54,0.14), transparent 24%), radial-gradient(circle at bottom right, rgba(94,231,255,0.10), transparent 28%), linear-gradient(135deg, rgba(7,11,19,0.96), rgba(13,19,31,0.92))';
+const journeyPanelBackground =
+    'linear-gradient(180deg, rgba(8,12,19,0.94), rgba(14,20,31,0.86))';
+const journeyPanelSoft = 'rgba(255,255,255,0.03)';
+const journeyPanelStronger = 'rgba(5,7,13,0.54)';
+const journeyBorder = '1px solid rgba(255,255,255,0.08)';
+const journeySubtleBorder = '1px solid rgba(255,255,255,0.10)';
+const journeyText = '#f8fafc';
+const journeyTextBody = '#dbe3ef';
+const journeyTextMuted = '#9fb0c2';
+const journeyTextDim = '#7f92ab';
+const accentEmber = '#ff5a36';
+const accentHot = '#ff7a18';
+const accentCyan = '#5ee7ff';
+const accentEmberSoft = 'rgba(255,90,54,0.12)';
+const accentCyanSoft = 'rgba(94,231,255,0.10)';
+const accentHotSoft = 'rgba(255,122,24,0.12)';
+
 function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
     const keyTools = Array.from(new Set(course.toolGroups.flatMap((group) => group.tools))).slice(
         0,
@@ -42,18 +62,19 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
 
     return (
         <Card
+            className="hud-shell hud-angled-shell"
             style={{
                 borderRadius: 32,
-                background:
-                    'radial-gradient(circle at top left, rgba(239,35,60,0.10), transparent 28%), radial-gradient(circle at bottom right, rgba(59,130,246,0.08), transparent 30%), linear-gradient(135deg, rgba(255,248,244,0.98), rgba(255,255,255,0.97))',
-                border: '1px solid rgba(255,255,255,0.62)',
-                boxShadow: '0 32px 80px rgba(15,23,42,0.22)',
+                background: journeyCardBackground,
+                border: journeyBorder,
+                boxShadow: '0 32px 80px rgba(0,0,0,0.34)',
                 overflow: 'hidden',
             }}
             styles={{
                 body: {padding: 32},
             }}
         >
+            <HudOverlay reticlePosition="bottom-left" scanDelay={0.35} />
             <Space orientation="vertical" size={28} style={{width: '100%'}}>
                 <Row gutter={[28, 28]} align="stretch">
                     <Col xs={24} lg={15}>
@@ -68,15 +89,16 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                             >
                                 <div>
                                     <div
+                                        className="hud-chip"
                                         style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
                                             gap: 10,
                                             padding: '12px 14px',
                                             borderRadius: 20,
-                                            background: 'rgba(255,255,255,0.58)',
-                                            border: '1px solid rgba(239,35,60,0.10)',
-                                            boxShadow: '0 12px 24px rgba(255,255,255,0.35)',
+                                            background: accentEmberSoft,
+                                            border: '1px solid rgba(255,90,54,0.18)',
+                                            boxShadow: '0 12px 24px rgba(255,90,54,0.14)',
                                         }}
                                     >
                                         <div
@@ -84,13 +106,13 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                                 width: 12,
                                                 height: 12,
                                                 borderRadius: 999,
-                                                background: '#ef233c',
-                                                boxShadow: '0 0 18px rgba(239,35,60,0.28)',
+                                                background: accentEmber,
+                                                boxShadow: '0 0 18px rgba(255,90,54,0.32)',
                                             }}
                                         />
                                         <div
                                             style={{
-                                                color: '#ef233c',
+                                                color: '#ffd7c9',
                                                 fontSize: 18,
                                                 fontWeight: 800,
                                                 lineHeight: 1,
@@ -104,7 +126,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                     <div
                                         style={{
                                             marginTop: 14,
-                                            color: '#64748b',
+                                            color: '#fdba74',
                                             fontSize: 12,
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.18em',
@@ -117,7 +139,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                     <div
                                         style={{
                                             marginTop: 8,
-                                            color: '#334155',
+                                            color: journeyTextBody,
                                             fontSize: 15,
                                             fontWeight: 600,
                                         }}
@@ -131,7 +153,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 <h3
                                     style={{
                                         margin: 0,
-                                        color: '#0f172a',
+                                        color: journeyText,
                                         fontSize: 44,
                                         lineHeight: 1.08,
                                         letterSpacing: '-0.05em',
@@ -144,7 +166,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 <p
                                     style={{
                                         margin: '18px 0 0',
-                                        color: '#334155',
+                                        color: journeyTextBody,
                                         fontSize: 17,
                                         lineHeight: 1.85,
                                         maxWidth: 760,
@@ -156,7 +178,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 <div
                                     style={{
                                         marginTop: 16,
-                                        color: '#64748b',
+                                        color: journeyTextMuted,
                                         fontSize: 14,
                                         fontWeight: 600,
                                         lineHeight: 1.7,
@@ -169,6 +191,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                             <Space orientation="vertical" size={12} style={{width: '100%'}}>
                                 {course.highlights.map((highlight) => (
                                     <div
+                                        className="hud-panel"
                                         key={highlight}
                                         style={{
                                             display: 'flex',
@@ -176,8 +199,8 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                             gap: 12,
                                             padding: '14px 16px',
                                             borderRadius: 18,
-                                            background: 'rgba(255,255,255,0.58)',
-                                            border: '1px solid rgba(15,23,42,0.06)',
+                                            background: journeyPanelSoft,
+                                            border: journeySubtleBorder,
                                         }}
                                     >
                                         <div
@@ -186,14 +209,14 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                                 height: 10,
                                                 borderRadius: 999,
                                                 marginTop: 8,
-                                                background: '#f43f5e',
-                                                boxShadow: '0 0 16px rgba(244,63,94,0.22)',
+                                                background: accentEmber,
+                                                boxShadow: '0 0 16px rgba(255,90,54,0.24)',
                                                 flexShrink: 0,
                                             }}
                                         />
                                         <div
                                             style={{
-                                                color: '#334155',
+                                                color: journeyTextBody,
                                                 fontSize: 15,
                                                 lineHeight: 1.8,
                                                 fontWeight: 600,
@@ -208,14 +231,15 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                             <Space wrap size={[10, 10]}>
                                 {course.tags.map((tag) => (
                                     <Tag
+                                        className="hud-chip"
                                         key={tag}
                                         style={{
                                             margin: 0,
                                             borderRadius: 999,
                                             padding: '7px 14px',
-                                            border: '1px solid rgba(239,35,60,0.16)',
-                                            background: 'rgba(239,35,60,0.08)',
-                                            color: '#be123c',
+                                            border: '1px solid rgba(255,90,54,0.20)',
+                                            background: accentEmberSoft,
+                                            color: '#ffd7c9',
                                             fontWeight: 700,
                                             fontSize: 14,
                                         }}
@@ -234,25 +258,30 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                         height: 56,
                                         borderRadius: 18,
                                         paddingInline: 28,
-                                        background: 'linear-gradient(135deg, #ef233c, #f43f5e)',
-                                        border: 'none',
+                                        background:
+                                            'linear-gradient(135deg, rgba(255,90,54,1), rgba(255,122,24,0.94) 58%, rgba(94,231,255,0.78))',
+                                        border: '1px solid rgba(255,90,54,0.28)',
                                         fontWeight: 700,
                                         fontSize: 18,
-                                        boxShadow: '0 18px 38px rgba(239,35,60,0.26)',
+                                        letterSpacing: '0.04em',
+                                        textTransform: 'uppercase',
+                                        boxShadow:
+                                            '0 18px 34px rgba(255,90,54,0.28), inset 0 1px 0 rgba(255,255,255,0.14)',
                                     }}
                                 >
                                     {notesOpen ? 'Hide Notes' : 'Review Notes'}
                                 </Button>
 
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         display: 'inline-flex',
                                         alignItems: 'center',
                                         gap: 10,
                                         padding: '12px 16px',
                                         borderRadius: 18,
-                                        background: 'rgba(15,23,42,0.05)',
-                                        border: '1px solid rgba(15,23,42,0.08)',
+                                        background: journeyPanelStronger,
+                                        border: journeySubtleBorder,
                                     }}
                                 >
                                     <div
@@ -260,12 +289,13 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                             width: 10,
                                             height: 10,
                                             borderRadius: 999,
-                                            background: '#15803d',
+                                            background: accentCyan,
+                                            boxShadow: '0 0 14px rgba(94,231,255,0.26)',
                                         }}
                                     />
                                     <div
                                         style={{
-                                            color: '#0f172a',
+                                            color: journeyTextBody,
                                             fontSize: 14,
                                             fontWeight: 700,
                                         }}
@@ -280,18 +310,19 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                     <Col xs={24} lg={9}>
                         <Space orientation="vertical" size={16} style={{width: '100%'}}>
                             <div
+                                className="hud-panel"
                                 style={{
                                     borderRadius: 26,
                                     padding: 24,
                                     background:
-                                        'linear-gradient(180deg, rgba(15,23,42,0.92), rgba(17,24,39,0.98))',
-                                    border: '1px solid rgba(148,163,184,0.12)',
-                                    boxShadow: '0 20px 44px rgba(15,23,42,0.22)',
+                                        'linear-gradient(180deg, rgba(10,14,22,0.96), rgba(16,22,34,0.94))',
+                                    border: journeyBorder,
+                                    boxShadow: '0 20px 44px rgba(0,0,0,0.26)',
                                 }}
                             >
                                 <div
                                     style={{
-                                        color: '#94a3b8',
+                                        color: journeyTextMuted,
                                         fontSize: 12,
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.18em',
@@ -317,7 +348,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 <div
                                     style={{
                                         marginTop: 6,
-                                        color: '#86efac',
+                                        color: accentCyan,
                                         fontSize: 14,
                                         fontWeight: 700,
                                     }}
@@ -329,7 +360,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                     <Progress
                                         percent={course.progress}
                                         showInfo={false}
-                                        strokeColor="#22c55e"
+                                        strokeColor={accentEmber}
                                         railColor="rgba(148,163,184,0.16)"
                                         size={{height: 10}}
                                         style={{marginBottom: 0}}
@@ -349,17 +380,18 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                         {label: 'Scope', value: course.modules},
                                     ].map((item) => (
                                         <div
+                                            className="hud-stat-card"
                                             key={item.label}
                                             style={{
                                                 padding: '14px 14px',
                                                 borderRadius: 18,
-                                                background: 'rgba(255,255,255,0.03)',
-                                                border: '1px solid rgba(148,163,184,0.10)',
+                                                background: 'rgba(255,255,255,0.04)',
+                                                border: journeySubtleBorder,
                                             }}
                                         >
                                             <div
                                                 style={{
-                                                    color: '#94a3b8',
+                                                    color: journeyTextMuted,
                                                     fontSize: 11,
                                                     textTransform: 'uppercase',
                                                     letterSpacing: '0.14em',
@@ -384,17 +416,18 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                             </div>
 
                             <div
+                                className="hud-panel"
                                 style={{
                                     borderRadius: 26,
                                     padding: 22,
-                                    background: 'rgba(255,255,255,0.62)',
-                                    border: '1px solid rgba(15,23,42,0.08)',
-                                    boxShadow: '0 16px 36px rgba(15,23,42,0.10)',
+                                    background: journeyPanelBackground,
+                                    border: journeyBorder,
+                                    boxShadow: '0 16px 36px rgba(0,0,0,0.20)',
                                 }}
                             >
                                 <div
                                     style={{
-                                        color: '#0f172a',
+                                        color: journeyText,
                                         fontSize: 13,
                                         fontWeight: 800,
                                         textTransform: 'uppercase',
@@ -408,13 +441,14 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 <Space wrap size={[10, 10]} style={{width: '100%'}}>
                                     {keyTools.map((tool) => (
                                         <div
+                                            className="hud-chip"
                                             key={tool}
                                             style={{
                                                 padding: '10px 12px',
                                                 borderRadius: 14,
-                                                background: 'rgba(255,255,255,0.66)',
-                                                border: '1px solid rgba(15,23,42,0.08)',
-                                                color: '#334155',
+                                                background: 'rgba(255,255,255,0.04)',
+                                                border: journeySubtleBorder,
+                                                color: journeyTextBody,
                                                 fontSize: 14,
                                                 fontWeight: 700,
                                             }}
@@ -427,7 +461,7 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 <div
                                     style={{
                                         marginTop: 16,
-                                        color: '#475569',
+                                        color: journeyTextMuted,
                                         lineHeight: 1.75,
                                         fontSize: 14,
                                     }}
@@ -442,13 +476,14 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
 
                 {notesOpen ? (
                     <div
+                        className="hud-shell hud-angled-panel"
                         style={{
                             padding: '24px 24px',
                             borderRadius: 26,
                             background:
-                                'linear-gradient(180deg, rgba(15,23,42,0.94), rgba(17,24,39,0.98))',
-                            border: '1px solid rgba(148,163,184,0.12)',
-                            boxShadow: '0 22px 48px rgba(15,23,42,0.20)',
+                                'linear-gradient(180deg, rgba(10,14,22,0.96), rgba(16,22,34,0.94))',
+                            border: journeyBorder,
+                            boxShadow: '0 22px 48px rgba(0,0,0,0.26)',
                         }}
                     >
                         <div
@@ -487,9 +522,9 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 style={{
                                     padding: '8px 12px',
                                     borderRadius: 999,
-                                    background: 'rgba(239,35,60,0.10)',
-                                    border: '1px solid rgba(239,35,60,0.18)',
-                                    color: '#fda4af',
+                                    background: accentEmberSoft,
+                                    border: '1px solid rgba(255,90,54,0.18)',
+                                    color: '#ffd7c9',
                                     fontSize: 13,
                                     fontWeight: 700,
                                 }}
@@ -502,17 +537,18 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                             {course.takeaways.map((takeaway, index) => (
                                 <Col xs={24} md={12} xl={8} key={takeaway}>
                                     <div
+                                        className="hud-panel"
                                         style={{
                                             height: '100%',
                                             padding: '18px 18px',
                                             borderRadius: 20,
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(148,163,184,0.10)',
+                                            background: 'rgba(255,255,255,0.04)',
+                                            border: journeySubtleBorder,
                                         }}
                                     >
                                         <div
                                             style={{
-                                                color: '#f87171',
+                                                color: accentHot,
                                                 fontSize: 12,
                                                 textTransform: 'uppercase',
                                                 letterSpacing: '0.16em',
@@ -544,12 +580,12 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
 }
 
 function ResearchWorkspace({
-                               tracks,
-                               activeTrackId,
-                               summaryOpen,
-                               onSelectTrack,
-                               onToggleSummary,
-                           }: ResearchWorkspaceProps) {
+    tracks,
+    activeTrackId,
+    summaryOpen,
+    onSelectTrack,
+    onToggleSummary,
+}: ResearchWorkspaceProps) {
     const activeTrack = tracks.find((track) => track.id === activeTrackId) ?? tracks[0];
 
     if (!activeTrack) {
@@ -579,9 +615,9 @@ function ResearchWorkspace({
     };
 
     const memoryFrameItems = [
-        {label: 'Problem', value: activeTrack.problem, color: '#fda4af'},
-        {label: 'Solution', value: activeTrack.solution, color: '#93c5fd'},
-        {label: 'Impact', value: activeTrack.impact, color: '#86efac', id: impactSectionId},
+        {label: 'Problem', value: activeTrack.problem, color: accentEmber},
+        {label: 'Solution', value: activeTrack.solution, color: accentCyan},
+        {label: 'Impact', value: activeTrack.impact, color: accentHot, id: impactSectionId},
     ];
 
     return (
@@ -598,6 +634,7 @@ function ResearchWorkspace({
 
                     return (
                         <motion.button
+                            className="hud-step-card hud-angled-panel"
                             key={track.id}
                             type="button"
                             onClick={() => onSelectTrack(track.id)}
@@ -606,8 +643,8 @@ function ResearchWorkspace({
                                 y: -3,
                                 scale: 1.01,
                                 boxShadow: active
-                                    ? '0 24px 48px rgba(59,130,246,0.18)'
-                                    : '0 18px 36px rgba(2,6,23,0.18)',
+                                    ? '0 24px 48px rgba(255,90,54,0.18)'
+                                    : '0 18px 36px rgba(0,0,0,0.22)',
                             }}
                             whileTap={{scale: 0.985}}
                             transition={hoverLiftTransition}
@@ -618,20 +655,20 @@ function ResearchWorkspace({
                                 cursor: 'pointer',
                                 appearance: 'none',
                                 background: active
-                                    ? 'linear-gradient(135deg, rgba(59,130,246,0.22), rgba(14,165,233,0.16))'
-                                    : 'rgba(15,23,42,0.46)',
+                                    ? 'linear-gradient(135deg, rgba(255,90,54,0.24), rgba(255,122,24,0.18), rgba(94,231,255,0.12))'
+                                    : journeyPanelBackground,
                                 border: active
-                                    ? '1px solid rgba(96,165,250,0.32)'
-                                    : '1px solid rgba(148,163,184,0.12)',
+                                    ? '1px solid rgba(255,90,54,0.24)'
+                                    : journeyBorder,
                                 boxShadow: active
-                                    ? '0 18px 42px rgba(59,130,246,0.16)'
-                                    : '0 14px 32px rgba(2,6,23,0.14)',
+                                    ? '0 18px 42px rgba(255,90,54,0.16)'
+                                    : '0 14px 32px rgba(0,0,0,0.18)',
                                 transition: 'all 0.2s ease',
                             }}
                         >
                             <div
                                 style={{
-                                    color: active ? '#e0f2fe' : '#94a3b8',
+                                    color: active ? '#ffd7c9' : journeyTextMuted,
                                     fontSize: 11,
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.16em',
@@ -667,24 +704,26 @@ function ResearchWorkspace({
             </div>
 
             <Card
+                className="hud-shell hud-angled-shell"
                 style={{
                     borderRadius: 28,
                     background:
-                        'radial-gradient(circle at top right, rgba(96,165,250,0.14), transparent 24%), linear-gradient(180deg, rgba(15,23,42,0.90), rgba(17,24,39,0.98))',
-                    border: '1px solid rgba(148,163,184,0.12)',
-                    boxShadow: '0 24px 64px rgba(2,6,23,0.24)',
+                        'radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 24%), radial-gradient(circle at top left, rgba(255,90,54,0.12), transparent 22%), linear-gradient(180deg, rgba(8,12,19,0.94), rgba(15,22,33,0.98))',
+                    border: journeyBorder,
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.30)',
                 }}
                 styles={{
                     body: {padding: 26},
                 }}
             >
+                <HudOverlay scanDelay={0.65} />
                 <Row gutter={[20, 20]}>
                     <Col xs={24} xl={14}>
                         <Space orientation="vertical" size={18} style={{width: '100%'}}>
                             <div>
                                 <div
                                     style={{
-                                        color: '#93c5fd',
+                                        color: accentCyan,
                                         fontSize: 12,
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.16em',
@@ -712,14 +751,15 @@ function ResearchWorkspace({
                             <Space wrap size={[10, 10]}>
                                 {activeTrack.tags.map((tag) => (
                                     <Tag
+                                        className="hud-chip"
                                         key={tag}
                                         style={{
                                             margin: 0,
                                             borderRadius: 999,
                                             padding: '6px 12px',
-                                            border: '1px solid rgba(96,165,250,0.20)',
-                                            background: 'rgba(96,165,250,0.10)',
-                                            color: '#bfdbfe',
+                                            border: '1px solid rgba(255,90,54,0.18)',
+                                            background: accentEmberSoft,
+                                            color: '#ffd7c9',
                                             fontWeight: 700,
                                         }}
                                     >
@@ -729,12 +769,13 @@ function ResearchWorkspace({
                             </Space>
 
                             <div
+                                className="hud-panel"
                                 id={keySectionsSectionId}
                                 style={{
                                     padding: '18px 18px',
                                     borderRadius: 22,
-                                    background: 'rgba(2,6,23,0.24)',
-                                    border: '1px solid rgba(148,163,184,0.10)',
+                                    background: journeyPanelStronger,
+                                    border: journeySubtleBorder,
                                 }}
                             >
                                 <div
@@ -752,13 +793,14 @@ function ResearchWorkspace({
                                 <Space wrap size={[10, 10]}>
                                     {activeTrack.keySections.map((section) => (
                                         <div
+                                            className="hud-chip"
                                             key={section}
                                             style={{
                                                 padding: '8px 12px',
                                                 borderRadius: 14,
                                                 background: 'rgba(255,255,255,0.04)',
-                                                border: '1px solid rgba(148,163,184,0.10)',
-                                                color: '#e2e8f0',
+                                                border: journeySubtleBorder,
+                                                color: journeyTextBody,
                                                 fontSize: 13,
                                                 fontWeight: 700,
                                             }}
@@ -781,9 +823,11 @@ function ResearchWorkspace({
                                         height: 46,
                                         paddingInline: 18,
                                         background:
-                                            'linear-gradient(135deg, rgba(59,130,246,0.92), rgba(14,165,233,0.92))',
-                                        border: 'none',
+                                            'linear-gradient(135deg, rgba(255,90,54,0.98), rgba(255,122,24,0.94) 58%, rgba(94,231,255,0.74))',
+                                        border: '1px solid rgba(255,90,54,0.24)',
                                         fontWeight: 700,
+                                        letterSpacing: '0.04em',
+                                        textTransform: 'uppercase',
                                     }}
                                 >
                                     View PDF
@@ -796,8 +840,8 @@ function ResearchWorkspace({
                                         borderRadius: 16,
                                         height: 46,
                                         paddingInline: 18,
-                                        background: 'rgba(15,23,42,0.52)',
-                                        border: '1px solid rgba(148,163,184,0.14)',
+                                        background: journeyPanelStronger,
+                                        border: journeyBorder,
                                         color: '#f8fafc',
                                         fontWeight: 700,
                                     }}
@@ -808,11 +852,12 @@ function ResearchWorkspace({
 
                             {summaryOpen ? (
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         padding: '18px 20px',
                                         borderRadius: 22,
-                                        background: 'rgba(15,23,42,0.42)',
-                                        border: '1px solid rgba(148,163,184,0.12)',
+                                        background: journeyPanelBackground,
+                                        border: journeyBorder,
                                     }}
                                 >
                                     <Text
@@ -832,13 +877,14 @@ function ResearchWorkspace({
                                     <Space orientation="vertical" size={12} style={{width: '100%'}}>
                                         {memoryFrameItems.map((item) => (
                                             <div
+                                                className="hud-panel"
                                                 key={item.label}
                                                 id={item.id}
                                                 style={{
                                                     padding: '12px 14px',
                                                     borderRadius: 16,
-                                                    background: 'rgba(2,6,23,0.28)',
-                                                    border: '1px solid rgba(148,163,184,0.08)',
+                                                    background: journeyPanelStronger,
+                                                    border: journeySubtleBorder,
                                                 }}
                                             >
                                                 <Text
@@ -862,17 +908,18 @@ function ResearchWorkspace({
 
                             {activeTrack.cautionPoints ? (
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         padding: '18px 20px',
                                         borderRadius: 22,
                                         background:
-                                            'linear-gradient(180deg, rgba(127,29,29,0.22), rgba(15,23,42,0.48))',
-                                        border: '1px solid rgba(248,113,113,0.18)',
+                                            'linear-gradient(180deg, rgba(255,90,54,0.16), rgba(10,14,22,0.52))',
+                                        border: '1px solid rgba(255,90,54,0.18)',
                                     }}
                                 >
                                     <div
                                         style={{
-                                            color: '#fecaca',
+                                            color: '#ffd7c9',
                                             fontSize: 13,
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.14em',
@@ -885,6 +932,7 @@ function ResearchWorkspace({
                                     <Space orientation="vertical" size={10} style={{width: '100%'}}>
                                         {activeTrack.cautionPoints.map((point) => (
                                             <div
+                                                className="hud-panel"
                                                 key={point}
                                                 style={{
                                                     display: 'flex',
@@ -893,7 +941,7 @@ function ResearchWorkspace({
                                                     padding: '12px 14px',
                                                     borderRadius: 16,
                                                     background: 'rgba(255,255,255,0.04)',
-                                                    border: '1px solid rgba(248,113,113,0.10)',
+                                                    border: '1px solid rgba(255,90,54,0.10)',
                                                 }}
                                             >
                                                 <div
@@ -902,13 +950,13 @@ function ResearchWorkspace({
                                                         height: 8,
                                                         borderRadius: 999,
                                                         marginTop: 8,
-                                                        background: '#f87171',
+                                                        background: accentEmber,
                                                         flexShrink: 0,
                                                     }}
                                                 />
                                                 <div
                                                     style={{
-                                                        color: '#fee2e2',
+                                                        color: '#ffe2d8',
                                                         lineHeight: 1.75,
                                                     }}
                                                 >
@@ -922,11 +970,12 @@ function ResearchWorkspace({
 
                             {activeTrack.goToMarketRows ? (
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         padding: '18px 20px',
                                         borderRadius: 22,
-                                        background: 'rgba(15,23,42,0.42)',
-                                        border: '1px solid rgba(148,163,184,0.12)',
+                                        background: journeyPanelBackground,
+                                        border: journeyBorder,
                                     }}
                                 >
                                     <div
@@ -946,7 +995,7 @@ function ResearchWorkspace({
                                         style={{
                                             overflow: 'hidden',
                                             borderRadius: 18,
-                                            border: '1px solid rgba(148,163,184,0.10)',
+                                            border: journeySubtleBorder,
                                         }}
                                     >
                                         <div
@@ -961,7 +1010,7 @@ function ResearchWorkspace({
                                                     key={header}
                                                     style={{
                                                         padding: '12px 14px',
-                                                        color: '#93c5fd',
+                                                        color: accentCyan,
                                                         fontSize: 12,
                                                         textTransform: 'uppercase',
                                                         letterSpacing: '0.12em',
@@ -979,8 +1028,8 @@ function ResearchWorkspace({
                                                 style={{
                                                     display: 'grid',
                                                     gridTemplateColumns: '1fr 1fr',
-                                                    borderTop: '1px solid rgba(148,163,184,0.08)',
-                                                    background: 'rgba(2,6,23,0.18)',
+                                                    borderTop: journeySubtleBorder,
+                                                    background: journeyPanelStronger,
                                                 }}
                                             >
                                                 <div
@@ -1009,17 +1058,18 @@ function ResearchWorkspace({
 
                             {activeTrack.surprises ? (
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         padding: '18px 20px',
                                         borderRadius: 22,
                                         background:
-                                            'linear-gradient(180deg, rgba(88,28,135,0.18), rgba(15,23,42,0.42))',
-                                        border: '1px solid rgba(196,181,253,0.16)',
+                                            'linear-gradient(180deg, rgba(94,231,255,0.12), rgba(10,14,22,0.42))',
+                                        border: '1px solid rgba(94,231,255,0.16)',
                                     }}
                                 >
                                     <div
                                         style={{
-                                            color: '#e9d5ff',
+                                            color: '#d6f9ff',
                                             fontSize: 13,
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.14em',
@@ -1032,13 +1082,14 @@ function ResearchWorkspace({
                                     <Space orientation="vertical" size={10} style={{width: '100%'}}>
                                         {activeTrack.surprises.map((surprise) => (
                                             <div
+                                                className="hud-panel"
                                                 key={surprise}
                                                 style={{
                                                     padding: '12px 14px',
                                                     borderRadius: 16,
                                                     background: 'rgba(255,255,255,0.04)',
-                                                    border: '1px solid rgba(196,181,253,0.10)',
-                                                    color: '#f3e8ff',
+                                                    border: '1px solid rgba(94,231,255,0.10)',
+                                                    color: '#e6fbff',
                                                     lineHeight: 1.75,
                                                     fontWeight: 600,
                                                 }}
@@ -1052,17 +1103,18 @@ function ResearchWorkspace({
 
                             {activeTrack.tradeOffs ? (
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         padding: '18px 20px',
                                         borderRadius: 22,
                                         background:
-                                            'linear-gradient(180deg, rgba(20,83,45,0.18), rgba(15,23,42,0.42))',
-                                        border: '1px solid rgba(74,222,128,0.16)',
+                                            'linear-gradient(180deg, rgba(255,122,24,0.14), rgba(10,14,22,0.42))',
+                                        border: '1px solid rgba(255,122,24,0.16)',
                                     }}
                                 >
                                     <div
                                         style={{
-                                            color: '#bbf7d0',
+                                            color: '#fed7aa',
                                             fontSize: 13,
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.14em',
@@ -1075,17 +1127,18 @@ function ResearchWorkspace({
                                     <Space orientation="vertical" size={12} style={{width: '100%'}}>
                                         {activeTrack.tradeOffs.map((item) => (
                                             <div
+                                                className="hud-panel"
                                                 key={item.option}
                                                 style={{
                                                     padding: '14px 14px',
                                                     borderRadius: 16,
                                                     background: 'rgba(255,255,255,0.04)',
-                                                    border: '1px solid rgba(74,222,128,0.10)',
+                                                    border: '1px solid rgba(255,122,24,0.10)',
                                                 }}
                                             >
                                                 <div
                                                     style={{
-                                                        color: '#86efac',
+                                                        color: accentHot,
                                                         fontWeight: 800,
                                                         marginBottom: 6,
                                                     }}
@@ -1094,7 +1147,7 @@ function ResearchWorkspace({
                                                 </div>
                                                 <div
                                                     style={{
-                                                        color: '#dcfce7',
+                                                        color: '#ffe7c2',
                                                         lineHeight: 1.75,
                                                     }}
                                                 >
@@ -1111,11 +1164,12 @@ function ResearchWorkspace({
                     <Col xs={24} xl={10}>
                         <Space orientation="vertical" size={16} style={{width: '100%'}}>
                             <div
+                                className="hud-panel"
                                 style={{
                                     borderRadius: 24,
                                     padding: 18,
-                                    background: 'rgba(255,255,255,0.03)',
-                                    border: '1px solid rgba(148,163,184,0.10)',
+                                    background: journeyPanelBackground,
+                                    border: journeyBorder,
                                 }}
                             >
                                 <div
@@ -1141,7 +1195,7 @@ function ResearchWorkspace({
                                         <div
                                             style={{
                                                 marginTop: 4,
-                                                color: '#94a3b8',
+                                                color: journeyTextMuted,
                                                 fontSize: 13,
                                             }}
                                         >
@@ -1151,12 +1205,13 @@ function ResearchWorkspace({
 
                                     {viewPdfEnabled ? (
                                         <div
+                                            className="hud-chip"
                                             style={{
                                                 padding: '8px 12px',
                                                 borderRadius: 999,
-                                                background: 'rgba(34,197,94,0.10)',
-                                                border: '1px solid rgba(34,197,94,0.16)',
-                                                color: '#86efac',
+                                                background: accentCyanSoft,
+                                                border: '1px solid rgba(94,231,255,0.16)',
+                                                color: '#d6f9ff',
                                                 fontSize: 12,
                                                 fontWeight: 700,
                                             }}
@@ -1167,12 +1222,13 @@ function ResearchWorkspace({
                                 </div>
 
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         marginBottom: 14,
                                         padding: '14px 14px',
                                         borderRadius: 18,
-                                        background: 'rgba(2,6,23,0.24)',
-                                        border: '1px solid rgba(148,163,184,0.10)',
+                                        background: journeyPanelStronger,
+                                        border: journeySubtleBorder,
                                     }}
                                 >
                                     <div
@@ -1191,6 +1247,7 @@ function ResearchWorkspace({
                                     <Space wrap size={[8, 8]} style={{marginBottom: 12}}>
                                         {memoryFrameItems.map((item) => (
                                             <button
+                                                className="hud-chip"
                                                 key={item.label}
                                                 type="button"
                                                 onClick={() =>
@@ -1204,6 +1261,8 @@ function ResearchWorkspace({
                                                     background: `${item.color}14`,
                                                     color: item.color,
                                                     fontWeight: 800,
+                                                    letterSpacing: '0.06em',
+                                                    textTransform: 'uppercase',
                                                     cursor: 'pointer',
                                                 }}
                                             >
@@ -1218,8 +1277,8 @@ function ResearchWorkspace({
                                             onClick={() => jumpToSection(keySectionsSectionId)}
                                             style={{
                                                 borderRadius: 14,
-                                                background: 'rgba(15,23,42,0.52)',
-                                                border: '1px solid rgba(148,163,184,0.14)',
+                                                background: journeyPanelBackground,
+                                                border: journeyBorder,
                                                 color: '#f8fafc',
                                                 fontWeight: 700,
                                             }}
@@ -1231,8 +1290,8 @@ function ResearchWorkspace({
                                             onClick={() => jumpToSection(impactSectionId, true)}
                                             style={{
                                                 borderRadius: 14,
-                                                background: 'rgba(15,23,42,0.52)',
-                                                border: '1px solid rgba(148,163,184,0.14)',
+                                                background: journeyPanelBackground,
+                                                border: journeyBorder,
                                                 color: '#f8fafc',
                                                 fontWeight: 700,
                                             }}
@@ -1259,9 +1318,9 @@ function ResearchWorkspace({
                                         style={{
                                             padding: '26px 18px',
                                             borderRadius: 18,
-                                            background: 'rgba(2,6,23,0.28)',
-                                            border: '1px solid rgba(148,163,184,0.08)',
-                                            color: '#94a3b8',
+                                            background: journeyPanelStronger,
+                                            border: journeySubtleBorder,
+                                            color: journeyTextMuted,
                                             lineHeight: 1.8,
                                         }}
                                     >
@@ -1271,11 +1330,12 @@ function ResearchWorkspace({
                             </div>
 
                             <div
+                                className="hud-panel"
                                 style={{
                                     borderRadius: 24,
                                     padding: 18,
-                                    background: 'rgba(255,255,255,0.03)',
-                                    border: '1px solid rgba(148,163,184,0.10)',
+                                    background: journeyPanelBackground,
+                                    border: journeyBorder,
                                 }}
                             >
                                 <div
@@ -1293,6 +1353,7 @@ function ResearchWorkspace({
                                 <Space orientation="vertical" size={10} style={{width: '100%'}}>
                                     {activeTrack.keySections.map((section, index) => (
                                         <div
+                                            className="hud-panel"
                                             key={section}
                                             style={{
                                                 display: 'flex',
@@ -1300,8 +1361,8 @@ function ResearchWorkspace({
                                                 gap: 12,
                                                 padding: '10px 12px',
                                                 borderRadius: 16,
-                                                background: 'rgba(2,6,23,0.22)',
-                                                border: '1px solid rgba(148,163,184,0.08)',
+                                                background: journeyPanelStronger,
+                                                border: journeySubtleBorder,
                                             }}
                                         >
                                             <div
@@ -1312,8 +1373,8 @@ function ResearchWorkspace({
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    background: 'rgba(59,130,246,0.14)',
-                                                    color: '#93c5fd',
+                                                    background: accentCyanSoft,
+                                                    color: accentCyan,
                                                     fontWeight: 800,
                                                     flexShrink: 0,
                                                 }}
@@ -1343,7 +1404,7 @@ function ResearchWorkspace({
 
 function ProjectCard({project}: ProjectCardProps) {
     const [showEngineeringDetails, setShowEngineeringDetails] = useState(false);
-    const scenarioAccentColors = ['#60a5fa', '#22d3ee', '#34d399', '#f59e0b', '#fb7185'];
+    const scenarioAccentColors = [accentEmber, accentCyan, accentHot, '#fdba74', '#fca5a5'];
 
     return (
         <motion.div
@@ -1351,81 +1412,144 @@ function ProjectCard({project}: ProjectCardProps) {
             transition={hoverLiftTransition}
         >
             <Card
+                className="hud-shell hud-angled-shell"
                 style={{
                     borderRadius: 28,
                     background:
-                        'radial-gradient(circle at top right, rgba(34,197,94,0.16), transparent 26%), linear-gradient(135deg, rgba(15,23,42,0.92), rgba(17,24,39,0.96))',
-                    border: '1px solid rgba(148,163,184,0.12)',
-                    boxShadow: '0 24px 64px rgba(2,6,23,0.24)',
+                        'radial-gradient(circle at top right, rgba(255,90,54,0.14), transparent 26%), radial-gradient(circle at bottom left, rgba(94,231,255,0.10), transparent 26%), linear-gradient(135deg, rgba(8,12,19,0.94), rgba(15,22,33,0.96))',
+                    border: journeyBorder,
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.32)',
                 }}
                 styles={{
                     body: {padding: 28},
                 }}
             >
-            <Row gutter={[24, 24]}>
-                <Col xs={24} lg={14}>
-                    <Space orientation="vertical" size={16} style={{width: '100%'}}>
-                        <Tag
-                            style={{
-                                width: 'fit-content',
-                                margin: 0,
-                                borderRadius: 999,
-                                padding: '6px 12px',
-                                border: '1px solid rgba(34,197,94,0.20)',
-                                background: 'rgba(34,197,94,0.10)',
-                                color: '#86efac',
-                                fontWeight: 600,
-                            }}
-                        >
-                            Applied knowledge
-                        </Tag>
+                <HudOverlay scanDelay={0.9} />
+                <Row gutter={[24, 24]}>
+                    <Col xs={24} lg={14}>
+                        <Space orientation="vertical" size={16} style={{width: '100%'}}>
+                            <Tag
+                                className="hud-chip"
+                                style={{
+                                    width: 'fit-content',
+                                    margin: 0,
+                                    borderRadius: 999,
+                                    padding: '6px 12px',
+                                    border: '1px solid rgba(255,90,54,0.20)',
+                                    background: accentEmberSoft,
+                                    color: '#ffd7c9',
+                                    fontWeight: 600,
+                                }}
+                            >
+                                Applied knowledge
+                            </Tag>
 
-                        <Title
-                            level={2}
-                            style={{
-                                margin: 0,
-                                color: '#f8fafc',
-                            }}
-                        >
-                            {project.title}
-                        </Title>
+                            <Title
+                                level={2}
+                                style={{
+                                    margin: 0,
+                                    color: '#f8fafc',
+                                }}
+                            >
+                                {project.title}
+                            </Title>
 
-                        <Paragraph
-                            style={{
-                                margin: 0,
-                                color: '#cbd5e1',
-                                fontSize: 16,
-                                lineHeight: 1.85,
-                            }}
-                        >
-                            {project.summary}
-                        </Paragraph>
+                            <Paragraph
+                                style={{
+                                    margin: 0,
+                                    color: '#cbd5e1',
+                                    fontSize: 16,
+                                    lineHeight: 1.85,
+                                }}
+                            >
+                                {project.summary}
+                            </Paragraph>
 
-                        <Space wrap size={[10, 10]}>
-                            {project.tech.map((tech) => (
-                                <Tag
-                                    key={tech}
+                            <Space wrap size={[10, 10]}>
+                                {project.tech.map((tech) => (
+                                    <Tag
+                                        className="hud-chip"
+                                        key={tech}
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '6px 12px',
+                                            border: '1px solid rgba(94,231,255,0.18)',
+                                            background: accentCyanSoft,
+                                            color: '#d6f9ff',
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        {tech}
+                                    </Tag>
+                                ))}
+                            </Space>
+
+                            <div
+                                className="hud-panel"
+                                style={{
+                                    padding: '18px 18px',
+                                    borderRadius: 20,
+                                    background: journeyPanelSoft,
+                                    border: journeySubtleBorder,
+                                }}
+                            >
+                                <Text
                                     style={{
-                                        margin: 0,
-                                        borderRadius: 999,
-                                        padding: '6px 12px',
-                                        border: '1px solid rgba(34,211,238,0.20)',
-                                        background: 'rgba(34,211,238,0.10)',
-                                        color: '#67e8f9',
-                                        fontWeight: 600,
+                                        display: 'block',
+                                        color: '#94a3b8',
+                                        fontSize: 12,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.14em',
+                                        marginBottom: 12,
                                     }}
                                 >
-                                    {tech}
-                                </Tag>
-                            ))}
-                        </Space>
+                                    I built this because
+                                </Text>
 
+                                <Row gutter={[12, 12]}>
+                                    {project.whyBuilt.map((item) => (
+                                        <Col xs={24} md={8} key={item.title}>
+                                            <div
+                                                className="hud-panel"
+                                                style={{
+                                                    height: '100%',
+                                                    padding: '14px 14px',
+                                                    borderRadius: 18,
+                                                    background: journeyPanelStronger,
+                                                    border: journeySubtleBorder,
+                                                }}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        display: 'block',
+                                                        color: accentCyan,
+                                                        fontWeight: 800,
+                                                        marginBottom: 8,
+                                                    }}
+                                                >
+                                                    {item.title}
+                                                </Text>
+                                                <Text style={{color: '#e2e8f0', lineHeight: 1.75}}>
+                                                    {item.detail}
+                                                </Text>
+                                            </div>
+                                        </Col>
+                                    ))}
+                                </Row>
+                            </div>
+                        </Space>
+                    </Col>
+
+                    <Col xs={24} lg={10}>
                         <div
+                            className="hud-panel hud-angled-panel"
                             style={{
-                                padding: '18px 18px',
-                                borderRadius: 20,
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(148,163,184,0.10)',
+                                height: '100%',
+                                padding: 22,
+                                borderRadius: 24,
+                                background: journeyPanelBackground,
+                                border: journeyBorder,
                             }}
                         >
                             <Text
@@ -1435,136 +1559,81 @@ function ProjectCard({project}: ProjectCardProps) {
                                     fontSize: 12,
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.14em',
-                                    marginBottom: 12,
+                                    marginBottom: 8,
                                 }}
                             >
-                                I built this because
+                                Impact
                             </Text>
 
-                            <Row gutter={[12, 12]}>
-                                {project.whyBuilt.map((item) => (
-                                    <Col xs={24} md={8} key={item.title}>
+                            <Text
+                                style={{
+                                    display: 'block',
+                                    color: '#f8fafc',
+                                    fontSize: 34,
+                                    fontWeight: 700,
+                                    lineHeight: 1.1,
+                                    marginBottom: 18,
+                                }}
+                            >
+                                {project.impact}
+                            </Text>
+
+                            <Text
+                                style={{
+                                    display: 'block',
+                                    color: '#94a3b8',
+                                    fontSize: 12,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.14em',
+                                    marginBottom: 10,
+                                }}
+                            >
+                                What I learned
+                            </Text>
+
+                            <Space orientation="vertical" size={12} style={{width: '100%'}}>
+                                {project.learnings.map((learning) => (
+                                    <div
+                                        key={learning}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'flex-start',
+                                            gap: 12,
+                                            padding: '12px 14px',
+                                            borderRadius: 16,
+                                            background: journeyPanelStronger,
+                                            border: journeySubtleBorder,
+                                        }}
+                                    >
                                         <div
                                             style={{
-                                                height: '100%',
-                                                padding: '14px 14px',
-                                                borderRadius: 18,
-                                                background: 'rgba(2,6,23,0.22)',
-                                                border: '1px solid rgba(148,163,184,0.08)',
+                                                width: 8,
+                                                height: 8,
+                                                borderRadius: 999,
+                                                marginTop: 8,
+                                                background: accentHot,
+                                                flexShrink: 0,
                                             }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    display: 'block',
-                                                    color: '#67e8f9',
-                                                    fontWeight: 800,
-                                                    marginBottom: 8,
-                                                }}
-                                            >
-                                                {item.title}
-                                            </Text>
-                                            <Text style={{color: '#e2e8f0', lineHeight: 1.75}}>
-                                                {item.detail}
-                                            </Text>
-                                        </div>
-                                    </Col>
+                                        />
+                                        <Text style={{color: '#e2e8f0', lineHeight: 1.7}}>
+                                            {learning}
+                                        </Text>
+                                    </div>
                                 ))}
-                            </Row>
+                            </Space>
                         </div>
-                    </Space>
-                </Col>
-
-                <Col xs={24} lg={10}>
-                    <div
-                        style={{
-                            height: '100%',
-                            padding: 22,
-                            borderRadius: 24,
-                            background: 'rgba(15,23,42,0.46)',
-                            border: '1px solid rgba(148,163,184,0.12)',
-                        }}
-                    >
-                        <Text
-                            style={{
-                                display: 'block',
-                                color: '#94a3b8',
-                                fontSize: 12,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.14em',
-                                marginBottom: 8,
-                            }}
-                        >
-                            Impact
-                        </Text>
-
-                        <Text
-                            style={{
-                                display: 'block',
-                                color: '#f8fafc',
-                                fontSize: 34,
-                                fontWeight: 700,
-                                lineHeight: 1.1,
-                                marginBottom: 18,
-                            }}
-                        >
-                            {project.impact}
-                        </Text>
-
-                        <Text
-                            style={{
-                                display: 'block',
-                                color: '#94a3b8',
-                                fontSize: 12,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.14em',
-                                marginBottom: 10,
-                            }}
-                        >
-                            What I learned
-                        </Text>
-
-                        <Space orientation="vertical" size={12} style={{width: '100%'}}>
-                            {project.learnings.map((learning) => (
-                                <div
-                                    key={learning}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'flex-start',
-                                        gap: 12,
-                                        padding: '12px 14px',
-                                        borderRadius: 16,
-                                        background: 'rgba(2,6,23,0.22)',
-                                        border: '1px solid rgba(148,163,184,0.08)',
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            width: 8,
-                                            height: 8,
-                                            borderRadius: 999,
-                                            marginTop: 8,
-                                            background: '#4ade80',
-                                            flexShrink: 0,
-                                        }}
-                                    />
-                                    <Text style={{color: '#e2e8f0', lineHeight: 1.7}}>
-                                        {learning}
-                                    </Text>
-                                </div>
-                            ))}
-                        </Space>
-                    </div>
-                </Col>
-            </Row>
+                    </Col>
+                </Row>
 
             <div
+                className="hud-panel"
                 style={{
                     marginTop: 20,
                     padding: '20px 20px',
                     borderRadius: 22,
                     background:
-                        'linear-gradient(135deg, rgba(15,23,42,0.72), rgba(17,24,39,0.88))',
-                    border: '1px solid rgba(148,163,184,0.12)',
+                        'linear-gradient(135deg, rgba(10,14,22,0.92), rgba(16,22,34,0.88))',
+                    border: journeyBorder,
                 }}
             >
                 <Text
@@ -1613,6 +1682,7 @@ function ProjectCard({project}: ProjectCardProps) {
                             return (
                                 <motion.div
                                     key={`${step.label}-${step.detail}`}
+                                    className="hud-step-card"
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -1622,13 +1692,14 @@ function ProjectCard({project}: ProjectCardProps) {
                                     transition={hoverLiftTransition}
                                 >
                                     <div
+                                        className="hud-step-card"
                                         style={{
                                             width: 224,
                                             minWidth: 224,
                                             padding: '16px 16px',
                                             borderRadius: 20,
                                             background:
-                                                'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(2,6,23,0.20))',
+                                                'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(5,7,13,0.34))',
                                             border: `1px solid ${accentColor}22`,
                                             boxShadow: `0 16px 34px ${accentColor}12`,
                                         }}
@@ -1723,19 +1794,20 @@ function ProjectCard({project}: ProjectCardProps) {
             </div>
 
             <div
+                className="hud-panel"
                 style={{
                     marginTop: 20,
                     padding: '20px 20px',
                     borderRadius: 22,
                     background:
-                        'linear-gradient(180deg, rgba(120,53,15,0.20), rgba(15,23,42,0.54))',
-                    border: '1px solid rgba(251,191,36,0.18)',
+                        'linear-gradient(180deg, rgba(255,122,24,0.18), rgba(10,14,22,0.54))',
+                    border: '1px solid rgba(255,122,24,0.18)',
                 }}
             >
                 <Text
                     style={{
                         display: 'block',
-                        color: '#fde68a',
+                        color: '#fed7aa',
                         fontSize: 12,
                         textTransform: 'uppercase',
                         letterSpacing: '0.14em',
@@ -1750,12 +1822,13 @@ function ProjectCard({project}: ProjectCardProps) {
                     {project.limitations.map((limitation) => (
                         <Col xs={24} md={12} key={limitation}>
                             <div
+                                className="hud-panel"
                                 style={{
                                     height: '100%',
                                     padding: '14px 14px',
                                     borderRadius: 18,
                                     background: 'rgba(255,255,255,0.04)',
-                                    border: '1px solid rgba(251,191,36,0.10)',
+                                    border: '1px solid rgba(255,122,24,0.10)',
                                 }}
                             >
                                 <Text
@@ -1785,8 +1858,8 @@ function ProjectCard({project}: ProjectCardProps) {
                         borderRadius: 16,
                         height: 48,
                         paddingInline: 20,
-                        background: 'rgba(15,23,42,0.52)',
-                        border: '1px solid rgba(148,163,184,0.14)',
+                        background: journeyPanelBackground,
+                        border: journeyBorder,
                         color: '#f8fafc',
                         fontWeight: 700,
                     }}
@@ -1799,13 +1872,14 @@ function ProjectCard({project}: ProjectCardProps) {
 
             {showEngineeringDetails ? (
                 <div
+                    className="hud-panel"
                     style={{
                         marginTop: 16,
                         padding: '20px 20px',
                         borderRadius: 22,
                         background:
-                            'linear-gradient(180deg, rgba(15,23,42,0.96), rgba(17,24,39,0.98))',
-                        border: '1px solid rgba(148,163,184,0.12)',
+                            'linear-gradient(180deg, rgba(8,12,19,0.96), rgba(15,22,33,0.98))',
+                        border: journeyBorder,
                     }}
                 >
                     <Text
@@ -1825,18 +1899,19 @@ function ProjectCard({project}: ProjectCardProps) {
                         {project.engineeringDetails.map((detail) => (
                             <Col xs={24} md={12} xl={8} key={detail.title}>
                                 <div
+                                    className="hud-panel"
                                     style={{
                                         height: '100%',
                                         padding: '16px 16px',
                                         borderRadius: 18,
                                         background: 'rgba(255,255,255,0.03)',
-                                        border: '1px solid rgba(148,163,184,0.10)',
+                                        border: journeySubtleBorder,
                                     }}
                                 >
                                     <Text
                                         style={{
                                             display: 'block',
-                                            color: '#67e8f9',
+                                            color: accentCyan,
                                             fontWeight: 800,
                                             marginBottom: 8,
                                         }}
@@ -1852,19 +1927,20 @@ function ProjectCard({project}: ProjectCardProps) {
                     </Row>
 
                     <div
+                        className="hud-panel"
                         style={{
                             marginTop: 18,
                             padding: '18px 18px',
                             borderRadius: 20,
                             background:
-                                'linear-gradient(180deg, rgba(20,83,45,0.18), rgba(2,6,23,0.28))',
-                            border: '1px solid rgba(74,222,128,0.14)',
+                                'linear-gradient(180deg, rgba(255,90,54,0.14), rgba(5,7,13,0.28))',
+                            border: '1px solid rgba(255,90,54,0.14)',
                         }}
                     >
                         <Text
                             style={{
                                 display: 'block',
-                                color: '#bbf7d0',
+                                color: '#ffd7c9',
                                 fontSize: 12,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.14em',
@@ -1879,25 +1955,26 @@ function ProjectCard({project}: ProjectCardProps) {
                             {project.tradeOffs.map((item) => (
                                 <Col xs={24} md={12} xl={8} key={item.option}>
                                     <div
+                                        className="hud-panel"
                                         style={{
                                             height: '100%',
                                             padding: '14px 14px',
                                             borderRadius: 18,
                                             background: 'rgba(255,255,255,0.04)',
-                                            border: '1px solid rgba(74,222,128,0.10)',
+                                            border: '1px solid rgba(255,90,54,0.10)',
                                         }}
                                     >
                                         <Text
                                             style={{
                                                 display: 'block',
-                                                color: '#86efac',
+                                                color: accentEmber,
                                                 fontWeight: 800,
                                                 marginBottom: 8,
                                             }}
                                         >
                                             {item.option}
                                         </Text>
-                                        <Text style={{color: '#dcfce7', lineHeight: 1.8}}>
+                                        <Text style={{color: '#ffe2d8', lineHeight: 1.8}}>
                                             {item.tradeoff}
                                         </Text>
                                     </div>
@@ -1921,169 +1998,181 @@ function LearningJourneyPage() {
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
             <MotionReveal y={20} blur={12}>
                 <Card
+                    className="hud-shell hud-angled-shell"
                     style={{
                         borderRadius: 28,
                         overflow: 'hidden',
                         background:
-                            'radial-gradient(circle at top right, rgba(244,63,94,0.16), transparent 24%), radial-gradient(circle at 20% 20%, rgba(34,211,238,0.14), transparent 26%), linear-gradient(135deg, rgba(15,23,42,0.94), rgba(17,24,39,0.92))',
-                        border: '1px solid rgba(148,163,184,0.12)',
-                        boxShadow: '0 28px 80px rgba(2,6,23,0.28)',
+                            'radial-gradient(circle at top right, rgba(255,90,54,0.18), transparent 24%), radial-gradient(circle at 20% 20%, rgba(94,231,255,0.12), transparent 26%), linear-gradient(135deg, rgba(8,12,19,0.96), rgba(15,22,33,0.92))',
+                        border: journeyBorder,
+                        boxShadow: '0 28px 80px rgba(0,0,0,0.34)',
                     }}
                     styles={{
                         body: {padding: 28},
                     }}
                 >
+                    <HudOverlay scanDelay={0.15} />
                     <Row gutter={[24, 24]} align="middle">
-                    <Col xs={24} lg={15}>
-                        <Space orientation="vertical" size={16} style={{width: '100%'}}>
-                            <Tag
-                                style={{
-                                    width: 'fit-content',
-                                    margin: 0,
-                                    borderRadius: 999,
-                                    padding: '6px 12px',
-                                    border: '1px solid rgba(244,114,182,0.20)',
-                                    background: 'rgba(244,114,182,0.10)',
-                                    color: '#f9a8d4',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                My AI Journey
-                            </Tag>
-
-                            <Title
-                                level={1}
-                                style={{
-                                    margin: 0,
-                                    color: '#f8fafc',
-                                    lineHeight: 1.1,
-                                    letterSpacing: '-0.04em',
-                                }}
-                            >
-                                Turning raw player feedback into real product decisions using AI
-                            </Title>
-
-                            <Paragraph
-                                style={{
-                                    margin: 0,
-                                    color: '#cbd5e1',
-                                    fontSize: 16,
-                                    lineHeight: 1.9,
-                                    maxWidth: 880,
-                                }}
-                            >
-                                Courses, research, and applied AI work in one place so this reads as
-                                more than a demo. It shows the learning layer, the research layer,
-                                and the product layer behind how I think about AI engineering with a
-                                product mindset.
-                            </Paragraph>
-
-                            <Space wrap size={[10, 10]}>
+                        <Col xs={24} lg={15}>
+                            <Space orientation="vertical" size={16} style={{width: '100%'}}>
                                 <Tag
+                                    className="hud-chip"
                                     style={{
+                                        width: 'fit-content',
                                         margin: 0,
                                         borderRadius: 999,
                                         padding: '6px 12px',
-                                        border: '1px solid rgba(96,165,250,0.20)',
-                                        background: 'rgba(96,165,250,0.10)',
-                                        color: '#bfdbfe',
+                                        border: '1px solid rgba(255,90,54,0.20)',
+                                        background: accentEmberSoft,
+                                        color: '#ffd7c9',
+                                        fontWeight: 600,
                                     }}
                                 >
-                                    AI Engineer
+                                    My AI Journey
                                 </Tag>
-                                <Tag
+
+                                <Title
+                                    level={1}
                                     style={{
                                         margin: 0,
-                                        borderRadius: 999,
-                                        padding: '6px 12px',
-                                        border: '1px solid rgba(168,85,247,0.20)',
-                                        background: 'rgba(168,85,247,0.10)',
-                                        color: '#d8b4fe',
+                                        color: '#f8fafc',
+                                        lineHeight: 1.1,
+                                        letterSpacing: '-0.04em',
                                     }}
                                 >
-                                    Product Mindset
-                                </Tag>
-                                <Tag
+                                    Turning raw player feedback into real product decisions using AI
+                                </Title>
+
+                                <Paragraph
                                     style={{
                                         margin: 0,
-                                        borderRadius: 999,
-                                        padding: '6px 12px',
-                                        border: '1px solid rgba(34,197,94,0.20)',
-                                        background: 'rgba(34,197,94,0.10)',
-                                        color: '#86efac',
+                                        color: '#cbd5e1',
+                                        fontSize: 16,
+                                        lineHeight: 1.9,
+                                        maxWidth: 880,
                                     }}
                                 >
-                                    Continuous Learning
-                                </Tag>
+                                    Courses, research, and applied AI work in one place so this reads as
+                                    more than a demo. It shows the learning layer, the research layer,
+                                    and the product layer behind how I think about AI engineering with a
+                                    product mindset.
+                                </Paragraph>
+
+                                <Space wrap size={[10, 10]}>
+                                    <Tag
+                                        className="hud-chip"
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '6px 12px',
+                                            border: '1px solid rgba(94,231,255,0.18)',
+                                            background: accentCyanSoft,
+                                            color: '#d6f9ff',
+                                        }}
+                                    >
+                                        AI Engineer
+                                    </Tag>
+                                    <Tag
+                                        className="hud-chip"
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '6px 12px',
+                                            border: '1px solid rgba(255,122,24,0.18)',
+                                            background: accentHotSoft,
+                                            color: '#fed7aa',
+                                        }}
+                                    >
+                                        Product Mindset
+                                    </Tag>
+                                    <Tag
+                                        className="hud-chip"
+                                        style={{
+                                            margin: 0,
+                                            borderRadius: 999,
+                                            padding: '6px 12px',
+                                            border: '1px solid rgba(255,90,54,0.18)',
+                                            background: accentEmberSoft,
+                                            color: '#ffd7c9',
+                                        }}
+                                    >
+                                        Continuous Learning
+                                    </Tag>
+                                </Space>
                             </Space>
-                        </Space>
-                    </Col>
+                        </Col>
 
-                    <Col xs={24} lg={9}>
-                        <div style={{display: 'grid', gap: 12}}>
-                            {[
-                                {label: 'Courses', value: `${learningCourses.length}`},
-                                {label: 'Research PDFs', value: `${researchTracks.length}`},
-                                {label: 'Flagship impact', value: portfolioProjects[0]?.impact ?? 'N/A'},
-                            ].map((item) => (
-                                <div
-                                    key={item.label}
-                                    style={{
-                                        padding: '18px 18px',
-                                        borderRadius: 20,
-                                        background: 'rgba(15,23,42,0.46)',
-                                        border: '1px solid rgba(148,163,184,0.12)',
-                                        boxShadow: '0 16px 36px rgba(2,6,23,0.18)',
-                                    }}
-                                >
-                                    <Text
+                        <Col xs={24} lg={9}>
+                            <div style={{display: 'grid', gap: 12}}>
+                                {[
+                                    {label: 'Courses', value: `${learningCourses.length}`},
+                                    {label: 'Research PDFs', value: `${researchTracks.length}`},
+                                    {
+                                        label: 'Flagship impact',
+                                        value: portfolioProjects[0]?.impact ?? 'N/A',
+                                    },
+                                ].map((item) => (
+                                    <div
+                                        className="hud-stat-card hud-angled-stat"
+                                        key={item.label}
                                         style={{
-                                            display: 'block',
-                                            color: '#94a3b8',
-                                            fontSize: 12,
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.14em',
-                                            marginBottom: 8,
+                                            padding: '18px 18px',
+                                            borderRadius: 20,
+                                            background: journeyPanelBackground,
+                                            border: journeyBorder,
+                                            boxShadow: '0 16px 36px rgba(0,0,0,0.18)',
                                         }}
                                     >
-                                        {item.label}
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            color: '#f8fafc',
-                                            fontSize: item.label === 'Flagship impact' ? 24 : 36,
-                                            fontWeight: 700,
-                                            lineHeight: 1.1,
-                                        }}
-                                    >
-                                        {item.value}
-                                    </Text>
-                                </div>
-                            ))}
-                        </div>
-                    </Col>
+                                        <Text
+                                            style={{
+                                                display: 'block',
+                                                color: '#94a3b8',
+                                                fontSize: 12,
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.14em',
+                                                marginBottom: 8,
+                                            }}
+                                        >
+                                            {item.label}
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                color: '#f8fafc',
+                                                fontSize: item.label === 'Flagship impact' ? 24 : 36,
+                                                fontWeight: 700,
+                                                lineHeight: 1.1,
+                                            }}
+                                        >
+                                            {item.value}
+                                        </Text>
+                                    </div>
+                                ))}
+                            </div>
+                        </Col>
                     </Row>
                 </Card>
             </MotionReveal>
 
             <MotionReveal delay={0.04} y={18} blur={8}>
                 <div>
-                    <Text
-                        style={{
-                            display: 'block',
-                            color: '#f9a8d4',
-                            fontSize: 12,
-                            fontWeight: 700,
-                            letterSpacing: '0.16em',
-                            textTransform: 'uppercase',
-                            marginBottom: 8,
-                        }}
-                    >
-                        1. Courses
-                    </Text>
-                    <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                        Learning that feeds product judgment
-                    </Title>
+                    <div className="hud-divider">
+                        <Text
+                            style={{
+                                display: 'block',
+                                color: accentEmber,
+                                fontSize: 12,
+                                fontWeight: 700,
+                                letterSpacing: '0.16em',
+                                textTransform: 'uppercase',
+                                marginBottom: 8,
+                            }}
+                        >
+                            1. Courses
+                        </Text>
+                        <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
+                            Learning that feeds product judgment
+                        </Title>
+                    </div>
                 </div>
             </MotionReveal>
 
@@ -2107,52 +2196,57 @@ function LearningJourneyPage() {
 
             <MotionReveal delay={0.04} y={18} blur={8}>
                 <div>
-                    <Text
-                        style={{
-                            display: 'block',
-                            color: '#93c5fd',
-                            fontSize: 12,
-                            fontWeight: 700,
-                            letterSpacing: '0.16em',
-                            textTransform: 'uppercase',
-                            marginBottom: 8,
-                        }}
-                    >
-                        2. Research
-                    </Text>
-                    <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                        Deep knowledge compressed for fast recall
-                    </Title>
-                    <Paragraph
-                        style={{
-                            margin: '8px 0 0',
-                            color: '#94a3b8',
-                            fontSize: 15,
-                            lineHeight: 1.8,
-                            maxWidth: 900,
-                        }}
-                    >
-                        Each report card has a short summary and a quick memory frame so I or a reader
-                        can open it for 10 seconds and remember the problem, solution, and impact.
-                    </Paragraph>
+                    <div className="hud-divider">
+                        <Text
+                            style={{
+                                display: 'block',
+                                color: accentCyan,
+                                fontSize: 12,
+                                fontWeight: 700,
+                                letterSpacing: '0.16em',
+                                textTransform: 'uppercase',
+                                marginBottom: 8,
+                            }}
+                        >
+                            2. Research
+                        </Text>
+                        <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
+                            Deep knowledge compressed for fast recall
+                        </Title>
+                        <Paragraph
+                            style={{
+                                margin: '8px 0 0',
+                                color: journeyTextMuted,
+                                fontSize: 15,
+                                lineHeight: 1.8,
+                                maxWidth: 900,
+                            }}
+                        >
+                            Each report card has a short summary and a quick memory frame so I or a
+                            reader can open it for 10 seconds and remember the problem, solution, and
+                            impact.
+                        </Paragraph>
+                    </div>
                 </div>
             </MotionReveal>
 
             <MotionReveal delay={0.08} y={22} blur={10}>
                 <div
+                    className="hud-panel hud-angled-panel"
                     style={{
                         padding: '18px 18px',
                         borderRadius: 24,
                         background:
-                            'linear-gradient(135deg, rgba(15,23,42,0.72), rgba(17,24,39,0.84))',
-                        border: '1px solid rgba(148,163,184,0.12)',
-                        boxShadow: '0 18px 42px rgba(2,6,23,0.18)',
+                            'linear-gradient(135deg, rgba(10,14,22,0.92), rgba(16,22,34,0.84))',
+                        border: journeyBorder,
+                        boxShadow: '0 18px 42px rgba(0,0,0,0.24)',
                     }}
                 >
+                    <HudOverlay reticlePosition="bottom-left" scanDelay={1.2} />
                     <Text
                         style={{
                             display: 'block',
-                            color: '#93c5fd',
+                            color: accentCyan,
                             fontSize: 12,
                             fontWeight: 800,
                             textTransform: 'uppercase',
@@ -2173,6 +2267,7 @@ function LearningJourneyPage() {
                         {storyFlowSteps.map((step, index) => (
                             <motion.div
                                 key={step}
+                                className="hud-step-card hud-angled-panel"
                                 style={{
                                     padding: '14px 14px',
                                     borderRadius: 18,
@@ -2184,7 +2279,7 @@ function LearningJourneyPage() {
                             >
                                 <div
                                     style={{
-                                        color: '#64748b',
+                                        color: journeyTextDim,
                                         fontSize: 11,
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.14em',
@@ -2224,29 +2319,31 @@ function LearningJourneyPage() {
 
             <MotionReveal delay={0.04} y={18} blur={8}>
                 <div>
-                    <Text
-                        style={{
-                            display: 'block',
-                            color: '#86efac',
-                            fontSize: 12,
-                            fontWeight: 700,
-                            letterSpacing: '0.16em',
-                            textTransform: 'uppercase',
-                            marginBottom: 8,
-                        }}
-                    >
-                        3. Projects
-                    </Text>
-                    <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                        Applied knowledge in a real shipped artifact
-                    </Title>
+                    <div className="hud-divider">
+                        <Text
+                            style={{
+                                display: 'block',
+                                color: accentHot,
+                                fontSize: 12,
+                                fontWeight: 700,
+                                letterSpacing: '0.16em',
+                                textTransform: 'uppercase',
+                                marginBottom: 8,
+                            }}
+                        >
+                            3. Projects
+                        </Text>
+                        <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
+                            Applied knowledge in a real shipped artifact
+                        </Title>
+                    </div>
                 </div>
             </MotionReveal>
 
             <Space orientation="vertical" size={16} style={{width: '100%'}}>
                 {portfolioProjects.map((project) => (
                     <MotionReveal key={project.id} delay={0.08} y={24} blur={10}>
-                        <ProjectCard project={project}/>
+                        <ProjectCard project={project} />
                     </MotionReveal>
                 ))}
             </Space>

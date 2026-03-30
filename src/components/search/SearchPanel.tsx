@@ -4,6 +4,7 @@ import AnalyzeButton from './AnalyzeButton';
 import GameAutocomplete from './GameAutocomplete';
 import ReviewLimitInput from './ReviewLimitInput';
 import {buildSteamHeaderImage} from "../../utils/steam.ts";
+import HudOverlay from '../motion/HudOverlay';
 
 type SearchPanelProps = {
     gameQuery: string;
@@ -32,36 +33,41 @@ function SearchPanel({
 
     return (
         <Card
-            className="glass-card"
+            className="glass-card hud-shell hud-angled-shell"
             style={{
                 borderRadius: 28,
                 overflow: 'hidden',
+                background:
+                    'radial-gradient(circle at top left, rgba(255,90,54,0.14), transparent 24%), radial-gradient(circle at bottom right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(8,11,18,0.92), rgba(13,18,29,0.84))',
             }}
             styles={{
                 body: {padding: 0}
             }}
         >
+            <HudOverlay scanDelay={0.35} />
             <Row gutter={0}>
                 <Col xs={24} lg={11}>
                     <div
+                        className="hud-panel hud-angled-panel"
                         style={{
                             height: '100%',
                             padding: 28,
-                            borderRight: '1px solid rgba(148, 163, 184, 0.10)',
+                            borderRight: '1px solid rgba(255, 255, 255, 0.08)',
                             background:
-                                'linear-gradient(180deg, rgba(15,23,42,0.55), rgba(15,23,42,0.25))',
+                                'linear-gradient(180deg, rgba(13,18,29,0.78), rgba(8,11,18,0.52))',
                         }}
                     >
                         <Space orientation="vertical" size={14} style={{width: '100%'}}>
                             <Tag
+                                className="hud-chip"
                                 style={{
                                     width: 'fit-content',
                                     marginInlineEnd: 0,
                                     borderRadius: 999,
                                     padding: '6px 12px',
-                                    border: '1px solid rgba(96,165,250,0.20)',
-                                    background: 'rgba(96,165,250,0.10)',
-                                    color: '#bfdbfe',
+                                    border: '1px solid rgba(255,90,54,0.24)',
+                                    background: 'rgba(255,90,54,0.12)',
+                                    color: '#ffd7c9',
                                 }}
                             >
                                 Review Input Console
@@ -85,50 +91,56 @@ function SearchPanel({
 
                             <Space wrap size={[8, 8]}>
                                 <Tag
-                                    style={{
-                                        marginInlineEnd: 0,
-                                        borderRadius: 999,
-                                        background: 'rgba(34,197,94,0.10)',
-                                        color: '#86efac',
-                                        border: '1px solid rgba(34,197,94,0.18)',
-                                        padding: '4px 10px',
-                                    }}
-                                >
+                                className="hud-chip"
+                                style={{
+                                    marginInlineEnd: 0,
+                                    borderRadius: 999,
+                                    background: 'rgba(94,231,255,0.10)',
+                                    color: '#d6f9ff',
+                                    border: '1px solid rgba(94,231,255,0.20)',
+                                    padding: '4px 10px',
+                                }}
+                            >
                                     Sentiment
                                 </Tag>
                                 <Tag
-                                    style={{
-                                        marginInlineEnd: 0,
-                                        borderRadius: 999,
-                                        background: 'rgba(168,85,247,0.10)',
-                                        color: '#d8b4fe',
-                                        border: '1px solid rgba(168,85,247,0.18)',
-                                        padding: '4px 10px',
-                                    }}
-                                >
+                                className="hud-chip"
+                                style={{
+                                    marginInlineEnd: 0,
+                                    borderRadius: 999,
+                                    background: 'rgba(255,90,54,0.10)',
+                                    color: '#ffd7c9',
+                                    border: '1px solid rgba(255,90,54,0.18)',
+                                    padding: '4px 10px',
+                                }}
+                            >
                                     Praise Mining
                                 </Tag>
                                 <Tag
-                                    style={{
-                                        marginInlineEnd: 0,
-                                        borderRadius: 999,
-                                        background: 'rgba(239,68,68,0.10)',
-                                        color: '#fda4af',
-                                        border: '1px solid rgba(239,68,68,0.18)',
-                                        padding: '4px 10px',
-                                    }}
-                                >
+                                className="hud-chip"
+                                style={{
+                                    marginInlineEnd: 0,
+                                    borderRadius: 999,
+                                    background: 'rgba(255,122,24,0.10)',
+                                    color: '#fed7aa',
+                                    border: '1px solid rgba(255,122,24,0.20)',
+                                    padding: '4px 10px',
+                                }}
+                            >
                                     Complaint Detection
                                 </Tag>
                             </Space>
 
                             <div
+                                className="hud-panel hud-angled-panel"
                                 style={{
                                     marginTop: 6,
                                     padding: 16,
                                     borderRadius: 18,
-                                    background: 'rgba(2,6,23,0.35)',
-                                    border: '1px solid rgba(148,163,184,0.10)',
+                                    background:
+                                        'linear-gradient(180deg, rgba(5,7,13,0.62), rgba(10,14,22,0.72))',
+                                    border: '1px solid rgba(255,255,255,0.08)',
+                                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
                                 }}
                             >
                                 {selectedGame ? (
@@ -143,8 +155,8 @@ function SearchPanel({
                                                 height: 132,
                                                 objectFit: 'cover',
                                                 borderRadius: 16,
-                                                border: '1px solid rgba(148,163,184,0.14)',
-                                                boxShadow: '0 12px 28px rgba(0,0,0,0.22)',
+                                                border: '1px solid rgba(255,90,54,0.14)',
+                                                boxShadow: '0 16px 34px rgba(0,0,0,0.30)',
                                                 background: 'rgba(15,23,42,0.8)',
                                             }}
                                             onError={(event) => {
@@ -164,7 +176,7 @@ function SearchPanel({
                                             >
                                                 {selectedGame.label}
                                             </Text>
-                                            <Text style={{color: '#67e8f9'}}>
+                                            <Text style={{color: '#5ee7ff'}}>
                                                 Steam App ID: #{selectedGame.appId}
                                             </Text>
                                         </Space>
@@ -187,10 +199,11 @@ function SearchPanel({
 
                 <Col xs={24} lg={13}>
                     <div
+                        className="hud-panel hud-angled-panel"
                         style={{
                             padding: 28,
                             background:
-                                'linear-gradient(180deg, rgba(30,41,59,0.16), rgba(15,23,42,0.08))',
+                                'linear-gradient(180deg, rgba(18,24,36,0.24), rgba(8,11,18,0.12))',
                         }}
                     >
                         <Space orientation="vertical" size={18} style={{width: '100%'}}>
@@ -228,18 +241,20 @@ function SearchPanel({
                             </div>
 
                             <div
+                                className="hud-panel hud-angled-panel"
                                 style={{
                                     padding: 16,
                                     borderRadius: 18,
-                                    background: 'rgba(15,23,42,0.45)',
-                                    border: '1px solid rgba(148,163,184,0.10)',
+                                    background:
+                                        'linear-gradient(180deg, rgba(11,15,24,0.88), rgba(16,22,34,0.72))',
+                                    border: '1px solid rgba(255,255,255,0.08)',
                                 }}
                             >
                                 <Space orientation="vertical" size={6}>
                                     <Text style={{color: '#f8fafc', fontWeight: 600}}>
                                         Analysis output
                                     </Text>
-                                    <Text style={{color: '#94a3b8'}}>
+                                    <Text style={{color: '#b6c2d3'}}>
                                         The report will include sentiment distribution, praised
                                         features, recurring complaints, and an AI-generated
                                         summary.

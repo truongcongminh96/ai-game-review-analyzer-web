@@ -1,4 +1,5 @@
 import {Collapse, Space, Tag, Typography} from 'antd';
+import HudOverlay from '../motion/HudOverlay';
 import {backendRepoTree, sourceSections} from '../../data/sourceFiles';
 
 const {Paragraph, Text} = Typography;
@@ -6,7 +7,7 @@ const {Paragraph, Text} = Typography;
 function RepoStructure() {
     return (
         <div
-            className="repo-structure"
+            className="repo-structure hud-shell hud-angled-shell"
             style={{
                 background: 'rgba(15,23,42,0.72)',
                 border: '1px solid rgba(148,163,184,0.12)',
@@ -15,6 +16,7 @@ function RepoStructure() {
                 boxShadow: '0 18px 48px rgba(2,6,23,0.18)',
             }}
         >
+            <HudOverlay scanDelay={1.15} />
             <Space orientation="vertical" size={20} style={{width: '100%'}}>
                 <div>
                     <h3
@@ -44,6 +46,7 @@ function RepoStructure() {
                 <Space wrap size={[8, 8]}>
                     {sourceSections.map((section) => (
                         <Tag
+                            className="hud-chip"
                             key={section.key}
                             style={{
                                 margin: 0,

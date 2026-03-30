@@ -1,4 +1,5 @@
 import {Card, Space, Tag, Typography} from 'antd';
+import HudOverlay from '../motion/HudOverlay';
 
 function BackendShowcase() {
     const {Paragraph, Text} = Typography;
@@ -12,15 +13,17 @@ function BackendShowcase() {
 
     return (
         <Card
-            className="soft-card"
+            className="soft-card hud-shell hud-angled-shell"
             title="Backend Contract"
             style={{
                 height: '100%',
                 borderRadius: 24,
+                background:
+                    'radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 24%), radial-gradient(circle at bottom left, rgba(255,90,54,0.12), transparent 26%), linear-gradient(180deg, rgba(7,11,19,0.96), rgba(13,19,31,0.90))',
             }}
             styles={{
                 header: {
-                    borderBottom: '1px solid rgba(148, 163, 184, 0.10)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                     color: '#f8fafc',
                 },
                 body: {
@@ -28,6 +31,7 @@ function BackendShowcase() {
                 },
             }}
         >
+            <HudOverlay reticlePosition="bottom-left" scanDelay={0.5} />
             <Space orientation="vertical" size={20} style={{width: '100%'}}>
                 <Paragraph
                     style={{
@@ -44,14 +48,15 @@ function BackendShowcase() {
                 <Space wrap size={[10, 10]}>
                     {games.map((game) => (
                         <Tag
+                            className="hud-chip"
                             key={game.appId}
                             style={{
                                 marginInlineEnd: 0,
                                 borderRadius: 999,
                                 padding: '6px 12px',
-                                background: 'rgba(59,130,246,0.10)',
-                                border: '1px solid rgba(96,165,250,0.18)',
-                                color: '#dbeafe',
+                                background: 'rgba(255,90,54,0.10)',
+                                border: '1px solid rgba(255,90,54,0.18)',
+                                color: '#ffd7c9',
                             }}
                         >
                             {game.label} #{game.appId}
@@ -60,11 +65,12 @@ function BackendShowcase() {
                 </Space>
 
                 <div
+                    className="hud-panel hud-angled-panel"
                     style={{
                         padding: 16,
                         borderRadius: 18,
-                        background: 'rgba(2,6,23,0.28)',
-                        border: '1px solid rgba(148,163,184,0.10)',
+                        background: 'rgba(5,7,13,0.54)',
+                        border: '1px solid rgba(255,255,255,0.08)',
                     }}
                 >
                     <Space orientation="vertical" size={12} style={{width: '100%'}}>
@@ -74,7 +80,7 @@ function BackendShowcase() {
                             </Text>
                             <Text
                                 style={{
-                                    color: '#67e8f9',
+                                    color: '#5ee7ff',
                                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                                     fontSize: 14,
                                 }}
@@ -87,7 +93,7 @@ function BackendShowcase() {
                             <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
                                 Payload
                             </Text>
-                            <Text style={{color: '#67e8f9'}}>
+                            <Text style={{color: '#ffb59d'}}>
                                 {`{ appId, limit, language }`}
                             </Text>
                         </div>
