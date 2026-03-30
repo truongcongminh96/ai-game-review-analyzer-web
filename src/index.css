@@ -518,6 +518,129 @@ a {
     color: #94a3b8 !important;
 }
 
+.ui-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    min-width: 0;
+}
+
+.ui-title-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.ui-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #9fb0c2;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.ui-title-tight {
+    margin: 0 !important;
+    color: #f8fafc !important;
+    font-family: var(--font-display) !important;
+    font-weight: 800 !important;
+    line-height: 1.02 !important;
+    letter-spacing: 0.015em !important;
+    text-wrap: balance;
+}
+
+.ui-copy-muted {
+    color: #b6c2d3 !important;
+    line-height: 1.78 !important;
+    text-wrap: pretty;
+}
+
+.ui-copy-strong {
+    color: #dbe3ef !important;
+    line-height: 1.72 !important;
+}
+
+.ui-field-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #dbe3ef;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.ui-field-label svg {
+    font-size: 14px;
+    opacity: 0.88;
+}
+
+.ui-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+}
+
+.ui-icon-badge svg {
+    font-size: 16px;
+}
+
+.ui-icon-badge-ember {
+    color: #ffd7c9;
+    border: 1px solid rgba(255, 90, 54, 0.22);
+    background: linear-gradient(135deg, rgba(255, 90, 54, 0.18), rgba(255, 122, 24, 0.10));
+}
+
+.ui-icon-badge-cyan {
+    color: #d6f9ff;
+    border: 1px solid rgba(94, 231, 255, 0.22);
+    background: linear-gradient(135deg, rgba(94, 231, 255, 0.16), rgba(8, 145, 178, 0.08));
+}
+
+.ui-icon-badge-hot {
+    color: #fed7aa;
+    border: 1px solid rgba(255, 122, 24, 0.22);
+    background: linear-gradient(135deg, rgba(255, 122, 24, 0.18), rgba(255, 90, 54, 0.08));
+}
+
+.ui-icon-badge-violet {
+    color: #e9d5ff;
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(94, 231, 255, 0.06));
+}
+
+@media (max-width: 768px) {
+    .ui-title-row {
+        gap: 12px;
+    }
+
+    .ui-icon-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+    }
+
+    .ui-icon-badge svg {
+        font-size: 15px;
+    }
+}
+
 .progress-bar {
     width: 100%;
     height: 14px;
@@ -911,4 +1034,182 @@ a {
     box-shadow: 0 0 20px rgba(103,232,249,0.4);
     transform: translateY(-2px);
     transition: all 0.25s ease;
+}
+
+@media (max-width: 992px) {
+    .search-panel-side {
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
+@media (max-width: 768px) {
+    .app-content {
+        padding: 20px 16px 40px !important;
+    }
+
+    .app-hero-card .ant-card-body,
+    .search-panel-card .ant-card-body,
+    .backend-showcase-card .ant-card-body,
+    .learning-journey-hero .ant-card-body,
+    .source-review-hero .ant-card-body,
+    .source-review-flow .ant-card-body,
+    .source-review-browser .ant-card-body,
+    .code-viewer-card .ant-card-body {
+        padding: 18px !important;
+    }
+
+    .backend-showcase-card .ant-card-head,
+    .code-viewer-card .ant-card-head,
+    .source-review-browser .ant-card-head {
+        padding-inline: 18px !important;
+    }
+
+    .search-panel-side,
+    .search-panel-main,
+    .search-panel-output,
+    .learning-story-flow,
+    .source-review-telemetry,
+    .repo-structure,
+    .repo-structure .hud-panel,
+    .code-viewer-card .hud-panel {
+        padding: 16px !important;
+    }
+
+    .ui-title-row {
+        gap: 10px;
+    }
+
+    .ui-title-stack {
+        gap: 4px;
+    }
+
+    .ui-kicker {
+        font-size: 11px;
+        letter-spacing: 0.13em;
+    }
+
+    .ui-copy-muted {
+        line-height: 1.66 !important;
+    }
+
+    .ui-field-label {
+        gap: 6px;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+    }
+
+    .hud-chip {
+        letter-spacing: 0.04em;
+    }
+
+    .hero-pill {
+        gap: 6px;
+        padding: 8px 12px;
+        font-size: 13px;
+        letter-spacing: 0.05em;
+    }
+
+    .hero-showcase,
+    .hero-showcase-content {
+        min-height: 360px;
+    }
+
+    .hero-showcase-content {
+        padding: 18px;
+    }
+
+    .hero-showcase-content::after {
+        display: none;
+    }
+
+    .selected-game-cover {
+        max-width: 100% !important;
+        height: 120px !important;
+    }
+
+    .learning-story-flow-grid {
+        grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)) !important;
+    }
+
+    .code-viewer-shell {
+        min-height: 420px !important;
+    }
+
+    .code-viewer-lines {
+        font-size: 12.5px !important;
+        line-height: 1.68 !important;
+    }
+
+    .code-viewer-row {
+        grid-template-columns: 2.7rem minmax(0, 1fr) !important;
+        column-gap: 12px !important;
+    }
+
+    .code-viewer-card .ant-card-head-wrapper,
+    .source-review-browser .ant-card-head-wrapper {
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+
+    .code-viewer-card .ant-card-head-title,
+    .source-review-browser .ant-card-head-title {
+        overflow: visible !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .app-content {
+        padding: 18px 12px 34px !important;
+    }
+
+    .hero-showcase,
+    .hero-showcase-content {
+        min-height: 320px;
+    }
+
+    .hero-showcase-content {
+        padding: 16px;
+    }
+
+    .hero-showcase-dot.active {
+        width: 22px;
+    }
+
+    .ui-icon-badge {
+        width: 32px;
+        height: 32px;
+    }
+
+    .ui-icon-badge svg {
+        font-size: 14px;
+    }
+
+    .search-panel-side,
+    .search-panel-main,
+    .search-panel-output,
+    .learning-story-flow,
+    .repo-structure,
+    .repo-structure .hud-panel,
+    .code-viewer-card .hud-panel {
+        padding: 14px !important;
+    }
+
+    .learning-story-flow-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .code-viewer-shell {
+        min-height: 380px !important;
+    }
+
+    .code-viewer-lines {
+        font-size: 12px !important;
+    }
+
+    .code-viewer-row {
+        grid-template-columns: 2.35rem minmax(0, 1fr) !important;
+        column-gap: 10px !important;
+    }
 }

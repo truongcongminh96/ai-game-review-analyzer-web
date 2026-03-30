@@ -1,8 +1,10 @@
 import {useMemo, useState} from 'react';
 import {Card, Col, Collapse, Row, Space, Tag, Typography} from 'antd';
 import {
+    ApartmentOutlined,
     CodeOutlined,
     DatabaseOutlined,
+    FolderOpenOutlined,
     RocketOutlined,
 } from '@ant-design/icons';
 import {
@@ -40,6 +42,9 @@ function SourceReviewPage() {
     }, []);
 
     const activeStep = activeFile ? (fileToFlowStep[activeFile.path] ?? null) : null;
+    const activeFileName = activeFile.path.split('/').pop() ?? activeFile.path;
+    const activeSectionTitle =
+        sourceSections.find((section) => section.key === activeFile.sectionKey)?.title ?? 'Unknown';
 
     const handleSelectFile = (file: SourceFileItem) => {
         setSelectedKey(file.key);
@@ -55,7 +60,7 @@ function SourceReviewPage() {
     return (
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
             <Card
-                className="hud-shell hud-angled-shell"
+                className="hud-shell hud-angled-shell source-review-hero"
                 style={{
                     background: 'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(17,24,39,0.88))',
                     border: '1px solid rgba(148,163,184,0.12)',
@@ -85,17 +90,27 @@ function SourceReviewPage() {
                         Backend Source Review
                     </Tag>
 
-                    <Title
-                        level={2}
-                        style={{
-                            margin: 0,
-                            color: '#f8fafc',
-                        }}
-                    >
-                        Review the current backend architecture behind the demo
-                    </Title>
+                    <div className="ui-title-row">
+                        <span className="ui-icon-badge ui-icon-badge-cyan">
+                            <CodeOutlined />
+                        </span>
+                        <div className="ui-title-stack">
+                            <span className="ui-kicker">System Architecture</span>
+                            <Title
+                                className="ui-title-tight"
+                                level={2}
+                                style={{
+                                    margin: 0,
+                                    color: '#f8fafc',
+                                }}
+                            >
+                                Inspect the backend architecture behind the demo
+                            </Title>
+                        </div>
+                    </div>
 
                     <Paragraph
+                        className="ui-copy-muted"
                         style={{
                             margin: 0,
                             color: '#94a3b8',
@@ -109,6 +124,61 @@ function SourceReviewPage() {
                         orchestration, Steam + Ollama integrations, optional persistence, and the
                         migration/schema layer that stores analysis runs.
                     </Paragraph>
+
+                    <div
+                        className="hud-panel hud-angled-panel source-review-telemetry"
+                        style={{
+                            padding: '14px 16px',
+                            borderRadius: 18,
+                            background:
+                                'linear-gradient(135deg, rgba(8,11,18,0.72), rgba(19,28,45,0.52))',
+                            border: '1px solid rgba(148,163,184,0.10)',
+                        }}
+                    >
+                        <Space wrap size={[8, 8]}>
+                            <Tag
+                                className="hud-chip"
+                                style={{
+                                    margin: 0,
+                                    borderRadius: 999,
+                                    padding: '5px 10px',
+                                    border: '1px solid rgba(94,231,255,0.20)',
+                                    background: 'rgba(94,231,255,0.10)',
+                                    color: '#d6f9ff',
+                                }}
+                            >
+                                Focus: {activeFileName}
+                            </Tag>
+                            <Tag
+                                className="hud-chip"
+                                style={{
+                                    margin: 0,
+                                    borderRadius: 999,
+                                    padding: '5px 10px',
+                                    border: '1px solid rgba(255,90,54,0.18)',
+                                    background: 'rgba(255,90,54,0.10)',
+                                    color: '#ffd7c9',
+                                }}
+                            >
+                                Layer: {activeSectionTitle}
+                            </Tag>
+                            {activeStep ? (
+                                <Tag
+                                    className="hud-chip"
+                                    style={{
+                                        margin: 0,
+                                        borderRadius: 999,
+                                        padding: '5px 10px',
+                                        border: '1px solid rgba(255,122,24,0.18)',
+                                        background: 'rgba(255,122,24,0.10)',
+                                        color: '#fed7aa',
+                                    }}
+                                >
+                                    Step 0{activeStep} mapped
+                                </Tag>
+                            ) : null}
+                        </Space>
+                    </div>
 
                     <Space wrap size={[10, 10]}>
                         <Tag
@@ -161,8 +231,8 @@ function SourceReviewPage() {
 
             <Row gutter={[16, 16]}>
                 <Col xs={24}>
-                    <Card
-                        className="hud-shell hud-angled-shell"
+            <Card
+                        className="hud-shell hud-angled-shell source-review-flow"
                         style={{
                             background: 'rgba(15,23,42,0.72)',
                             border: '1px solid rgba(148,163,184,0.12)',
@@ -174,11 +244,24 @@ function SourceReviewPage() {
                     >
                         <HudOverlay reticlePosition="bottom-left" scanDelay={0.52} />
                         <Space orientation="vertical" size={18} style={{width: '100%'}}>
-                            <div>
-                                <Title level={4} style={{color: '#f8fafc', margin: 0}}>
-                                    Layer Walkthrough
-                                </Title>
+                            <div className="hud-divider">
+                                <div className="ui-title-row">
+                                    <span className="ui-icon-badge ui-icon-badge-violet">
+                                        <ApartmentOutlined />
+                                    </span>
+                                    <div className="ui-title-stack">
+                                        <span className="ui-kicker">Runtime Map</span>
+                                        <Title
+                                            className="ui-title-tight"
+                                            level={4}
+                                            style={{color: '#f8fafc', margin: 0}}
+                                        >
+                                            Layer Walkthrough
+                                        </Title>
+                                    </div>
+                                </div>
                                 <Paragraph
+                                    className="ui-copy-muted"
                                     style={{
                                         color: '#94a3b8',
                                         margin: '8px 0 0',
@@ -312,8 +395,20 @@ function SourceReviewPage() {
 
                 <Col xs={24} lg={8}>
                     <Card
-                        className="hud-shell hud-angled-shell"
-                        title={<span style={{color: '#f8fafc'}}>Layered File Browser</span>}
+                        className="hud-shell hud-angled-shell source-review-browser"
+                        title={
+                            <div className="ui-title-row" style={{alignItems: 'center'}}>
+                                <span className="ui-icon-badge ui-icon-badge-hot">
+                                    <FolderOpenOutlined />
+                                </span>
+                                <div className="ui-title-stack">
+                                    <span className="ui-kicker">Inspection Console</span>
+                                    <span className="ui-title-tight" style={{fontSize: 24}}>
+                                        Layered File Browser
+                                    </span>
+                                </div>
+                            </div>
+                        }
                         style={{
                             background: 'rgba(15,23,42,0.72)',
                             border: '1px solid rgba(148,163,184,0.12)',
@@ -336,6 +431,27 @@ function SourceReviewPage() {
                                 MySQL snippets, while the Postgres side follows the same repository
                                 contracts.
                             </Paragraph>
+
+                            <div
+                                className="hud-panel hud-angled-panel"
+                                style={{
+                                    padding: '14px 16px',
+                                    borderRadius: 18,
+                                    background:
+                                        'linear-gradient(135deg, rgba(8,11,18,0.78), rgba(19,28,45,0.52))',
+                                    border: '1px solid rgba(148,163,184,0.10)',
+                                }}
+                            >
+                                <Text style={{display: 'block', color: '#94a3b8', marginBottom: 6}}>
+                                    Current focus
+                                </Text>
+                                <Text style={{display: 'block', color: '#f8fafc', fontWeight: 700}}>
+                                    {activeFile.title}
+                                </Text>
+                                <Text style={{color: '#67e8f9', fontSize: 13}}>
+                                    {activeFile.path}
+                                </Text>
+                            </div>
 
                             <Collapse
                                 ghost

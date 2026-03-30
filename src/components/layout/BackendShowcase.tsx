@@ -1,4 +1,5 @@
 import {Card, Space, Tag, Typography} from 'antd';
+import {ApiOutlined, BarChartOutlined, CodeOutlined} from '@ant-design/icons';
 import HudOverlay from '../motion/HudOverlay';
 
 function BackendShowcase() {
@@ -13,8 +14,20 @@ function BackendShowcase() {
 
     return (
         <Card
-            className="soft-card hud-shell hud-angled-shell"
-            title="Backend Contract"
+            className="soft-card hud-shell hud-angled-shell backend-showcase-card"
+            title={
+                <div className="ui-title-row" style={{alignItems: 'center'}}>
+                    <span className="ui-icon-badge ui-icon-badge-cyan">
+                        <ApiOutlined />
+                    </span>
+                    <div className="ui-title-stack">
+                        <span className="ui-kicker">Delivery Layer</span>
+                        <span className="ui-title-tight" style={{fontSize: 24}}>
+                            Backend Contract
+                        </span>
+                    </div>
+                </div>
+            }
             style={{
                 height: '100%',
                 borderRadius: 24,
@@ -34,6 +47,7 @@ function BackendShowcase() {
             <HudOverlay reticlePosition="bottom-left" scanDelay={0.5} />
             <Space orientation="vertical" size={20} style={{width: '100%'}}>
                 <Paragraph
+                    className="ui-copy-muted"
                     style={{
                         marginBottom: 0,
                         color: '#cbd5e1',
@@ -75,7 +89,8 @@ function BackendShowcase() {
                 >
                     <Space orientation="vertical" size={12} style={{width: '100%'}}>
                         <div>
-                            <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
+                            <Text className="ui-field-label" style={{marginBottom: 4}}>
+                                <ApiOutlined />
                                 Endpoint
                             </Text>
                             <Text
@@ -90,7 +105,8 @@ function BackendShowcase() {
                         </div>
 
                         <div>
-                            <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
+                            <Text className="ui-field-label" style={{marginBottom: 4}}>
+                                <CodeOutlined />
                                 Payload
                             </Text>
                             <Text style={{color: '#ffb59d'}}>
@@ -99,7 +115,8 @@ function BackendShowcase() {
                         </div>
 
                         <div>
-                            <Text style={{color: '#94a3b8', display: 'block', marginBottom: 4}}>
+                            <Text className="ui-field-label" style={{marginBottom: 4}}>
+                                <BarChartOutlined />
                                 Output
                             </Text>
                             <Text style={{color: '#cbd5e1'}}>

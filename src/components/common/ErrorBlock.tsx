@@ -8,6 +8,7 @@ type ErrorBlockProps = {
 function ErrorBlock({message}: ErrorBlockProps) {
     return (
         <Alert
+            className="hud-shell hud-angled-shell"
             showIcon
             icon={<WarningOutlined />}
             type="error"

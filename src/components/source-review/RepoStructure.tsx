@@ -1,3 +1,4 @@
+import {FolderOpenOutlined} from '@ant-design/icons';
 import {Collapse, Space, Tag, Typography} from 'antd';
 import HudOverlay from '../motion/HudOverlay';
 import {backendRepoTree, sourceSections} from '../../data/sourceFiles';
@@ -18,19 +19,29 @@ function RepoStructure() {
         >
             <HudOverlay scanDelay={1.15} />
             <Space orientation="vertical" size={20} style={{width: '100%'}}>
-                <div>
-                    <h3
-                        style={{
-                            margin: 0,
-                            color: '#f8fafc',
-                            fontSize: 22,
-                            fontWeight: 700,
-                        }}
-                    >
-                        Full Repository Reference
-                    </h3>
+                <div className="hud-divider">
+                    <div className="ui-title-row">
+                        <span className="ui-icon-badge ui-icon-badge-hot">
+                            <FolderOpenOutlined />
+                        </span>
+                        <div className="ui-title-stack">
+                            <span className="ui-kicker">Deep Dive</span>
+                            <h3
+                                className="ui-title-tight"
+                                style={{
+                                    margin: 0,
+                                    color: '#f8fafc',
+                                    fontSize: 22,
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Full Repository Reference
+                            </h3>
+                        </div>
+                    </div>
 
                     <Paragraph
+                        className="ui-copy-muted"
                         style={{
                             margin: '10px 0 0',
                             color: '#94a3b8',
@@ -74,6 +85,7 @@ function RepoStructure() {
                             ),
                             children: (
                                 <div
+                                    className="hud-panel hud-angled-panel"
                                     style={{
                                         padding: 18,
                                         borderRadius: 18,

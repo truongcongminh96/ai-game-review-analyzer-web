@@ -1,4 +1,5 @@
-import {Card, Empty, Typography} from 'antd';
+import {Card, Empty, Space, Tag, Typography} from 'antd';
+import HudOverlay from '../motion/HudOverlay';
 
 type EmptyBlockProps = {
     title: string;
@@ -10,7 +11,7 @@ function EmptyBlock({title, description}: EmptyBlockProps) {
 
     return (
         <Card
-            className="glass-card"
+            className="glass-card hud-shell hud-angled-shell empty-state-card"
             style={{
                 borderRadius: 24,
                 minHeight: 340,
@@ -27,40 +28,62 @@ function EmptyBlock({title, description}: EmptyBlockProps) {
                 }
             }}
         >
-            <Title
-                level={3}
-                style={{
-                    marginBottom: 12,
-                    color: '#f8fafc',
-                }}
-            >
-                {title}
-            </Title>
+            <HudOverlay scanDelay={0.42} />
+            <Space orientation="vertical" size={14} style={{width: '100%', alignItems: 'center'}}>
+                <Tag
+                    className="hud-chip"
+                    style={{
+                        margin: 0,
+                        borderRadius: 999,
+                        padding: '6px 12px',
+                        border: '1px solid rgba(94,231,255,0.18)',
+                        background: 'rgba(94,231,255,0.10)',
+                        color: '#d6f9ff',
+                        fontWeight: 700,
+                    }}
+                >
+                    System Idle
+                </Tag>
 
-            <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                styles={{
-                    image: {
-                        opacity: 0.22,
-                        filter: 'grayscale(0.2)',
-                    },
-                    description: {
-                        display: 'none',
-                    },
-                }}
-            />
+                <div className="hud-divider" style={{width: '100%', textAlign: 'center'}}>
+                    <Title
+                        className="ui-title-tight"
+                        level={3}
+                        style={{
+                            marginBottom: 0,
+                            color: '#f8fafc',
+                        }}
+                    >
+                        {title}
+                    </Title>
+                </div>
 
-            <Paragraph
-                style={{
-                    maxWidth: 640,
-                    marginBottom: 0,
-                    color: '#94a3b8',
-                    fontSize: 18,
-                    lineHeight: 1.7,
-                }}
-            >
-                {description}
-            </Paragraph>
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    styles={{
+                        image: {
+                            opacity: 0.22,
+                            filter: 'grayscale(0.2)',
+                        },
+                        description: {
+                            display: 'none',
+                        },
+                    }}
+                />
+
+                <Paragraph
+                    className="ui-copy-muted"
+                    style={{
+                        maxWidth: 640,
+                        marginBottom: 0,
+                        color: '#94a3b8',
+                        fontSize: 18,
+                        lineHeight: 1.7,
+                    }}
+                >
+                    {description}
+                </Paragraph>
+            </Space>
         </Card>
     );
 }

@@ -1,3 +1,4 @@
+import {BookOutlined, ExperimentOutlined, RocketOutlined} from '@ant-design/icons';
 import {Button, Card, Col, Progress, Row, Space, Tag, Typography} from 'antd';
 import {useState} from 'react';
 import {motion} from 'framer-motion';
@@ -1998,7 +1999,7 @@ function LearningJourneyPage() {
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
             <MotionReveal y={20} blur={12}>
                 <Card
-                    className="hud-shell hud-angled-shell"
+                    className="hud-shell hud-angled-shell learning-journey-hero"
                     style={{
                         borderRadius: 28,
                         overflow: 'hidden',
@@ -2031,19 +2032,29 @@ function LearningJourneyPage() {
                                     My AI Journey
                                 </Tag>
 
-                                <Title
-                                    level={1}
-                                    style={{
-                                        margin: 0,
-                                        color: '#f8fafc',
-                                        lineHeight: 1.1,
-                                        letterSpacing: '-0.04em',
-                                    }}
-                                >
-                                    Turning raw player feedback into real product decisions using AI
-                                </Title>
+                                <div className="ui-title-row">
+                                    <span className="ui-icon-badge ui-icon-badge-cyan">
+                                        <ExperimentOutlined />
+                                    </span>
+                                    <div className="ui-title-stack">
+                                        <span className="ui-kicker">Learning Stack</span>
+                                        <Title
+                                            className="ui-title-tight"
+                                            level={1}
+                                            style={{
+                                                margin: 0,
+                                                color: '#f8fafc',
+                                                lineHeight: 1.1,
+                                                letterSpacing: '-0.04em',
+                                            }}
+                                        >
+                                            Turning raw player feedback into real product decisions using AI
+                                        </Title>
+                                    </div>
+                                </div>
 
                                 <Paragraph
+                                    className="ui-copy-muted"
                                     style={{
                                         margin: 0,
                                         color: '#cbd5e1',
@@ -2156,22 +2167,30 @@ function LearningJourneyPage() {
             <MotionReveal delay={0.04} y={18} blur={8}>
                 <div>
                     <div className="hud-divider">
-                        <Text
-                            style={{
-                                display: 'block',
-                                color: accentEmber,
-                                fontSize: 12,
-                                fontWeight: 700,
-                                letterSpacing: '0.16em',
-                                textTransform: 'uppercase',
-                                marginBottom: 8,
-                            }}
-                        >
-                            1. Courses
-                        </Text>
-                        <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                            Learning that feeds product judgment
-                        </Title>
+                        <div className="ui-title-row">
+                            <span className="ui-icon-badge ui-icon-badge-ember">
+                                <BookOutlined />
+                            </span>
+                            <div className="ui-title-stack">
+                                <Text
+                                    className="ui-kicker"
+                                    style={{
+                                        display: 'block',
+                                        color: accentEmber,
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        letterSpacing: '0.16em',
+                                        textTransform: 'uppercase',
+                                        marginBottom: 0,
+                                    }}
+                                >
+                                    1. Courses
+                                </Text>
+                                <Title className="ui-title-tight" level={2} style={{margin: 0, color: '#f8fafc'}}>
+                                    Learning that feeds product judgment
+                                </Title>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </MotionReveal>
@@ -2197,23 +2216,32 @@ function LearningJourneyPage() {
             <MotionReveal delay={0.04} y={18} blur={8}>
                 <div>
                     <div className="hud-divider">
-                        <Text
-                            style={{
-                                display: 'block',
-                                color: accentCyan,
-                                fontSize: 12,
-                                fontWeight: 700,
-                                letterSpacing: '0.16em',
-                                textTransform: 'uppercase',
-                                marginBottom: 8,
-                            }}
-                        >
-                            2. Research
-                        </Text>
-                        <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                            Deep knowledge compressed for fast recall
-                        </Title>
+                        <div className="ui-title-row">
+                            <span className="ui-icon-badge ui-icon-badge-cyan">
+                                <ExperimentOutlined />
+                            </span>
+                            <div className="ui-title-stack">
+                                <Text
+                                    className="ui-kicker"
+                                    style={{
+                                        display: 'block',
+                                        color: accentCyan,
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        letterSpacing: '0.16em',
+                                        textTransform: 'uppercase',
+                                        marginBottom: 0,
+                                    }}
+                                >
+                                    2. Research
+                                </Text>
+                                <Title className="ui-title-tight" level={2} style={{margin: 0, color: '#f8fafc'}}>
+                                    Deep knowledge compressed for fast recall
+                                </Title>
+                            </div>
+                        </div>
                         <Paragraph
+                            className="ui-copy-muted"
                             style={{
                                 margin: '8px 0 0',
                                 color: journeyTextMuted,
@@ -2232,7 +2260,7 @@ function LearningJourneyPage() {
 
             <MotionReveal delay={0.08} y={22} blur={10}>
                 <div
-                    className="hud-panel hud-angled-panel"
+                    className="hud-panel hud-angled-panel learning-story-flow"
                     style={{
                         padding: '18px 18px',
                         borderRadius: 24,
@@ -2258,6 +2286,7 @@ function LearningJourneyPage() {
                     </Text>
 
                     <div
+                        className="learning-story-flow-grid"
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
@@ -2320,22 +2349,30 @@ function LearningJourneyPage() {
             <MotionReveal delay={0.04} y={18} blur={8}>
                 <div>
                     <div className="hud-divider">
-                        <Text
-                            style={{
-                                display: 'block',
-                                color: accentHot,
-                                fontSize: 12,
-                                fontWeight: 700,
-                                letterSpacing: '0.16em',
-                                textTransform: 'uppercase',
-                                marginBottom: 8,
-                            }}
-                        >
-                            3. Projects
-                        </Text>
-                        <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                            Applied knowledge in a real shipped artifact
-                        </Title>
+                        <div className="ui-title-row">
+                            <span className="ui-icon-badge ui-icon-badge-hot">
+                                <RocketOutlined />
+                            </span>
+                            <div className="ui-title-stack">
+                                <Text
+                                    className="ui-kicker"
+                                    style={{
+                                        display: 'block',
+                                        color: accentHot,
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        letterSpacing: '0.16em',
+                                        textTransform: 'uppercase',
+                                        marginBottom: 0,
+                                    }}
+                                >
+                                    3. Projects
+                                </Text>
+                                <Title className="ui-title-tight" level={2} style={{margin: 0, color: '#f8fafc'}}>
+                                    Applied knowledge in a real shipped artifact
+                                </Title>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </MotionReveal>

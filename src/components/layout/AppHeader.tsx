@@ -158,11 +158,11 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     style={{
                         marginInlineEnd: 0,
                         borderRadius: 999,
-                        padding: isMobile ? '7px 14px' : '9px 16px',
+                        padding: isMobile ? '6px 12px' : '9px 16px',
                         border: sourceBadge.border,
                         background: sourceBadge.background,
                         color: sourceBadge.color,
-                        fontSize: isMobile ? 13 : 14,
+                        fontSize: isMobile ? 12 : 14,
                         fontWeight: 700,
                         fontFamily: 'var(--font-display)',
                         letterSpacing: '0.06em',
@@ -182,11 +182,11 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     style={{
                         marginInlineEnd: 0,
                         borderRadius: 999,
-                        padding: isMobile ? '7px 14px' : '9px 16px',
+                        padding: isMobile ? '6px 12px' : '9px 16px',
                         border: '1px solid rgba(34,211,238,0.22)',
                         background: 'rgba(34,211,238,0.10)',
                         color: '#67e8f9',
-                        fontSize: isMobile ? 13 : 14,
+                        fontSize: isMobile ? 12 : 14,
                         fontWeight: 700,
                         fontFamily: 'var(--font-display)',
                         letterSpacing: '0.06em',
@@ -207,11 +207,11 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     style={{
                         marginInlineEnd: 0,
                         borderRadius: 999,
-                        padding: isMobile ? '7px 14px' : '9px 16px',
+                        padding: isMobile ? '6px 12px' : '9px 16px',
                         border: contextBadge.border,
                         background: contextBadge.background,
                         color: contextBadge.color,
-                        fontSize: isMobile ? 13 : 14,
+                        fontSize: isMobile ? 12 : 14,
                         fontWeight: 700,
                         fontFamily: 'var(--font-display)',
                         letterSpacing: '0.06em',
@@ -275,13 +275,14 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: 6,
+                                gap: 4,
                                 minWidth: 0,
                                 flex: 1,
                                 overflow: 'hidden',
                             }}
                         >
                             <Title
+                                className="ui-title-tight"
                                 level={2}
                                 style={{
                                     margin: 0,
@@ -289,8 +290,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     fontSize: titleFontSize,
                                     fontFamily: 'var(--font-display)',
                                     fontWeight: 800,
-                                    lineHeight: 1.02,
-                                    letterSpacing: '0.015em',
+                                    lineHeight: 1,
+                                    letterSpacing: '0.012em',
                                     textShadow: '0 0 26px rgba(255,90,54,0.12)',
                                     whiteSpace: 'normal',
                                     overflow: 'hidden',
@@ -310,10 +311,12 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 }}
                             >
                                 <Text
+                                    className="ui-copy-muted"
                                     style={{
                                         color: '#cbd5e1',
                                         fontSize: subtitleFontSize,
                                         fontWeight: 500,
+                                        lineHeight: 1.5,
                                         whiteSpace: 'normal',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
@@ -344,6 +347,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     }}
                                 />
                                 <Text
+                                    className="ui-kicker"
                                     style={{
                                         color: '#fec2b3',
                                         fontSize: isMobile ? 12 : 14,
@@ -442,7 +446,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                             outline: 'none',
                                             borderRadius: 999,
                                             padding: isMobile
-                                                ? '12px 14px'
+                                                ? '11px 10px'
                                                 : isCompactDesktop
                                                     ? '12px 18px'
                                                     : '13px 22px',
@@ -462,8 +466,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                             textAlign: 'center',
                                             flex: isMobile ? 1 : 'none',
                                             minWidth: isMobile ? 0 : isCompactDesktop ? 164 : 182,
-                                            fontSize: isMobile ? 16 : 18,
-                                            letterSpacing: active ? '0.08em' : '0.07em',
+                                            fontSize: isMobile ? 15 : 18,
+                                            letterSpacing: active ? '0.07em' : '0.06em',
                                             textTransform: 'uppercase',
                                             whiteSpace: 'nowrap',
                                         }}

@@ -11,7 +11,7 @@ function AppHero() {
 
     return (
         <Card
-            className="glass-card hud-shell hud-angled-shell"
+            className="glass-card hud-shell hud-angled-shell app-hero-card"
             style={{
                 borderRadius: 28,
                 overflow: 'hidden',
@@ -62,24 +62,34 @@ function AppHero() {
                             </motion.div>
 
                             <motion.div variants={revealVariant(0, 20, 8)}>
-                                <Title
-                                    level={1}
-                                    style={{
-                                        margin: 0,
-                                        color: '#f8fafc',
-                                        fontSize: 'clamp(2rem, 4vw, 3.4rem)',
-                                        fontFamily: 'var(--font-display)',
-                                        fontWeight: 800,
-                                        letterSpacing: '0.015em',
-                                        lineHeight: 1.1,
-                                    }}
-                                >
-                                    Turn raw player reviews into actionable game insight
-                                </Title>
+                                <div className="ui-title-row">
+                                    <span className="ui-icon-badge ui-icon-badge-ember">
+                                        <RobotOutlined />
+                                    </span>
+                                    <div className="ui-title-stack">
+                                        <span className="ui-kicker">AI Review Ops</span>
+                                        <Title
+                                            className="ui-title-tight"
+                                            level={1}
+                                            style={{
+                                                margin: 0,
+                                                color: '#f8fafc',
+                                                fontSize: 'clamp(2rem, 4vw, 3.4rem)',
+                                                fontFamily: 'var(--font-display)',
+                                                fontWeight: 800,
+                                                letterSpacing: '0.015em',
+                                                lineHeight: 1.1,
+                                            }}
+                                        >
+                                            Turn raw player reviews into actionable game insight
+                                        </Title>
+                                    </div>
+                                </div>
                             </motion.div>
 
                             <motion.div variants={revealVariant(0, 18, 8)}>
                                 <Paragraph
+                                    className="ui-copy-muted"
                                     style={{
                                         fontSize: 16,
                                         color: '#cbd5e1',
@@ -87,9 +97,9 @@ function AppHero() {
                                         maxWidth: 640,
                                     }}
                                 >
-                                    Analyze Steam feedback to detect sentiment, praised gameplay
-                                    systems, recurring complaints, and AI-generated summaries in a
-                                    clean dashboard built for demos, portfolios, and product reviews.
+                                    Analyze Steam feedback to spot sentiment, praised systems,
+                                    recurring complaints, and AI summaries in a dashboard built for
+                                    demos, portfolios, and product reviews.
                                 </Paragraph>
                             </motion.div>
 

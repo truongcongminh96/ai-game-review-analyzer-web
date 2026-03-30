@@ -1,3 +1,4 @@
+import {CodeOutlined} from '@ant-design/icons';
 import {Card, Grid, Space, Tag, Typography} from 'antd';
 import {type ReactNode} from 'react';
 import HudOverlay from '../motion/HudOverlay';
@@ -267,7 +268,7 @@ function CodeViewer({file}: CodeViewerProps) {
 
     return (
         <Card
-            className="hud-shell hud-angled-shell"
+            className="hud-shell hud-angled-shell code-viewer-card"
             title={
                 <div
                     style={{
@@ -277,7 +278,17 @@ function CodeViewer({file}: CodeViewerProps) {
                         gap: 12,
                     }}
                 >
-                    <span style={{color: '#f8fafc'}}>Editor Preview</span>
+                    <div className="ui-title-row" style={{alignItems: 'center'}}>
+                        <span className="ui-icon-badge ui-icon-badge-cyan">
+                            <CodeOutlined />
+                        </span>
+                        <div className="ui-title-stack">
+                            <span className="ui-kicker">File Preview</span>
+                            <span className="ui-title-tight" style={{fontSize: 24}}>
+                                Editor Preview
+                            </span>
+                        </div>
+                    </div>
 
                     <a
                         href="https://github.com/truongcongminh96/ai-game-review-analyzer"
@@ -310,18 +321,21 @@ function CodeViewer({file}: CodeViewerProps) {
             <HudOverlay reticlePosition="bottom-left" scanDelay={0.95} />
             <Space orientation="vertical" size={14} style={{width: '100%'}}>
                 <div>
-                    <Text style={{color: '#67e8f9', fontSize: 13}}>{file.path}</Text>
+                    <div className="hud-divider">
+                        <Text style={{color: '#67e8f9', fontSize: 13}}>{file.path}</Text>
 
-                    <Title level={4} style={{color: '#f8fafc', margin: '8px 0 6px'}}>
-                        {file.title}
-                    </Title>
+                        <Title className="ui-title-tight" level={4} style={{color: '#f8fafc', margin: '8px 0 6px'}}>
+                            {file.title}
+                        </Title>
 
-                    <Paragraph style={{color: '#94a3b8', marginBottom: 12}}>
-                        {file.description}
-                    </Paragraph>
+                        <Paragraph className="ui-copy-muted" style={{color: '#94a3b8', marginBottom: 0}}>
+                            {file.description}
+                        </Paragraph>
+                    </div>
 
                     <Space wrap size={[8, 8]}>
                         <Tag
+                            className="hud-chip"
                             style={{
                                 margin: 0,
                                 borderRadius: 999,
@@ -335,6 +349,7 @@ function CodeViewer({file}: CodeViewerProps) {
                         </Tag>
 
                         <Tag
+                            className="hud-chip"
                             style={{
                                 margin: 0,
                                 borderRadius: 999,
@@ -348,6 +363,7 @@ function CodeViewer({file}: CodeViewerProps) {
                         </Tag>
 
                         <Tag
+                            className="hud-chip"
                             style={{
                                 margin: 0,
                                 borderRadius: 999,
@@ -369,6 +385,7 @@ function CodeViewer({file}: CodeViewerProps) {
                 </div>
 
                 <div
+                    className="hud-panel hud-angled-panel"
                     style={{
                         borderRadius: 18,
                         border: '1px solid rgba(148,163,184,0.12)',
@@ -378,6 +395,7 @@ function CodeViewer({file}: CodeViewerProps) {
                     }}
                 >
                     <div
+                        className="hud-panel"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -419,6 +437,7 @@ function CodeViewer({file}: CodeViewerProps) {
                     </div>
 
                     <div
+                        className="hud-panel"
                         style={{
                             display: 'flex',
                             alignItems: 'flex-end',
@@ -484,6 +503,7 @@ function CodeViewer({file}: CodeViewerProps) {
                     </div>
 
                     <div
+                        className="hud-panel"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -513,6 +533,7 @@ function CodeViewer({file}: CodeViewerProps) {
                     </div>
 
                     <div
+                        className="code-viewer-shell"
                         style={{
                             display: 'flex',
                             minHeight: 500,
@@ -527,6 +548,7 @@ function CodeViewer({file}: CodeViewerProps) {
                             }}
                         >
                             <div
+                                className="code-viewer-lines"
                                 style={{
                                     minWidth: 0,
                                     fontSize: 13.5,
@@ -537,6 +559,7 @@ function CodeViewer({file}: CodeViewerProps) {
                             >
                                 {codeLines.map((line, index) => (
                                     <div
+                                        className="code-viewer-row"
                                         key={`${file.path}-${index}`}
                                         style={{
                                             display: 'grid',

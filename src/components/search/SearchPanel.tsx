@@ -1,4 +1,9 @@
 import {Card, Col, Row, Space, Tag, Typography} from 'antd';
+import {
+    ControlOutlined,
+    FileSearchOutlined,
+    SearchOutlined,
+} from '@ant-design/icons';
 import type {GameOption} from '../../types/game';
 import AnalyzeButton from './AnalyzeButton';
 import GameAutocomplete from './GameAutocomplete';
@@ -33,7 +38,7 @@ function SearchPanel({
 
     return (
         <Card
-            className="glass-card hud-shell hud-angled-shell"
+            className="glass-card hud-shell hud-angled-shell search-panel-card"
             style={{
                 borderRadius: 28,
                 overflow: 'hidden',
@@ -48,7 +53,7 @@ function SearchPanel({
             <Row gutter={0}>
                 <Col xs={24} lg={11}>
                     <div
-                        className="hud-panel hud-angled-panel"
+                        className="hud-panel hud-angled-panel search-panel-side"
                         style={{
                             height: '100%',
                             padding: 28,
@@ -70,14 +75,27 @@ function SearchPanel({
                                     color: '#ffd7c9',
                                 }}
                             >
-                                Review Input Console
+                                Review Console
                             </Tag>
 
-                            <Title level={3} style={{margin: 0, color: '#f8fafc'}}>
-                                Analyze a Steam game
-                            </Title>
+                            <div className="ui-title-row">
+                                <span className="ui-icon-badge ui-icon-badge-ember">
+                                    <SearchOutlined />
+                                </span>
+                                <div className="ui-title-stack">
+                                    <span className="ui-kicker">Input Console</span>
+                                    <Title
+                                        className="ui-title-tight"
+                                        level={3}
+                                        style={{margin: 0, color: '#f8fafc'}}
+                                    >
+                                        Analyze a Steam game
+                                    </Title>
+                                </div>
+                            </div>
 
                             <Paragraph
+                                className="ui-copy-muted"
                                 style={{
                                     marginBottom: 0,
                                     color: '#cbd5e1',
@@ -85,8 +103,8 @@ function SearchPanel({
                                     lineHeight: 1.7,
                                 }}
                             >
-                                Search by game title or enter a Steam App ID to generate an
-                                AI-powered insight report from recent player reviews.
+                                Search by title or paste a Steam App ID to generate an AI insight
+                                report from recent reviews.
                             </Paragraph>
 
                             <Space wrap size={[8, 8]}>
@@ -132,7 +150,7 @@ function SearchPanel({
                             </Space>
 
                             <div
-                                className="hud-panel hud-angled-panel"
+                                className="hud-panel hud-angled-panel search-panel-preview"
                                 style={{
                                     marginTop: 6,
                                     padding: 16,
@@ -185,7 +203,7 @@ function SearchPanel({
                                     <Space orientation="vertical" size={4}>
                                         <Text style={{color: '#94a3b8'}}>Quick examples</Text>
                                         <Text style={{color: '#e2e8f0'}}>
-                                            Elden Ring, Hades, Black Myth: Wukong
+                                            Elden Ring, Hades, Wukong
                                         </Text>
                                         <Text style={{color: '#94a3b8'}}>
                                             You can also paste a numeric Steam App ID directly.
@@ -199,7 +217,7 @@ function SearchPanel({
 
                 <Col xs={24} lg={13}>
                     <div
-                        className="hud-panel hud-angled-panel"
+                        className="hud-panel hud-angled-panel search-panel-main"
                         style={{
                             padding: 28,
                             background:
@@ -209,6 +227,7 @@ function SearchPanel({
                         <Space orientation="vertical" size={18} style={{width: '100%'}}>
                             <div>
                                 <Text
+                                    className="ui-field-label"
                                     style={{
                                         display: 'block',
                                         marginBottom: 8,
@@ -216,6 +235,7 @@ function SearchPanel({
                                         fontWeight: 600,
                                     }}
                                 >
+                                    <SearchOutlined />
                                     Game title or Steam App ID
                                 </Text>
                                 <GameAutocomplete
@@ -228,6 +248,7 @@ function SearchPanel({
 
                             <div>
                                 <Text
+                                    className="ui-field-label"
                                     style={{
                                         display: 'block',
                                         marginBottom: 8,
@@ -235,13 +256,14 @@ function SearchPanel({
                                         fontWeight: 600,
                                     }}
                                 >
+                                    <ControlOutlined />
                                     Review sample size
                                 </Text>
                                 <ReviewLimitInput value={limit} onChange={onLimitChange}/>
                             </div>
 
                             <div
-                                className="hud-panel hud-angled-panel"
+                                className="hud-panel hud-angled-panel search-panel-output"
                                 style={{
                                     padding: 16,
                                     borderRadius: 18,
@@ -251,7 +273,8 @@ function SearchPanel({
                                 }}
                             >
                                 <Space orientation="vertical" size={6}>
-                                    <Text style={{color: '#f8fafc', fontWeight: 600}}>
+                                    <Text className="ui-field-label" style={{color: '#f8fafc'}}>
+                                        <FileSearchOutlined />
                                         Analysis output
                                     </Text>
                                     <Text style={{color: '#b6c2d3'}}>
