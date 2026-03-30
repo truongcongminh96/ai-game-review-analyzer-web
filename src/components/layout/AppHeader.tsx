@@ -1,5 +1,7 @@
 import {Grid, Layout, Tag, Typography} from 'antd';
 import {ThunderboltOutlined} from '@ant-design/icons';
+import {motion} from 'framer-motion';
+import {hoverLiftTransition} from '../../motion/animations';
 
 const {Header} = Layout;
 const {Text, Title} = Typography;
@@ -148,57 +150,78 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                 justifyContent: showInlineBadges ? 'flex-end' : 'flex-start',
             }}
         >
-            <Tag
-                style={{
-                    marginInlineEnd: 0,
-                    borderRadius: 999,
-                    padding: isMobile ? '7px 14px' : '9px 16px',
-                    border: sourceBadge.border,
-                    background: sourceBadge.background,
-                    color: sourceBadge.color,
-                    fontSize: isMobile ? 13 : 14,
-                    fontWeight: 700,
-                    letterSpacing: '0.01em',
-                    backdropFilter: 'blur(10px)',
-                }}
+            <motion.div
+                whileHover={{y: -2, scale: 1.02, filter: 'brightness(1.05)'}}
+                transition={hoverLiftTransition}
             >
-                {sourceBadge.label}
-            </Tag>
+                <Tag
+                    style={{
+                        marginInlineEnd: 0,
+                        borderRadius: 999,
+                        padding: isMobile ? '7px 14px' : '9px 16px',
+                        border: sourceBadge.border,
+                        background: sourceBadge.background,
+                        color: sourceBadge.color,
+                        fontSize: isMobile ? 13 : 14,
+                        fontWeight: 700,
+                        fontFamily: 'var(--font-display)',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        backdropFilter: 'blur(10px)',
+                    }}
+                >
+                    {sourceBadge.label}
+                </Tag>
+            </motion.div>
 
-            <Tag
-                style={{
-                    marginInlineEnd: 0,
-                    borderRadius: 999,
-                    padding: isMobile ? '7px 14px' : '9px 16px',
-                    border: '1px solid rgba(34,211,238,0.22)',
-                    background: 'rgba(34,211,238,0.10)',
-                    color: '#67e8f9',
-                    fontSize: isMobile ? 13 : 14,
-                    fontWeight: 700,
-                    letterSpacing: '0.01em',
-                    backdropFilter: 'blur(10px)',
-                }}
+            <motion.div
+                whileHover={{y: -2, scale: 1.02, filter: 'brightness(1.06)'}}
+                transition={hoverLiftTransition}
             >
-                AI Powered
-            </Tag>
+                <Tag
+                    style={{
+                        marginInlineEnd: 0,
+                        borderRadius: 999,
+                        padding: isMobile ? '7px 14px' : '9px 16px',
+                        border: '1px solid rgba(34,211,238,0.22)',
+                        background: 'rgba(34,211,238,0.10)',
+                        color: '#67e8f9',
+                        fontSize: isMobile ? 13 : 14,
+                        fontWeight: 700,
+                        fontFamily: 'var(--font-display)',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        backdropFilter: 'blur(10px)',
+                    }}
+                >
+                    AI Powered
+                </Tag>
+            </motion.div>
 
-            <Tag
-                icon={<ThunderboltOutlined/>}
-                style={{
-                    marginInlineEnd: 0,
-                    borderRadius: 999,
-                    padding: isMobile ? '7px 14px' : '9px 16px',
-                    border: contextBadge.border,
-                    background: contextBadge.background,
-                    color: contextBadge.color,
-                    fontSize: isMobile ? 13 : 14,
-                    fontWeight: 700,
-                    letterSpacing: '0.01em',
-                    backdropFilter: 'blur(10px)',
-                }}
+            <motion.div
+                whileHover={{y: -2, scale: 1.02, filter: 'brightness(1.05)'}}
+                transition={hoverLiftTransition}
             >
-                {contextBadge.label}
-            </Tag>
+                <Tag
+                    icon={<ThunderboltOutlined/>}
+                    style={{
+                        marginInlineEnd: 0,
+                        borderRadius: 999,
+                        padding: isMobile ? '7px 14px' : '9px 16px',
+                        border: contextBadge.border,
+                        background: contextBadge.background,
+                        color: contextBadge.color,
+                        fontSize: isMobile ? 13 : 14,
+                        fontWeight: 700,
+                        fontFamily: 'var(--font-display)',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        backdropFilter: 'blur(10px)',
+                    }}
+                >
+                    {contextBadge.label}
+                </Tag>
+            </motion.div>
         </div>
     );
 
@@ -264,8 +287,10 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     margin: 0,
                                     color: '#f8fafc',
                                     fontSize: titleFontSize,
+                                    fontFamily: 'var(--font-display)',
+                                    fontWeight: 800,
                                     lineHeight: 1.02,
-                                    letterSpacing: '-0.055em',
+                                    letterSpacing: '0.015em',
                                     textShadow: '0 0 26px rgba(59,130,246,0.10)',
                                     whiteSpace: 'normal',
                                     overflow: 'hidden',
@@ -323,7 +348,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         color: '#7dd3fc',
                                         fontSize: isMobile ? 12 : 14,
                                         fontWeight: 700,
-                                        letterSpacing: '0.08em',
+                                        fontFamily: 'var(--font-display)',
+                                        letterSpacing: '0.1em',
                                         textTransform: 'uppercase',
                                     }}
                                 >
@@ -387,11 +413,29 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 const active = currentPage === item.key;
 
                                 return (
-                                    <button
+                                    <motion.button
                                         key={item.key}
                                         type="button"
                                         onClick={() => onNavigate(item.key)}
                                         aria-pressed={active}
+                                        whileHover={
+                                            active
+                                                ? {
+                                                    y: -2,
+                                                    scale: 1.01,
+                                                    boxShadow:
+                                                        'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 28px rgba(59,130,246,0.20)',
+                                                }
+                                                : {
+                                                    y: -2,
+                                                    scale: 1.01,
+                                                    background: 'rgba(30,41,59,0.82)',
+                                                    borderColor: 'rgba(148,163,184,0.18)',
+                                                    color: '#e2e8f0',
+                                                }
+                                        }
+                                        whileTap={{scale: 0.985}}
+                                        transition={hoverLiftTransition}
                                         style={{
                                             cursor: 'pointer',
                                             appearance: 'none',
@@ -412,18 +456,20 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                             boxShadow: active
                                                 ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 10px 22px rgba(37,99,235,0.18)'
                                                 : 'none',
-                                            fontWeight: active ? 700 : 500,
+                                            fontFamily: 'var(--font-display)',
+                                            fontWeight: active ? 700 : 600,
                                             transition: 'all 0.2s ease',
                                             textAlign: 'center',
                                             flex: isMobile ? 1 : 'none',
                                             minWidth: isMobile ? 0 : isCompactDesktop ? 164 : 182,
-                                            fontSize: isMobile ? 13 : 15,
-                                            letterSpacing: active ? '-0.01em' : '0',
+                                            fontSize: isMobile ? 16 : 18,
+                                            letterSpacing: active ? '0.08em' : '0.07em',
+                                            textTransform: 'uppercase',
                                             whiteSpace: 'nowrap',
                                         }}
                                     >
                                         {item.label}
-                                    </button>
+                                    </motion.button>
                                 );
                             })}
                         </div>

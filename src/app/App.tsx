@@ -7,6 +7,8 @@ import {env} from '../config/env';
 import AppHeader from '../components/layout/AppHeader';
 import AppHero from '../components/layout/AppHero';
 import BackendShowcase from '../components/layout/BackendShowcase';
+import AmbientBackdrop from '../components/motion/AmbientBackdrop';
+import {MotionReveal} from '../components/motion/Reveal';
 import SearchPanel from '../components/search/SearchPanel';
 import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
 import {useGameSearch} from '../hooks/useGameSearch';
@@ -47,52 +49,70 @@ function App() {
 
     const homeContent = (
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
-            <AppHero/>
+            <MotionReveal y={20} blur={12}>
+                <AppHero/>
+            </MotionReveal>
 
-            <SearchPanel
-                gameQuery={query}
-                gameOptions={suggestions}
-                selectedGame={selectedGame}
-                limit={limit}
-                loading={loading}
-                onGameChange={handleQueryChange}
-                onGameSelect={handleSelect}
-                onLimitChange={setLimit}
-                onAnalyze={handleAnalyze}
-            />
+            <MotionReveal delay={0.08}>
+                <SearchPanel
+                    gameQuery={query}
+                    gameOptions={suggestions}
+                    selectedGame={selectedGame}
+                    limit={limit}
+                    loading={loading}
+                    onGameChange={handleQueryChange}
+                    onGameSelect={handleSelect}
+                    onLimitChange={setLimit}
+                    onAnalyze={handleAnalyze}
+                />
+            </MotionReveal>
 
-            {error ? <ErrorBlock message={error}/> : null}
+            {error ? (
+                <MotionReveal delay={0.04} y={18} blur={8}>
+                    <ErrorBlock message={error}/>
+                </MotionReveal>
+            ) : null}
 
-            {loading ? <LoadingBlock/> : null}
+            {loading ? (
+                <MotionReveal delay={0.04} y={18} blur={8}>
+                    <LoadingBlock/>
+                </MotionReveal>
+            ) : null}
 
             {!loading && result ? (
-                <Suspense fallback={<LoadingBlock/>}>
-                    <ResultGrid
-                        result={result}
-                        dataSourceMode={dataSourceMode}
-                        analysisContext={analysisContext}
-                    />
-                </Suspense>
+                <MotionReveal delay={0.06}>
+                    <Suspense fallback={<LoadingBlock/>}>
+                        <ResultGrid
+                            result={result}
+                            dataSourceMode={dataSourceMode}
+                            analysisContext={analysisContext}
+                        />
+                    </Suspense>
+                </MotionReveal>
             ) : null}
 
             {!loading && !result ? (
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} lg={16}>
-                        <EmptyBlock
-                            title="Ready to analyze player feedback"
-                            description="Search for a Steam game, choose the review sample size, and generate an AI-powered insight report in seconds."
-                        />
-                    </Col>
-                    <Col xs={24} lg={8}>
-                        <BackendShowcase/>
-                    </Col>
-                </Row>
+                <MotionReveal delay={0.12} y={22}>
+                    <Row gutter={[16, 16]}>
+                        <Col xs={24} lg={16}>
+                            <EmptyBlock
+                                title="Ready to analyze player feedback"
+                                description="Search for a Steam game, choose the review sample size, and generate an AI-powered insight report in seconds."
+                            />
+                        </Col>
+                        <Col xs={24} lg={8}>
+                            <BackendShowcase/>
+                        </Col>
+                    </Row>
+                </MotionReveal>
             ) : null}
         </Space>
     );
 
     return (
         <Layout className="app-shell">
+            <AmbientBackdrop/>
+
             <AppHeader
                 dataSourceMode={dataSourceMode}
                 currentPage={currentPage}

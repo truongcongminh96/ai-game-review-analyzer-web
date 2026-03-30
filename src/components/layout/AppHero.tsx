@@ -1,6 +1,9 @@
 import {Card, Col, Row, Space, Typography} from 'antd';
+import {motion} from 'framer-motion';
 import HeroGameShowcase from "./HeroGameShowcase.tsx";
 import {ApiOutlined, RobotOutlined, ReadOutlined} from '@ant-design/icons';
+import {MotionReveal, MotionStagger} from '../motion/Reveal';
+import {hoverLiftTransition, revealVariant} from '../../motion/animations';
 
 function AppHero() {
     const {Paragraph, Title, Text} = Typography;
@@ -18,88 +21,133 @@ function AppHero() {
         >
             <Row gutter={[32, 32]} align="middle">
                 <Col xs={24} lg={14}>
-                    <Space orientation="vertical" size={14} style={{width: '100%'}}>
-                        <Space wrap size={[10, 10]}>
-                            <div className="hero-pill hero-pill-steam">
-                                <ReadOutlined/>
-                                <span>Steam Reviews</span>
-                            </div>
+                    <MotionStagger staggerChildren={0.08}>
+                        <Space orientation="vertical" size={14} style={{width: '100%'}}>
+                            <motion.div variants={revealVariant(0, 20, 8)}>
+                                <Space wrap size={[10, 10]}>
+                                    <motion.div
+                                        whileHover={{y: -2, scale: 1.02}}
+                                        transition={hoverLiftTransition}
+                                    >
+                                        <div className="hero-pill hero-pill-steam">
+                                            <ReadOutlined/>
+                                            <span>Steam Reviews</span>
+                                        </div>
+                                    </motion.div>
 
-                            <div className="hero-pill hero-pill-ai">
-                                <RobotOutlined/>
-                                <span>AI Insights</span>
-                            </div>
+                                    <motion.div
+                                        whileHover={{y: -2, scale: 1.02}}
+                                        transition={hoverLiftTransition}
+                                    >
+                                        <div className="hero-pill hero-pill-ai">
+                                            <RobotOutlined/>
+                                            <span>AI Insights</span>
+                                        </div>
+                                    </motion.div>
 
-                            <div className="hero-pill hero-pill-api">
-                                <ApiOutlined/>
-                                <span>Mock + API Ready</span>
-                            </div>
+                                    <motion.div
+                                        whileHover={{y: -2, scale: 1.02}}
+                                        transition={hoverLiftTransition}
+                                    >
+                                        <div className="hero-pill hero-pill-api">
+                                            <ApiOutlined/>
+                                            <span>Mock + API Ready</span>
+                                        </div>
+                                    </motion.div>
+                                </Space>
+                            </motion.div>
+
+                            <motion.div variants={revealVariant(0, 20, 8)}>
+                                <Title
+                                    level={1}
+                                    style={{
+                                        margin: 0,
+                                        color: '#f8fafc',
+                                        fontSize: 'clamp(2rem, 4vw, 3.4rem)',
+                                        fontFamily: 'var(--font-display)',
+                                        fontWeight: 800,
+                                        letterSpacing: '0.015em',
+                                        lineHeight: 1.1,
+                                    }}
+                                >
+                                    Turn raw player reviews into actionable game insight
+                                </Title>
+                            </motion.div>
+
+                            <motion.div variants={revealVariant(0, 18, 8)}>
+                                <Paragraph
+                                    style={{
+                                        fontSize: 16,
+                                        color: '#cbd5e1',
+                                        marginBottom: 0,
+                                        maxWidth: 640,
+                                    }}
+                                >
+                                    Analyze Steam feedback to detect sentiment, praised gameplay
+                                    systems, recurring complaints, and AI-generated summaries in a
+                                    clean dashboard built for demos, portfolios, and product reviews.
+                                </Paragraph>
+                            </motion.div>
+
+                            <motion.div variants={revealVariant(0, 18, 8)}>
+                                <Space wrap size={[12, 12]}>
+                                    <motion.div
+                                        whileHover={{y: -2, scale: 1.02}}
+                                        transition={hoverLiftTransition}
+                                    >
+                                        <div
+                                            style={{
+                                                padding: '10px 14px',
+                                                borderRadius: 14,
+                                                background: 'rgba(59, 130, 246, 0.12)',
+                                                border: '1px solid rgba(96, 165, 250, 0.22)',
+                                            }}
+                                        >
+                                            <Text style={{color: '#dbeafe'}}>Sentiment detection</Text>
+                                        </div>
+                                    </motion.div>
+
+                                    <motion.div
+                                        whileHover={{y: -2, scale: 1.02}}
+                                        transition={hoverLiftTransition}
+                                    >
+                                        <div
+                                            style={{
+                                                padding: '10px 14px',
+                                                borderRadius: 14,
+                                                background: 'rgba(168, 85, 247, 0.12)',
+                                                border: '1px solid rgba(192, 132, 252, 0.22)',
+                                            }}
+                                        >
+                                            <Text style={{color: '#f3e8ff'}}>Praise & complaint mining</Text>
+                                        </div>
+                                    </motion.div>
+
+                                    <motion.div
+                                        whileHover={{y: -2, scale: 1.02}}
+                                        transition={hoverLiftTransition}
+                                    >
+                                        <div
+                                            style={{
+                                                padding: '10px 14px',
+                                                borderRadius: 14,
+                                                background: 'rgba(34, 211, 238, 0.12)',
+                                                border: '1px solid rgba(103, 232, 249, 0.22)',
+                                            }}
+                                        >
+                                            <Text style={{color: '#cffafe'}}>Insight-ready report</Text>
+                                        </div>
+                                    </motion.div>
+                                </Space>
+                            </motion.div>
                         </Space>
-
-                        <Title
-                            level={1}
-                            style={{
-                                margin: 0,
-                                color: '#f8fafc',
-                                fontSize: 'clamp(2rem, 4vw, 3.4rem)',
-                                lineHeight: 1.1,
-                            }}
-                        >
-                            Turn raw player reviews into actionable game insight
-                        </Title>
-
-                        <Paragraph
-                            style={{
-                                fontSize: 16,
-                                color: '#cbd5e1',
-                                marginBottom: 0,
-                                maxWidth: 640,
-                            }}
-                        >
-                            Analyze Steam feedback to detect sentiment, praised gameplay
-                            systems, recurring complaints, and AI-generated summaries in a
-                            clean dashboard built for demos, portfolios, and product reviews.
-                        </Paragraph>
-
-                        <Space wrap size={[12, 12]}>
-                            <div
-                                style={{
-                                    padding: '10px 14px',
-                                    borderRadius: 14,
-                                    background: 'rgba(59, 130, 246, 0.12)',
-                                    border: '1px solid rgba(96, 165, 250, 0.22)',
-                                }}
-                            >
-                                <Text style={{color: '#dbeafe'}}>Sentiment detection</Text>
-                            </div>
-
-                            <div
-                                style={{
-                                    padding: '10px 14px',
-                                    borderRadius: 14,
-                                    background: 'rgba(168, 85, 247, 0.12)',
-                                    border: '1px solid rgba(192, 132, 252, 0.22)',
-                                }}
-                            >
-                                <Text style={{color: '#f3e8ff'}}>Praise & complaint mining</Text>
-                            </div>
-
-                            <div
-                                style={{
-                                    padding: '10px 14px',
-                                    borderRadius: 14,
-                                    background: 'rgba(34, 211, 238, 0.12)',
-                                    border: '1px solid rgba(103, 232, 249, 0.22)',
-                                }}
-                            >
-                                <Text style={{color: '#cffafe'}}>Insight-ready report</Text>
-                            </div>
-                        </Space>
-                    </Space>
+                    </MotionStagger>
                 </Col>
 
                 <Col xs={24} lg={10}>
-                    <HeroGameShowcase/>
+                    <MotionReveal delay={0.16} y={24} blur={12}>
+                        <HeroGameShowcase/>
+                    </MotionReveal>
                 </Col>
             </Row>
         </Card>

@@ -1,5 +1,7 @@
 import {Button, Card, Col, Progress, Row, Space, Tag, Typography} from 'antd';
 import {useState} from 'react';
+import {motion} from 'framer-motion';
+import {MotionReveal} from '../components/motion/Reveal';
 import {
     learningCourses,
     portfolioProjects,
@@ -8,6 +10,7 @@ import {
     type PortfolioProject,
     type ResearchTrack,
 } from '../data/learningJourney';
+import {hoverLiftTransition} from '../motion/animations';
 
 const {Paragraph, Text, Title} = Typography;
 
@@ -594,11 +597,20 @@ function ResearchWorkspace({
                     const active = track.id === activeTrack.id;
 
                     return (
-                        <button
+                        <motion.button
                             key={track.id}
                             type="button"
                             onClick={() => onSelectTrack(track.id)}
                             aria-pressed={active}
+                            whileHover={{
+                                y: -3,
+                                scale: 1.01,
+                                boxShadow: active
+                                    ? '0 24px 48px rgba(59,130,246,0.18)'
+                                    : '0 18px 36px rgba(2,6,23,0.18)',
+                            }}
+                            whileTap={{scale: 0.985}}
+                            transition={hoverLiftTransition}
                             style={{
                                 textAlign: 'left',
                                 padding: '18px 18px',
@@ -649,7 +661,7 @@ function ResearchWorkspace({
                             >
                                 {track.summary}
                             </div>
-                        </button>
+                        </motion.button>
                     );
                 })}
             </div>
@@ -1334,18 +1346,22 @@ function ProjectCard({project}: ProjectCardProps) {
     const scenarioAccentColors = ['#60a5fa', '#22d3ee', '#34d399', '#f59e0b', '#fb7185'];
 
     return (
-        <Card
-            style={{
-                borderRadius: 28,
-                background:
-                    'radial-gradient(circle at top right, rgba(34,197,94,0.16), transparent 26%), linear-gradient(135deg, rgba(15,23,42,0.92), rgba(17,24,39,0.96))',
-                border: '1px solid rgba(148,163,184,0.12)',
-                boxShadow: '0 24px 64px rgba(2,6,23,0.24)',
-            }}
-            styles={{
-                body: {padding: 28},
-            }}
+        <motion.div
+            whileHover={{y: -4, scale: 1.003}}
+            transition={hoverLiftTransition}
         >
+            <Card
+                style={{
+                    borderRadius: 28,
+                    background:
+                        'radial-gradient(circle at top right, rgba(34,197,94,0.16), transparent 26%), linear-gradient(135deg, rgba(15,23,42,0.92), rgba(17,24,39,0.96))',
+                    border: '1px solid rgba(148,163,184,0.12)',
+                    boxShadow: '0 24px 64px rgba(2,6,23,0.24)',
+                }}
+                styles={{
+                    body: {padding: 28},
+                }}
+            >
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={14}>
                     <Space orientation="vertical" size={16} style={{width: '100%'}}>
@@ -1595,13 +1611,15 @@ function ProjectCard({project}: ProjectCardProps) {
                                 scenarioAccentColors[index % scenarioAccentColors.length];
 
                             return (
-                                <div
+                                <motion.div
                                     key={`${step.label}-${step.detail}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         flexShrink: 0,
                                     }}
+                                    whileHover={{y: -4, scale: 1.015}}
+                                    transition={hoverLiftTransition}
                                 >
                                     <div
                                         style={{
@@ -1697,7 +1715,7 @@ function ProjectCard({project}: ProjectCardProps) {
                                             />
                                         </div>
                                     ) : null}
-                                </div>
+                                </motion.div>
                             );
                         })}
                     </div>
@@ -1889,7 +1907,8 @@ function ProjectCard({project}: ProjectCardProps) {
                     </div>
                 </div>
             ) : null}
-        </Card>
+            </Card>
+        </motion.div>
     );
 }
 
@@ -1900,20 +1919,21 @@ function LearningJourneyPage() {
 
     return (
         <Space orientation="vertical" size={24} style={{width: '100%'}}>
-            <Card
-                style={{
-                    borderRadius: 28,
-                    overflow: 'hidden',
-                    background:
-                        'radial-gradient(circle at top right, rgba(244,63,94,0.16), transparent 24%), radial-gradient(circle at 20% 20%, rgba(34,211,238,0.14), transparent 26%), linear-gradient(135deg, rgba(15,23,42,0.94), rgba(17,24,39,0.92))',
-                    border: '1px solid rgba(148,163,184,0.12)',
-                    boxShadow: '0 28px 80px rgba(2,6,23,0.28)',
-                }}
-                styles={{
-                    body: {padding: 28},
-                }}
-            >
-                <Row gutter={[24, 24]} align="middle">
+            <MotionReveal y={20} blur={12}>
+                <Card
+                    style={{
+                        borderRadius: 28,
+                        overflow: 'hidden',
+                        background:
+                            'radial-gradient(circle at top right, rgba(244,63,94,0.16), transparent 24%), radial-gradient(circle at 20% 20%, rgba(34,211,238,0.14), transparent 26%), linear-gradient(135deg, rgba(15,23,42,0.94), rgba(17,24,39,0.92))',
+                        border: '1px solid rgba(148,163,184,0.12)',
+                        boxShadow: '0 28px 80px rgba(2,6,23,0.28)',
+                    }}
+                    styles={{
+                        body: {padding: 28},
+                    }}
+                >
+                    <Row gutter={[24, 24]} align="middle">
                     <Col xs={24} lg={15}>
                         <Space orientation="vertical" size={16} style={{width: '100%'}}>
                             <Tag
@@ -2042,175 +2062,192 @@ function LearningJourneyPage() {
                             ))}
                         </div>
                     </Col>
-                </Row>
-            </Card>
+                    </Row>
+                </Card>
+            </MotionReveal>
 
-            <div>
-                <Text
-                    style={{
-                        display: 'block',
-                        color: '#f9a8d4',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        letterSpacing: '0.16em',
-                        textTransform: 'uppercase',
-                        marginBottom: 8,
-                    }}
-                >
-                    1. Courses
-                </Text>
-                <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                    Learning that feeds product judgment
-                </Title>
-            </div>
+            <MotionReveal delay={0.04} y={18} blur={8}>
+                <div>
+                    <Text
+                        style={{
+                            display: 'block',
+                            color: '#f9a8d4',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            letterSpacing: '0.16em',
+                            textTransform: 'uppercase',
+                            marginBottom: 8,
+                        }}
+                    >
+                        1. Courses
+                    </Text>
+                    <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
+                        Learning that feeds product judgment
+                    </Title>
+                </div>
+            </MotionReveal>
 
             <Row gutter={[16, 16]}>
                 {learningCourses.map((course) => (
                     <Col xs={24} key={course.id}>
-                        <CourseCard
-                            course={course}
-                            notesOpen={openCourseId === course.id}
-                            onToggleNotes={() =>
-                                setOpenCourseId((current) =>
-                                    current === course.id ? null : course.id
-                                )
-                            }
-                        />
+                        <MotionReveal delay={0.08} y={24} blur={10}>
+                            <CourseCard
+                                course={course}
+                                notesOpen={openCourseId === course.id}
+                                onToggleNotes={() =>
+                                    setOpenCourseId((current) =>
+                                        current === course.id ? null : course.id
+                                    )
+                                }
+                            />
+                        </MotionReveal>
                     </Col>
                 ))}
             </Row>
 
-            <div>
-                <Text
-                    style={{
-                        display: 'block',
-                        color: '#93c5fd',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        letterSpacing: '0.16em',
-                        textTransform: 'uppercase',
-                        marginBottom: 8,
-                    }}
-                >
-                    2. Research
-                </Text>
-                <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                    Deep knowledge compressed for fast recall
-                </Title>
-                <Paragraph
-                    style={{
-                        margin: '8px 0 0',
-                        color: '#94a3b8',
-                        fontSize: 15,
-                        lineHeight: 1.8,
-                        maxWidth: 900,
-                    }}
-                >
-                    Each report card has a short summary and a quick memory frame so I or a reader
-                    can open it for 10 seconds and remember the problem, solution, and impact.
-                </Paragraph>
-            </div>
+            <MotionReveal delay={0.04} y={18} blur={8}>
+                <div>
+                    <Text
+                        style={{
+                            display: 'block',
+                            color: '#93c5fd',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            letterSpacing: '0.16em',
+                            textTransform: 'uppercase',
+                            marginBottom: 8,
+                        }}
+                    >
+                        2. Research
+                    </Text>
+                    <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
+                        Deep knowledge compressed for fast recall
+                    </Title>
+                    <Paragraph
+                        style={{
+                            margin: '8px 0 0',
+                            color: '#94a3b8',
+                            fontSize: 15,
+                            lineHeight: 1.8,
+                            maxWidth: 900,
+                        }}
+                    >
+                        Each report card has a short summary and a quick memory frame so I or a reader
+                        can open it for 10 seconds and remember the problem, solution, and impact.
+                    </Paragraph>
+                </div>
+            </MotionReveal>
 
-            <div
-                style={{
-                    padding: '18px 18px',
-                    borderRadius: 24,
-                    background:
-                        'linear-gradient(135deg, rgba(15,23,42,0.72), rgba(17,24,39,0.84))',
-                    border: '1px solid rgba(148,163,184,0.12)',
-                    boxShadow: '0 18px 42px rgba(2,6,23,0.18)',
-                }}
-            >
-                <Text
-                    style={{
-                        display: 'block',
-                        color: '#93c5fd',
-                        fontSize: 12,
-                        fontWeight: 800,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.16em',
-                        marginBottom: 12,
-                    }}
-                >
-                    Story flow
-                </Text>
-
+            <MotionReveal delay={0.08} y={22} blur={10}>
                 <div
                     style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                        gap: 10,
+                        padding: '18px 18px',
+                        borderRadius: 24,
+                        background:
+                            'linear-gradient(135deg, rgba(15,23,42,0.72), rgba(17,24,39,0.84))',
+                        border: '1px solid rgba(148,163,184,0.12)',
+                        boxShadow: '0 18px 42px rgba(2,6,23,0.18)',
                     }}
                 >
-                    {storyFlowSteps.map((step, index) => (
-                        <div
-                            key={step}
-                            style={{
-                                padding: '14px 14px',
-                                borderRadius: 18,
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(148,163,184,0.10)',
-                            }}
-                        >
-                            <div
+                    <Text
+                        style={{
+                            display: 'block',
+                            color: '#93c5fd',
+                            fontSize: 12,
+                            fontWeight: 800,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.16em',
+                            marginBottom: 12,
+                        }}
+                    >
+                        Story flow
+                    </Text>
+
+                    <div
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                            gap: 10,
+                        }}
+                    >
+                        {storyFlowSteps.map((step, index) => (
+                            <motion.div
+                                key={step}
                                 style={{
-                                    color: '#64748b',
-                                    fontSize: 11,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.14em',
-                                    marginBottom: 8,
-                                    fontWeight: 800,
+                                    padding: '14px 14px',
+                                    borderRadius: 18,
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid rgba(148,163,184,0.10)',
                                 }}
+                                whileHover={{y: -2, scale: 1.02}}
+                                transition={hoverLiftTransition}
                             >
-                                Step 0{index + 1}
-                            </div>
-                            <div
-                                style={{
-                                    color: '#f8fafc',
-                                    fontSize: 18,
-                                    fontWeight: 700,
-                                }}
-                            >
-                                {step}
-                            </div>
-                        </div>
-                    ))}
+                                <div
+                                    style={{
+                                        color: '#64748b',
+                                        fontSize: 11,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.14em',
+                                        marginBottom: 8,
+                                        fontWeight: 800,
+                                    }}
+                                >
+                                    Step 0{index + 1}
+                                </div>
+                                <div
+                                    style={{
+                                        color: '#f8fafc',
+                                        fontSize: 18,
+                                        fontWeight: 700,
+                                    }}
+                                >
+                                    {step}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            </MotionReveal>
 
-            <ResearchWorkspace
-                tracks={researchTracks}
-                activeTrackId={activeResearchId}
-                summaryOpen={researchSummaryOpen}
-                onSelectTrack={(trackId) => {
-                    setActiveResearchId(trackId);
-                    setResearchSummaryOpen(true);
-                }}
-                onToggleSummary={() => setResearchSummaryOpen((current) => !current)}
-            />
-
-            <div>
-                <Text
-                    style={{
-                        display: 'block',
-                        color: '#86efac',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        letterSpacing: '0.16em',
-                        textTransform: 'uppercase',
-                        marginBottom: 8,
+            <MotionReveal delay={0.1} y={24} blur={10}>
+                <ResearchWorkspace
+                    tracks={researchTracks}
+                    activeTrackId={activeResearchId}
+                    summaryOpen={researchSummaryOpen}
+                    onSelectTrack={(trackId) => {
+                        setActiveResearchId(trackId);
+                        setResearchSummaryOpen(true);
                     }}
-                >
-                    3. Projects
-                </Text>
-                <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
-                    Applied knowledge in a real shipped artifact
-                </Title>
-            </div>
+                    onToggleSummary={() => setResearchSummaryOpen((current) => !current)}
+                />
+            </MotionReveal>
+
+            <MotionReveal delay={0.04} y={18} blur={8}>
+                <div>
+                    <Text
+                        style={{
+                            display: 'block',
+                            color: '#86efac',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            letterSpacing: '0.16em',
+                            textTransform: 'uppercase',
+                            marginBottom: 8,
+                        }}
+                    >
+                        3. Projects
+                    </Text>
+                    <Title level={2} style={{margin: 0, color: '#f8fafc'}}>
+                        Applied knowledge in a real shipped artifact
+                    </Title>
+                </div>
+            </MotionReveal>
 
             <Space orientation="vertical" size={16} style={{width: '100%'}}>
                 {portfolioProjects.map((project) => (
-                    <ProjectCard key={project.id} project={project}/>
+                    <MotionReveal key={project.id} delay={0.08} y={24} blur={10}>
+                        <ProjectCard project={project}/>
+                    </MotionReveal>
                 ))}
             </Space>
         </Space>
