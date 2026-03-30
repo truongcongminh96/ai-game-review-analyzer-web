@@ -182,10 +182,18 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
 
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={12}>
-                    <InsightList title="Most Praised Features" items={result.praisedFeatures}/>
+                    <InsightList
+                        title="Most Loved"
+                        items={result.praisedFeatures}
+                        variant="love"
+                    />
                 </Col>
                 <Col xs={24} lg={12}>
-                    <InsightList title="Common Complaints" items={result.commonComplaints}/>
+                    <InsightList
+                        title="Most Complained"
+                        items={result.commonComplaints}
+                        variant="complaint"
+                    />
                 </Col>
             </Row>
         </Space>
