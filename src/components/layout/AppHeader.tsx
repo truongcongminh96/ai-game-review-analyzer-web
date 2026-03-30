@@ -1,6 +1,6 @@
 import {Grid, Layout, Tag, Typography} from 'antd';
 import {ThunderboltOutlined} from '@ant-design/icons';
-import {AnimatePresence, motion} from 'framer-motion';
+import {AnimatePresence, motion, useReducedMotion} from 'framer-motion';
 import {useEffect, useRef, useState} from 'react';
 import {hoverLiftTransition} from '../../motion/animations';
 
@@ -15,6 +15,12 @@ type AppHeaderProps = {
     currentPage: AppPage;
     onNavigate: (page: AppPage) => void;
 };
+
+const headerPreviewVideos = [
+    '/video/Asian_female_warrior_202603310313.mp4',
+    '/video/Asian_female_warrior_202603310316.mp4',
+    '/video/Asian_female_warrior_202603310319.mp4',
+];
 
 type BrandGlyphProps = {
     size: number;
@@ -103,10 +109,13 @@ function BrandGlyph({size}: BrandGlyphProps) {
 function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const screens = useBreakpoint();
     const [isScrolled, setIsScrolled] = useState(false);
+    const [activeVideoIndex, setActiveVideoIndex] = useState(0);
     const compactTriggerRef = useRef<HTMLDivElement | null>(null);
+    const reduceMotion = useReducedMotion();
     const isMobile = !screens.md;
     const isCompactDesktop = Boolean(screens.md && !screens.xl);
     const showInlineBadges = Boolean(screens.xl);
+    const showHeaderVideo = Boolean(screens.md);
     const isStickyCompact = isScrolled;
     const contextBadge =
         currentPage === 'learning-journey'
@@ -253,6 +262,20 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
         };
     }, [isMobile]);
 
+    useEffect(() => {
+        if (!showHeaderVideo || reduceMotion || headerPreviewVideos.length < 2) {
+            return undefined;
+        }
+
+        const rotation = window.setInterval(() => {
+            setActiveVideoIndex((current) => (current + 1) % headerPreviewVideos.length);
+        }, 6800);
+
+        return () => {
+            window.clearInterval(rotation);
+        };
+    }, [reduceMotion, showHeaderVideo]);
+
     const renderNavRail = (compact: boolean, overlay = false) => (
         <div
             style={{
@@ -371,8 +394,9 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
         <>
             <Header
                 style={{
-                    background:
-                        'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
+                    background: showHeaderVideo
+                        ? 'linear-gradient(180deg, rgba(5,7,13,0.72), rgba(7,12,20,0.68) 58%, rgba(10,15,24,0.78))'
+                        : 'radial-gradient(circle at top left, rgba(255,90,54,0.10), transparent 24%), radial-gradient(circle at top right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(5,7,13,0.98), rgba(8,13,21,0.94) 58%, rgba(10,15,24,0.90))',
                     borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                     backdropFilter: 'blur(18px)',
                     WebkitBackdropFilter: 'blur(18px)',
@@ -388,11 +412,87 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     lineHeight: 'normal',
                 }}
             >
+                {showHeaderVideo ? (
+                    <motion.div
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        transition={{duration: 0.45, ease: 'easeOut'}}
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            overflow: 'hidden',
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        <AnimatePresence mode="wait">
+                            <motion.video
+                                key={headerPreviewVideos[activeVideoIndex]}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                preload="auto"
+                                aria-label="Header cinematic background"
+                                initial={{
+                                    opacity: 0,
+                                    scale: 1.08,
+                                    filter: 'saturate(0.98) contrast(1.06) brightness(0.74)',
+                                }}
+                                animate={{
+                                    opacity: 0.74,
+                                    scale: 1.02,
+                                    filter: 'saturate(1.02) contrast(1.1) brightness(0.82)',
+                                }}
+                                exit={{
+                                    opacity: 0,
+                                    scale: 1.06,
+                                    filter: 'saturate(1) contrast(1.08) brightness(0.76)',
+                                }}
+                                transition={{
+                                    duration: reduceMotion ? 0 : 0.9,
+                                    ease: [0.22, 1, 0.36, 1],
+                                }}
+                                style={{
+                                    position: 'absolute',
+                                    inset: '-12%',
+                                    width: '124%',
+                                    height: '124%',
+                                    objectFit: 'cover',
+                                    objectPosition: 'center 18%',
+                                }}
+                                src={headerPreviewVideos[activeVideoIndex]}
+                            />
+                        </AnimatePresence>
+
+                        <div
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background:
+                                    'linear-gradient(135deg, rgba(5,7,13,0.80), rgba(5,7,13,0.24) 40%, rgba(4,7,12,0.72) 100%), radial-gradient(circle at 78% 18%, rgba(94,231,255,0.16), transparent 24%), radial-gradient(circle at 16% 68%, rgba(255,90,54,0.16), transparent 28%)',
+                            }}
+                        />
+
+                        <div
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background:
+                                    'repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 18px)',
+                                opacity: 0.16,
+                                mixBlendMode: 'screen',
+                            }}
+                        />
+                    </motion.div>
+                ) : null}
+
                 <div
                     style={{
                         maxWidth: 1280,
                         margin: '0 auto',
                         width: '100%',
+                        position: 'relative',
+                        zIndex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         gap: isMobile ? 14 : 18,
