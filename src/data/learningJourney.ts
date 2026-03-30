@@ -49,6 +49,23 @@ export type PortfolioProject = {
     tech: string[];
     impact: string;
     learnings: string[];
+    whyBuilt: Array<{
+        title: string;
+        detail: string;
+    }>;
+    usageScenario: Array<{
+        label: string;
+        detail: string;
+    }>;
+    engineeringDetails: Array<{
+        title: string;
+        detail: string;
+    }>;
+    tradeOffs: Array<{
+        option: string;
+        tradeoff: string;
+    }>;
+    limitations: string[];
 };
 
 export const learningCourses: LearningCourse[] = [
@@ -62,12 +79,11 @@ export const learningCourses: LearningCourse[] = [
         modules: '2 Courses',
         status: 'Almost completed',
         summary:
-            'A management-focused GenAI program that combines business applications, AI productivity, and hands-on workflow building for real-world execution.',
+            'A practical GenAI program for building AI workflows, no-code MVPs, and better product decisions.',
         credential:
             '2 globally recognized certificates from NSDC, Microsoft, and upGrad.',
         highlights: [
             'Build AI agents, automate daily workflows, and create deployable no-code MVPs.',
-            'Practice directly with GenAI tools instead of staying at theory level.',
             'Learn how AI can support strategy, operations, and decision making across business functions.',
         ],
         toolGroups: [
@@ -220,6 +236,76 @@ export const portfolioProjects: PortfolioProject[] = [
             'System design across frontend, backend, and inference flow',
             'Prompt engineering for more structured and reusable outputs',
             'Handling LLM latency while keeping the UI readable and responsive',
+        ],
+        whyBuilt: [
+            {
+                title: 'I saw the problem',
+                detail: 'Teams waste hours reading reviews but still miss critical issues.',
+            },
+            {
+                title: 'Existing tools fail',
+                detail: 'Dashboards show sentiment, but hide root causes and patterns.',
+            },
+            {
+                title: 'AI can solve this',
+                detail: 'Structured LLM pipelines convert noisy feedback into decision-ready signals.',
+            },
+        ],
+        usageScenario: [
+            {
+                label: 'Launch',
+                detail: 'A game release starts receiving 10k reviews a day.',
+            },
+            {
+                label: 'Analyze',
+                detail: 'The AI pipeline analyzes the stream and clusters recurring complaints.',
+            },
+            {
+                label: 'Surface',
+                detail: 'A PM sees a concentrated bug or performance issue immediately.',
+            },
+            {
+                label: 'Respond',
+                detail: 'The team ships a targeted fix within 24 hours.',
+            },
+            {
+                label: 'Impact',
+                detail: 'Player sentiment stabilizes and the rating trend improves.',
+            },
+        ],
+        engineeringDetails: [
+            {
+                title: 'Architecture',
+                detail: 'A Go backend handles Steam fetching, prompt orchestration, and model execution, while a React frontend turns the output into a readable decision dashboard.',
+            },
+            {
+                title: 'Prompt',
+                detail: 'The prompt is structured to extract summary, praised features, complaints, topics, and sentiment so the output stays reusable and easier to trust.',
+            },
+            {
+                title: 'Infra',
+                detail: 'A local-first Ollama setup keeps experimentation low-cost and flexible, while mock and live modes make the product easier to demo, test, and iterate.',
+            },
+        ],
+        tradeOffs: [
+            {
+                option: 'Local LLM (Ollama)',
+                tradeoff: 'Low cost and high control, but higher latency during heavier review batches.',
+            },
+            {
+                option: 'Cloud LLM',
+                tradeoff: 'Lower latency and stronger quality, but higher cost and less deployment control.',
+            },
+            {
+                option: 'Batch processing',
+                tradeoff: 'Improves consistency and stability, but increases delay before insight cards are ready.',
+            },
+        ],
+        limitations: [
+            'LLM hallucination risk still exists when reviews are noisy or contradictory.',
+            'Topic clustering is useful, but not perfect for overlapping complaints.',
+            'The current workflow is biased toward English-language reviews.',
+            'Large datasets still create noticeable latency in local inference mode.',
         ],
     },
 ];

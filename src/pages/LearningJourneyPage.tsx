@@ -32,6 +32,11 @@ type ProjectCardProps = {
 const storyFlowSteps = ['Problem', 'Research', 'Idea', 'Build', 'Test', 'Impact'];
 
 function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
+    const keyTools = Array.from(new Set(course.toolGroups.flatMap((group) => group.tools))).slice(
+        0,
+        4
+    );
+
     return (
         <Card
             style={{
@@ -54,7 +59,6 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'flex-start',
-                                    justifyContent: 'space-between',
                                     gap: 16,
                                     flexWrap: 'wrap',
                                 }}
@@ -118,20 +122,6 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                         {course.partner}
                                     </div>
                                 </div>
-
-                                <div
-                                    style={{
-                                        padding: '10px 14px',
-                                        borderRadius: 999,
-                                        background: 'rgba(15,23,42,0.06)',
-                                        border: '1px solid rgba(15,23,42,0.08)',
-                                        color: '#0f172a',
-                                        fontSize: 13,
-                                        fontWeight: 700,
-                                    }}
-                                >
-                                    Featured course
-                                </div>
                             </div>
 
                             <div>
@@ -162,17 +152,11 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
 
                                 <div
                                     style={{
-                                        marginTop: 18,
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        padding: '10px 14px',
-                                        borderRadius: 16,
-                                        background: 'rgba(15,23,42,0.05)',
-                                        border: '1px solid rgba(15,23,42,0.08)',
-                                        color: '#0f172a',
+                                        marginTop: 16,
+                                        color: '#64748b',
                                         fontSize: 14,
-                                        fontWeight: 700,
-                                        lineHeight: 1.6,
+                                        fontWeight: 600,
+                                        lineHeight: 1.7,
                                     }}
                                 >
                                     {course.credential}
@@ -415,117 +399,39 @@ function CourseCard({course, notesOpen, onToggleNotes}: CourseCardProps) {
                                         marginBottom: 14,
                                     }}
                                 >
-                                    Tools used
+                                    Key tools
                                 </div>
 
-                                <Space
-                                    orientation="vertical"
-                                    size={12}
-                                    style={{width: '100%', marginBottom: 18}}
-                                >
-                                    {course.toolGroups.map((group) => (
+                                <Space wrap size={[10, 10]} style={{width: '100%'}}>
+                                    {keyTools.map((tool) => (
                                         <div
-                                            key={group.category}
+                                            key={tool}
                                             style={{
-                                                padding: '14px 14px',
-                                                borderRadius: 18,
-                                                background: 'rgba(15,23,42,0.04)',
+                                                padding: '10px 12px',
+                                                borderRadius: 14,
+                                                background: 'rgba(255,255,255,0.66)',
                                                 border: '1px solid rgba(15,23,42,0.08)',
+                                                color: '#334155',
+                                                fontSize: 14,
+                                                fontWeight: 700,
                                             }}
                                         >
-                                            <div
-                                                style={{
-                                                    color: '#0f172a',
-                                                    fontSize: 12,
-                                                    fontWeight: 800,
-                                                    textTransform: 'uppercase',
-                                                    letterSpacing: '0.14em',
-                                                    marginBottom: 10,
-                                                }}
-                                            >
-                                                {group.category}
-                                            </div>
-
-                                            <Space wrap size={[8, 8]}>
-                                                {group.tools.map((tool) => (
-                                                    <div
-                                                        key={`${group.category}-${tool}`}
-                                                        style={{
-                                                            padding: '8px 10px',
-                                                            borderRadius: 14,
-                                                            background: 'rgba(255,255,255,0.62)',
-                                                            border: '1px solid rgba(15,23,42,0.08)',
-                                                            color: '#334155',
-                                                            fontSize: 13,
-                                                            fontWeight: 700,
-                                                        }}
-                                                    >
-                                                        {tool}
-                                                    </div>
-                                                ))}
-                                            </Space>
+                                            {tool}
                                         </div>
                                     ))}
                                 </Space>
 
                                 <div
                                     style={{
-                                        color: '#0f172a',
-                                        fontSize: 13,
-                                        fontWeight: 800,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.16em',
-                                        marginBottom: 16,
+                                        marginTop: 16,
+                                        color: '#475569',
+                                        lineHeight: 1.75,
+                                        fontSize: 14,
                                     }}
                                 >
-                                    Key Takeaways
+                                    Detailed takeaways are tucked into <strong>Review Notes</strong>{' '}
+                                    to keep this card compact.
                                 </div>
-
-                                <Space orientation="vertical" size={12} style={{width: '100%'}}>
-                                    {course.takeaways.map((takeaway, index) => (
-                                        <div
-                                            key={takeaway}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'flex-start',
-                                                gap: 12,
-                                                padding: '12px 14px',
-                                                borderRadius: 18,
-                                                background: 'rgba(255,255,255,0.52)',
-                                                border: '1px solid rgba(15,23,42,0.06)',
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    width: 30,
-                                                    height: 30,
-                                                    borderRadius: 999,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    background: 'rgba(239,35,60,0.10)',
-                                                    color: '#be123c',
-                                                    fontSize: 13,
-                                                    fontWeight: 800,
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                {index + 1}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    color: '#334155',
-                                                    lineHeight: 1.7,
-                                                    fontSize: 14,
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                {takeaway}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </Space>
                             </div>
                         </Space>
                     </Col>
@@ -648,6 +554,32 @@ function ResearchWorkspace({
     }
 
     const viewPdfEnabled = Boolean(activeTrack.pdfPath);
+    const keySectionsSectionId = `${activeTrack.id}-key-sections`;
+    const impactSectionId = `${activeTrack.id}-impact`;
+
+    const jumpToSection = (sectionId: string, openSummaryFirst = false) => {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        if (openSummaryFirst && !summaryOpen) {
+            onToggleSummary();
+            window.setTimeout(() => {
+                document
+                    .getElementById(sectionId)
+                    ?.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }, 0);
+            return;
+        }
+
+        document.getElementById(sectionId)?.scrollIntoView({behavior: 'smooth', block: 'start'});
+    };
+
+    const memoryFrameItems = [
+        {label: 'Problem', value: activeTrack.problem, color: '#fda4af'},
+        {label: 'Solution', value: activeTrack.solution, color: '#93c5fd'},
+        {label: 'Impact', value: activeTrack.impact, color: '#86efac', id: impactSectionId},
+    ];
 
     return (
         <Space orientation="vertical" size={18} style={{width: '100%'}}>
@@ -785,6 +717,7 @@ function ResearchWorkspace({
                             </Space>
 
                             <div
+                                id={keySectionsSectionId}
                                 style={{
                                     padding: '18px 18px',
                                     borderRadius: 22,
@@ -885,13 +818,10 @@ function ResearchWorkspace({
                                     </Text>
 
                                     <Space orientation="vertical" size={12} style={{width: '100%'}}>
-                                        {[
-                                            {label: 'Problem', value: activeTrack.problem, color: '#fda4af'},
-                                            {label: 'Solution', value: activeTrack.solution, color: '#93c5fd'},
-                                            {label: 'Impact', value: activeTrack.impact, color: '#86efac'},
-                                        ].map((item) => (
+                                        {memoryFrameItems.map((item) => (
                                             <div
                                                 key={item.label}
+                                                id={item.id}
                                                 style={{
                                                     padding: '12px 14px',
                                                     borderRadius: 16,
@@ -1224,6 +1154,82 @@ function ResearchWorkspace({
                                     ) : null}
                                 </div>
 
+                                <div
+                                    style={{
+                                        marginBottom: 14,
+                                        padding: '14px 14px',
+                                        borderRadius: 18,
+                                        background: 'rgba(2,6,23,0.24)',
+                                        border: '1px solid rgba(148,163,184,0.10)',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            color: '#f8fafc',
+                                            fontSize: 12,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.14em',
+                                            fontWeight: 800,
+                                            marginBottom: 12,
+                                        }}
+                                    >
+                                        Focus first
+                                    </div>
+
+                                    <Space wrap size={[8, 8]} style={{marginBottom: 12}}>
+                                        {memoryFrameItems.map((item) => (
+                                            <button
+                                                key={item.label}
+                                                type="button"
+                                                onClick={() =>
+                                                    jumpToSection(item.id ?? impactSectionId, true)
+                                                }
+                                                style={{
+                                                    appearance: 'none',
+                                                    borderRadius: 999,
+                                                    padding: '8px 12px',
+                                                    border: `1px solid ${item.color}33`,
+                                                    background: `${item.color}14`,
+                                                    color: item.color,
+                                                    fontWeight: 800,
+                                                    cursor: 'pointer',
+                                                }}
+                                            >
+                                                {item.label}
+                                            </button>
+                                        ))}
+                                    </Space>
+
+                                    <Space wrap size={[10, 10]}>
+                                        <Button
+                                            size="middle"
+                                            onClick={() => jumpToSection(keySectionsSectionId)}
+                                            style={{
+                                                borderRadius: 14,
+                                                background: 'rgba(15,23,42,0.52)',
+                                                border: '1px solid rgba(148,163,184,0.14)',
+                                                color: '#f8fafc',
+                                                fontWeight: 700,
+                                            }}
+                                        >
+                                            Go to insights
+                                        </Button>
+                                        <Button
+                                            size="middle"
+                                            onClick={() => jumpToSection(impactSectionId, true)}
+                                            style={{
+                                                borderRadius: 14,
+                                                background: 'rgba(15,23,42,0.52)',
+                                                border: '1px solid rgba(148,163,184,0.14)',
+                                                color: '#f8fafc',
+                                                fontWeight: 700,
+                                            }}
+                                        >
+                                            Go to ROI
+                                        </Button>
+                                    </Space>
+                                </div>
+
                                 {viewPdfEnabled ? (
                                     <iframe
                                         title={`${activeTrack.title} preview`}
@@ -1324,6 +1330,9 @@ function ResearchWorkspace({
 }
 
 function ProjectCard({project}: ProjectCardProps) {
+    const [showEngineeringDetails, setShowEngineeringDetails] = useState(false);
+    const scenarioAccentColors = ['#60a5fa', '#22d3ee', '#34d399', '#f59e0b', '#fb7185'];
+
     return (
         <Card
             style={{
@@ -1394,6 +1403,58 @@ function ProjectCard({project}: ProjectCardProps) {
                                 </Tag>
                             ))}
                         </Space>
+
+                        <div
+                            style={{
+                                padding: '18px 18px',
+                                borderRadius: 20,
+                                background: 'rgba(255,255,255,0.03)',
+                                border: '1px solid rgba(148,163,184,0.10)',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    display: 'block',
+                                    color: '#94a3b8',
+                                    fontSize: 12,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.14em',
+                                    marginBottom: 12,
+                                }}
+                            >
+                                I built this because
+                            </Text>
+
+                            <Row gutter={[12, 12]}>
+                                {project.whyBuilt.map((item) => (
+                                    <Col xs={24} md={8} key={item.title}>
+                                        <div
+                                            style={{
+                                                height: '100%',
+                                                padding: '14px 14px',
+                                                borderRadius: 18,
+                                                background: 'rgba(2,6,23,0.22)',
+                                                border: '1px solid rgba(148,163,184,0.08)',
+                                            }}
+                                        >
+                                            <Text
+                                                style={{
+                                                    display: 'block',
+                                                    color: '#67e8f9',
+                                                    fontWeight: 800,
+                                                    marginBottom: 8,
+                                                }}
+                                            >
+                                                {item.title}
+                                            </Text>
+                                            <Text style={{color: '#e2e8f0', lineHeight: 1.75}}>
+                                                {item.detail}
+                                            </Text>
+                                        </div>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </div>
                     </Space>
                 </Col>
 
@@ -1479,6 +1540,355 @@ function ProjectCard({project}: ProjectCardProps) {
                     </div>
                 </Col>
             </Row>
+
+            <div
+                style={{
+                    marginTop: 20,
+                    padding: '20px 20px',
+                    borderRadius: 22,
+                    background:
+                        'linear-gradient(135deg, rgba(15,23,42,0.72), rgba(17,24,39,0.88))',
+                    border: '1px solid rgba(148,163,184,0.12)',
+                }}
+            >
+                <Text
+                    style={{
+                        display: 'block',
+                        color: '#94a3b8',
+                        fontSize: 12,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.14em',
+                        marginBottom: 8,
+                    }}
+                >
+                    Real-world usage scenario
+                </Text>
+
+                <Text
+                    style={{
+                        display: 'block',
+                        color: '#cbd5e1',
+                        lineHeight: 1.75,
+                        marginBottom: 16,
+                    }}
+                >
+                    A recruiter or PM should be able to scan this left to right and understand how
+                    the product moves from noisy player feedback to a concrete fix and measurable
+                    outcome.
+                </Text>
+
+                <div
+                    style={{
+                        overflowX: 'auto',
+                        paddingBottom: 6,
+                    }}
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'stretch',
+                            minWidth: 'max-content',
+                        }}
+                    >
+                        {project.usageScenario.map((step, index) => {
+                            const accentColor =
+                                scenarioAccentColors[index % scenarioAccentColors.length];
+
+                            return (
+                                <div
+                                    key={`${step.label}-${step.detail}`}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        flexShrink: 0,
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: 224,
+                                            minWidth: 224,
+                                            padding: '16px 16px',
+                                            borderRadius: 20,
+                                            background:
+                                                'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(2,6,23,0.20))',
+                                            border: `1px solid ${accentColor}22`,
+                                            boxShadow: `0 16px 34px ${accentColor}12`,
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                gap: 12,
+                                                marginBottom: 14,
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: 8,
+                                                    padding: '6px 10px',
+                                                    borderRadius: 999,
+                                                    background: `${accentColor}16`,
+                                                    border: `1px solid ${accentColor}28`,
+                                                    color: accentColor,
+                                                    fontWeight: 800,
+                                                    fontSize: 12,
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.10em',
+                                                }}
+                                            >
+                                                {step.label}
+                                            </div>
+                                            <div
+                                                style={{
+                                                    color: '#94a3b8',
+                                                    fontSize: 11,
+                                                    fontWeight: 800,
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.14em',
+                                                }}
+                                            >
+                                                Step 0{index + 1}
+                                            </div>
+                                        </div>
+                                        <Text
+                                            style={{
+                                                display: 'block',
+                                                color: '#f8fafc',
+                                                lineHeight: 1.8,
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            {step.detail}
+                                        </Text>
+                                    </div>
+
+                                    {index < project.usageScenario.length - 1 ? (
+                                        <div
+                                            aria-hidden="true"
+                                            style={{
+                                                width: 60,
+                                                minWidth: 60,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    width: 28,
+                                                    height: 2,
+                                                    borderRadius: 999,
+                                                    background: 'rgba(148,163,184,0.44)',
+                                                }}
+                                            />
+                                            <div
+                                                style={{
+                                                    width: 0,
+                                                    height: 0,
+                                                    marginLeft: 4,
+                                                    borderTop: '6px solid transparent',
+                                                    borderBottom: '6px solid transparent',
+                                                    borderLeft: `8px solid ${accentColor}`,
+                                                }}
+                                            />
+                                        </div>
+                                    ) : null}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style={{
+                    marginTop: 20,
+                    padding: '20px 20px',
+                    borderRadius: 22,
+                    background:
+                        'linear-gradient(180deg, rgba(120,53,15,0.20), rgba(15,23,42,0.54))',
+                    border: '1px solid rgba(251,191,36,0.18)',
+                }}
+            >
+                <Text
+                    style={{
+                        display: 'block',
+                        color: '#fde68a',
+                        fontSize: 12,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.14em',
+                        fontWeight: 800,
+                        marginBottom: 14,
+                    }}
+                >
+                    Known limitations
+                </Text>
+
+                <Row gutter={[12, 12]}>
+                    {project.limitations.map((limitation) => (
+                        <Col xs={24} md={12} key={limitation}>
+                            <div
+                                style={{
+                                    height: '100%',
+                                    padding: '14px 14px',
+                                    borderRadius: 18,
+                                    background: 'rgba(255,255,255,0.04)',
+                                    border: '1px solid rgba(251,191,36,0.10)',
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: '#fef3c7',
+                                        lineHeight: 1.75,
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    {limitation}
+                                </Text>
+                            </div>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
+
+            <div
+                style={{
+                    marginTop: 20,
+                }}
+            >
+                <Button
+                    size="large"
+                    onClick={() => setShowEngineeringDetails((current) => !current)}
+                    style={{
+                        borderRadius: 16,
+                        height: 48,
+                        paddingInline: 20,
+                        background: 'rgba(15,23,42,0.52)',
+                        border: '1px solid rgba(148,163,184,0.14)',
+                        color: '#f8fafc',
+                        fontWeight: 700,
+                    }}
+                >
+                    {showEngineeringDetails
+                        ? 'Hide engineering details'
+                        : 'Show engineering details'}
+                </Button>
+            </div>
+
+            {showEngineeringDetails ? (
+                <div
+                    style={{
+                        marginTop: 16,
+                        padding: '20px 20px',
+                        borderRadius: 22,
+                        background:
+                            'linear-gradient(180deg, rgba(15,23,42,0.96), rgba(17,24,39,0.98))',
+                        border: '1px solid rgba(148,163,184,0.12)',
+                    }}
+                >
+                    <Text
+                        style={{
+                            display: 'block',
+                            color: '#f8fafc',
+                            fontSize: 12,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.14em',
+                            marginBottom: 14,
+                        }}
+                    >
+                        Engineering details
+                    </Text>
+
+                    <Row gutter={[14, 14]}>
+                        {project.engineeringDetails.map((detail) => (
+                            <Col xs={24} md={12} xl={8} key={detail.title}>
+                                <div
+                                    style={{
+                                        height: '100%',
+                                        padding: '16px 16px',
+                                        borderRadius: 18,
+                                        background: 'rgba(255,255,255,0.03)',
+                                        border: '1px solid rgba(148,163,184,0.10)',
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            display: 'block',
+                                            color: '#67e8f9',
+                                            fontWeight: 800,
+                                            marginBottom: 8,
+                                        }}
+                                    >
+                                        {detail.title}
+                                    </Text>
+                                    <Text style={{color: '#e2e8f0', lineHeight: 1.8}}>
+                                        {detail.detail}
+                                    </Text>
+                                </div>
+                            </Col>
+                        ))}
+                    </Row>
+
+                    <div
+                        style={{
+                            marginTop: 18,
+                            padding: '18px 18px',
+                            borderRadius: 20,
+                            background:
+                                'linear-gradient(180deg, rgba(20,83,45,0.18), rgba(2,6,23,0.28))',
+                            border: '1px solid rgba(74,222,128,0.14)',
+                        }}
+                    >
+                        <Text
+                            style={{
+                                display: 'block',
+                                color: '#bbf7d0',
+                                fontSize: 12,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.14em',
+                                fontWeight: 800,
+                                marginBottom: 14,
+                            }}
+                        >
+                            Trade-offs
+                        </Text>
+
+                        <Row gutter={[12, 12]}>
+                            {project.tradeOffs.map((item) => (
+                                <Col xs={24} md={12} xl={8} key={item.option}>
+                                    <div
+                                        style={{
+                                            height: '100%',
+                                            padding: '14px 14px',
+                                            borderRadius: 18,
+                                            background: 'rgba(255,255,255,0.04)',
+                                            border: '1px solid rgba(74,222,128,0.10)',
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                display: 'block',
+                                                color: '#86efac',
+                                                fontWeight: 800,
+                                                marginBottom: 8,
+                                            }}
+                                        >
+                                            {item.option}
+                                        </Text>
+                                        <Text style={{color: '#dcfce7', lineHeight: 1.8}}>
+                                            {item.tradeoff}
+                                        </Text>
+                                    </div>
+                                </Col>
+                            ))}
+                        </Row>
+                    </div>
+                </div>
+            ) : null}
         </Card>
     );
 }
@@ -1530,7 +1940,7 @@ function LearningJourneyPage() {
                                     letterSpacing: '-0.04em',
                                 }}
                             >
-                                Courses, research, and applied AI work in one place
+                                Turning raw player feedback into real product decisions using AI
                             </Title>
 
                             <Paragraph
@@ -1542,9 +1952,10 @@ function LearningJourneyPage() {
                                     maxWidth: 880,
                                 }}
                             >
-                                This tab turns the project into more than a demo. It shows the
-                                learning layer, the research layer, and the product layer behind how
-                                I think about AI engineering with a product mindset.
+                                Courses, research, and applied AI work in one place so this reads as
+                                more than a demo. It shows the learning layer, the research layer,
+                                and the product layer behind how I think about AI engineering with a
+                                product mindset.
                             </Paragraph>
 
                             <Space wrap size={[10, 10]}>
