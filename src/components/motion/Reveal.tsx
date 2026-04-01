@@ -11,6 +11,7 @@ type MotionRevealProps = {
     blur?: number;
     amount?: number;
     once?: boolean;
+    trigger?: 'view' | 'mount';
 };
 
 type MotionStaggerProps = {
@@ -32,6 +33,7 @@ export function MotionReveal({
     blur = 10,
     amount = 0.18,
     once = true,
+    trigger = 'view',
 }: MotionRevealProps) {
     const reduceMotion = useReducedMotion();
 
@@ -48,8 +50,9 @@ export function MotionReveal({
             className={className}
             style={style}
             initial="hidden"
-            whileInView="visible"
-            viewport={{once, amount}}
+            animate={trigger === 'mount' ? 'visible' : undefined}
+            whileInView={trigger === 'view' ? 'visible' : undefined}
+            viewport={trigger === 'view' ? {once, amount} : undefined}
             variants={revealVariant(delay, y, blur)}
         >
             {children}

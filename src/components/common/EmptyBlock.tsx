@@ -1,4 +1,3 @@
-import {Card, Empty, Space, Tag, Typography} from 'antd';
 import HudOverlay from '../motion/HudOverlay';
 
 type EmptyBlockProps = {
@@ -7,33 +6,33 @@ type EmptyBlockProps = {
 };
 
 function EmptyBlock({title, description}: EmptyBlockProps) {
-    const {Paragraph, Title} = Typography;
-
     return (
-        <Card
+        <section
             className="glass-card hud-shell hud-angled-shell empty-state-card"
             style={{
                 borderRadius: 24,
                 minHeight: 340,
             }}
-            styles={{
-                body: {
+        >
+            <HudOverlay scanDelay={0.42} />
+            <div
+                style={{
                     height: '100%',
+                    minHeight: 340,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
                     textAlign: 'center',
                     padding: 32,
-                }
-            }}
-        >
-            <HudOverlay scanDelay={0.42} />
-            <Space orientation="vertical" size={14} style={{width: '100%', alignItems: 'center'}}>
-                <Tag
+                    gap: 14,
+                }}
+            >
+                <span
                     className="hud-chip"
                     style={{
-                        margin: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
                         borderRadius: 999,
                         padding: '6px 12px',
                         border: '1px solid rgba(94,231,255,0.18)',
@@ -43,48 +42,73 @@ function EmptyBlock({title, description}: EmptyBlockProps) {
                     }}
                 >
                     System Idle
-                </Tag>
+                </span>
 
                 <div className="hud-divider" style={{width: '100%', textAlign: 'center'}}>
-                    <Title
+                    <h3
                         className="ui-title-tight"
-                        level={3}
                         style={{
-                            marginBottom: 0,
+                            margin: 0,
                             color: '#f8fafc',
                         }}
                     >
                         {title}
-                    </Title>
+                    </h3>
                 </div>
 
-                <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    styles={{
-                        image: {
-                            opacity: 0.22,
-                            filter: 'grayscale(0.2)',
-                        },
-                        description: {
-                            display: 'none',
-                        },
+                <div
+                    aria-hidden="true"
+                    style={{
+                        position: 'relative',
+                        width: 108,
+                        height: 108,
+                        borderRadius: 28,
+                        border: '1px solid rgba(148,163,184,0.16)',
+                        background: 'rgba(15,23,42,0.30)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
                     }}
-                />
+                >
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: 58,
+                            height: 58,
+                            transform: 'translate(-50%, -50%)',
+                            borderRadius: '50%',
+                            border: '1px solid rgba(148,163,184,0.18)',
+                        }}
+                    />
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: 12,
+                            height: 12,
+                            transform: 'translate(-50%, -50%)',
+                            borderRadius: '50%',
+                            background: 'rgba(94,231,255,0.72)',
+                            boxShadow: '0 0 20px rgba(94,231,255,0.28)',
+                        }}
+                    />
+                </div>
 
-                <Paragraph
+                <p
                     className="ui-copy-muted"
                     style={{
                         maxWidth: 640,
-                        marginBottom: 0,
+                        margin: 0,
                         color: '#94a3b8',
                         fontSize: 18,
                         lineHeight: 1.7,
                     }}
                 >
                     {description}
-                </Paragraph>
-            </Space>
-        </Card>
+                </p>
+            </div>
+        </section>
     );
 }
 

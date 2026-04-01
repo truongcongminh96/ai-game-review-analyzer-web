@@ -1,5 +1,4 @@
-import {type PointerEvent, useEffect, useMemo, useRef, useState} from 'react';
-import {Space, Tag, Typography} from 'antd';
+import {type PointerEvent, type ReactNode, useEffect, useMemo, useRef, useState} from 'react';
 import {
     AnimatePresence,
     motion,
@@ -19,9 +18,12 @@ import {
     parallaxSpring,
 } from '../../motion/animations';
 
-const {Text, Title} = Typography;
+type HeroGameShowcaseProps = {
+    mode?: 'card' | 'background';
+    overlay?: ReactNode;
+};
 
-function HeroGameShowcase() {
+function HeroGameShowcase({mode = 'card', overlay}: HeroGameShowcaseProps) {
     const slides = useMemo(() => heroSlides, []);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
@@ -35,6 +37,7 @@ function HeroGameShowcase() {
         offset: ['start end', 'end start'],
     });
     const scrollImageY = useTransform(scrollYProgress, [0, 1], [-26, 26]);
+    const isBackground = mode === 'background';
     const glowX = useMotionValue(50);
     const glowY = useMotionValue(50);
     const glowOpacity = useSpring(0, {
@@ -107,7 +110,7 @@ function HeroGameShowcase() {
     return (
         <motion.div
             ref={showcaseRef}
-            className="hero-showcase hud-angled-shell"
+            className={`hero-showcase hud-angled-shell ${isBackground ? 'hero-showcase-background' : ''}`}
             onPointerMove={handlePointerMove}
             onPointerLeave={resetParallax}
             style={
@@ -225,47 +228,79 @@ function HeroGameShowcase() {
             />
             <HudOverlay reticlePosition="bottom-left" scanDelay={0.55} zIndex={1} />
 
-            <div className="hero-showcase-content">
-                <Space orientation="vertical" size={10} style={{width: '100%'}}>
-                    <Tag
-                        className="hud-chip"
-                        style={{
-                            width: 'fit-content',
-                            marginInlineEnd: 0,
-                            borderRadius: 999,
-                            padding: '6px 12px',
-                            border: '1px solid rgba(255,90,54,0.24)',
-                            background: 'rgba(255,90,54,0.12)',
-                            color: '#ffd7c9',
-                        }}
-                    >
-                        Featured mock game
-                    </Tag>
+            <div
+                className={`hero-showcase-content ${isBackground ? 'hero-showcase-content-background' : ''}`}
+            >
+                {isBackground ? (
+                    <>
+                        <div className="hero-showcase-overlay-copy">{overlay}</div>
 
-                    <div>
-                        <Title level={3} style={{margin: 0, color: '#f8fafc'}}>
-                            {currentSlide.title}
-                        </Title>
-                        <Text style={{color: '#67e8f9'}}>
-                            Steam App ID: #{currentSlide.appId}
-                        </Text>
-                    </div>
-                </Space>
+                        <div className="hero-showcase-floating-info">
+                            <span className="hero-showcase-featured-label">Featured mock game</span>
+                            <h3 className="hero-showcase-featured-title">{currentSlide.title}</h3>
+                            <span className="hero-showcase-featured-appid">
+                                Steam App ID: #{currentSlide.appId}
+                            </span>
+                        </div>
 
-                <div className="hero-showcase-dots">
-                    {slides.map((slide, index) => (
-                        <motion.button
-                            key={slide.appId}
-                            type="button"
-                            className={`hero-showcase-dot ${index === currentIndex ? 'active' : ''}`}
-                            onClick={() => setCurrentIndex(index)}
-                            aria-label={`Show ${slide.title}`}
-                            whileHover={{scale: 1.12}}
-                            whileTap={{scale: 0.92}}
-                            transition={hoverLiftTransition}
-                        />
-                    ))}
-                </div>
+                        <div className="hero-showcase-dots hero-showcase-dots-background">
+                            {slides.map((slide, index) => (
+                                <motion.button
+                                    key={slide.appId}
+                                    type="button"
+                                    className={`hero-showcase-dot ${index === currentIndex ? 'active' : ''}`}
+                                    onClick={() => setCurrentIndex(index)}
+                                    aria-label={`Show ${slide.title}`}
+                                    whileHover={{scale: 1.12}}
+                                    whileTap={{scale: 0.92}}
+                                    transition={hoverLiftTransition}
+                                />
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 10, width: '100%'}}>
+                            <span
+                                className="hud-chip"
+                                style={{
+                                    width: 'fit-content',
+                                    borderRadius: 999,
+                                    padding: '6px 12px',
+                                    border: '1px solid rgba(255,90,54,0.24)',
+                                    background: 'rgba(255,90,54,0.12)',
+                                    color: '#ffd7c9',
+                                }}
+                            >
+                                Featured mock game
+                            </span>
+
+                            <div>
+                                <h3 style={{margin: 0, color: '#f8fafc', fontSize: 32}}>
+                                    {currentSlide.title}
+                                </h3>
+                                <span style={{color: '#67e8f9'}}>
+                                    Steam App ID: #{currentSlide.appId}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="hero-showcase-dots">
+                            {slides.map((slide, index) => (
+                                <motion.button
+                                    key={slide.appId}
+                                    type="button"
+                                    className={`hero-showcase-dot ${index === currentIndex ? 'active' : ''}`}
+                                    onClick={() => setCurrentIndex(index)}
+                                    aria-label={`Show ${slide.title}`}
+                                    whileHover={{scale: 1.12}}
+                                    whileTap={{scale: 0.92}}
+                                    transition={hoverLiftTransition}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
         </motion.div>
     );

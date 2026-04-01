@@ -1,11 +1,9 @@
-import {Grid, Layout, Tag, Typography} from 'antd';
+import {Grid} from 'antd';
 import {ThunderboltOutlined} from '@ant-design/icons';
 import {AnimatePresence, motion, useReducedMotion} from 'framer-motion';
 import {useEffect, useRef, useState} from 'react';
 import {hoverLiftTransition} from '../../motion/animations';
 
-const {Header} = Layout;
-const {Text, Title} = Typography;
 const {useBreakpoint} = Grid;
 
 type AppPage = 'home' | 'source-review' | 'learning-journey';
@@ -113,6 +111,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
     const compactTriggerRef = useRef<HTMLDivElement | null>(null);
     const reduceMotion = useReducedMotion();
     const isMobile = !screens.md;
+    const isTabletLandscape = Boolean(screens.md && !screens.lg);
     const isCompactDesktop = Boolean(screens.md && !screens.xl);
     const showInlineBadges = Boolean(screens.xl);
     const showHeaderVideo = Boolean(screens.md);
@@ -160,16 +159,17 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: 12,
-                justifyContent: showInlineBadges ? 'flex-end' : 'flex-start',
+                justifyContent: showInlineBadges ? 'flex-end' : isTabletLandscape ? 'center' : 'flex-start',
             }}
         >
             <motion.div
                 whileHover={{y: -2, scale: 1.02, filter: 'brightness(1.05)'}}
                 transition={hoverLiftTransition}
             >
-                <Tag
+                <span
                     style={{
-                        marginInlineEnd: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
                         borderRadius: 999,
                         padding: isMobile ? '6px 12px' : '9px 16px',
                         border: sourceBadge.border,
@@ -184,16 +184,17 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     }}
                 >
                     {sourceBadge.label}
-                </Tag>
+                </span>
             </motion.div>
 
             <motion.div
                 whileHover={{y: -2, scale: 1.02, filter: 'brightness(1.06)'}}
                 transition={hoverLiftTransition}
             >
-                <Tag
+                <span
                     style={{
-                        marginInlineEnd: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
                         borderRadius: 999,
                         padding: isMobile ? '6px 12px' : '9px 16px',
                         border: '1px solid rgba(34,211,238,0.22)',
@@ -208,17 +209,18 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                     }}
                 >
                     AI Powered
-                </Tag>
+                </span>
             </motion.div>
 
             <motion.div
                 whileHover={{y: -2, scale: 1.02, filter: 'brightness(1.05)'}}
                 transition={hoverLiftTransition}
             >
-                <Tag
-                    icon={<ThunderboltOutlined/>}
+                <span
                     style={{
-                        marginInlineEnd: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
                         borderRadius: 999,
                         padding: isMobile ? '6px 12px' : '9px 16px',
                         border: contextBadge.border,
@@ -232,8 +234,9 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                         backdropFilter: 'blur(10px)',
                     }}
                 >
+                    <ThunderboltOutlined/>
                     {contextBadge.label}
-                </Tag>
+                </span>
             </motion.div>
         </div>
     );
@@ -269,14 +272,16 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
 
         const rotation = window.setInterval(() => {
             setActiveVideoIndex((current) => (current + 1) % headerPreviewVideos.length);
-        }, 6800);
+        }, 9400);
 
         return () => {
             window.clearInterval(rotation);
         };
     }, [reduceMotion, showHeaderVideo]);
 
-    const renderNavRail = (compact: boolean, overlay = false) => (
+    const useScrollableNav = isMobile || isTabletLandscape;
+
+    const renderNavRail = (compact: boolean) => (
         <div
             style={{
                 display: 'flex',
@@ -287,7 +292,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
         >
             <div
                 style={{
-                    width: overlay || isMobile ? '100%' : 'auto',
+                    width: isMobile ? '100%' : 'fit-content',
                     maxWidth: '100%',
                     padding: 1,
                     borderRadius: 999,
@@ -302,18 +307,36 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                 }}
             >
                 <div
+                    className="header-nav-track"
                     style={{
                         display: 'flex',
-                        gap: 8,
-                        width: '100%',
+                        gap: isTabletLandscape ? 6 : 8,
+                        width: isMobile ? 'max-content' : isTabletLandscape ? 'fit-content' : 'auto',
+                        minWidth: isMobile ? '100%' : 'auto',
                         maxWidth: '100%',
-                        padding: compact ? (isMobile ? 5 : 6) : isMobile ? 6 : 8,
+                        padding: compact
+                            ? isMobile
+                                ? 5
+                                : isTabletLandscape
+                                    ? 5
+                                    : 6
+                            : isMobile
+                                ? 6
+                                : isTabletLandscape
+                                    ? 6
+                                    : 8,
                         borderRadius: 999,
                         background:
                             'linear-gradient(180deg, rgba(8,12,19,0.98), rgba(13,19,29,0.88))',
                         border: '1px solid rgba(255,255,255,0.08)',
-                        justifyContent: isMobile ? 'space-between' : 'flex-start',
+                        justifyContent: useScrollableNav ? 'flex-start' : 'flex-start',
                         overflowX: 'auto',
+                        overflowY: 'hidden',
+                        scrollSnapType: useScrollableNav ? 'x proximity' : 'none',
+                        scrollPaddingInline: compact ? 6 : 8,
+                        WebkitOverflowScrolling: 'touch',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
                     }}
                 >
                     {navItems.map((item) => {
@@ -321,6 +344,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
 
                         return (
                             <motion.button
+                                className="header-nav-button"
                                 key={item.key}
                                 type="button"
                                 onClick={() => onNavigate(item.key)}
@@ -352,6 +376,10 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         ? compact
                                             ? '10px 10px'
                                             : '11px 10px'
+                                        : isTabletLandscape
+                                            ? compact
+                                                ? '9px 12px'
+                                                : '10px 14px'
                                         : isCompactDesktop
                                             ? compact
                                                 ? '10px 16px'
@@ -373,12 +401,35 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     fontWeight: active ? 700 : 600,
                                     transition: 'all 0.2s ease',
                                     textAlign: 'center',
-                                    flex: isMobile ? 1 : 'none',
-                                    minWidth: isMobile ? 0 : compact ? 160 : isCompactDesktop ? 164 : 182,
-                                    fontSize: compact ? (isMobile ? 14 : 16) : isMobile ? 15 : 18,
+                                    flex: useScrollableNav ? '0 0 auto' : 'none',
+                                    minWidth: isMobile
+                                        ? compact
+                                            ? 132
+                                            : 146
+                                        : isTabletLandscape
+                                            ? compact
+                                                ? 132
+                                                : 146
+                                            : compact
+                                                ? 160
+                                                : isCompactDesktop
+                                                    ? 164
+                                                    : 182,
+                                    fontSize: compact
+                                        ? isMobile
+                                            ? 14
+                                            : isTabletLandscape
+                                                ? 14
+                                                : 16
+                                        : isMobile
+                                            ? 15
+                                            : isTabletLandscape
+                                                ? 15
+                                                : 18,
                                     letterSpacing: active ? '0.07em' : '0.06em',
                                     textTransform: 'uppercase',
                                     whiteSpace: 'nowrap',
+                                    scrollSnapAlign: useScrollableNav ? 'start' : 'none',
                                 }}
                             >
                                 {item.label}
@@ -392,7 +443,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
 
     return (
         <>
-            <Header
+            <header
                 style={{
                     background: showHeaderVideo
                         ? 'linear-gradient(180deg, rgba(5,7,13,0.72), rgba(7,12,20,0.68) 58%, rgba(10,15,24,0.78))'
@@ -424,7 +475,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                             pointerEvents: 'none',
                         }}
                     >
-                        <AnimatePresence mode="wait">
+                        <AnimatePresence mode="sync">
                             <motion.video
                                 key={headerPreviewVideos[activeVideoIndex]}
                                 autoPlay
@@ -435,21 +486,21 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                 aria-label="Header cinematic background"
                                 initial={{
                                     opacity: 0,
-                                    scale: 1.08,
-                                    filter: 'saturate(0.98) contrast(1.06) brightness(0.74)',
+                                    scale: 1.06,
+                                    filter: 'saturate(0.98) contrast(1.06) brightness(0.76)',
                                 }}
                                 animate={{
                                     opacity: 0.74,
-                                    scale: 1.02,
+                                    scale: 1.01,
                                     filter: 'saturate(1.02) contrast(1.1) brightness(0.82)',
                                 }}
                                 exit={{
                                     opacity: 0,
-                                    scale: 1.06,
-                                    filter: 'saturate(1) contrast(1.08) brightness(0.76)',
+                                    scale: 1.04,
+                                    filter: 'saturate(1) contrast(1.08) brightness(0.78)',
                                 }}
                                 transition={{
-                                    duration: reduceMotion ? 0 : 0.9,
+                                    duration: reduceMotion ? 0 : 1.4,
                                     ease: [0.22, 1, 0.36, 1],
                                 }}
                                 style={{
@@ -527,9 +578,8 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     overflow: 'hidden',
                                 }}
                             >
-                                <Title
+                                <h2
                                     className="ui-title-tight"
-                                    level={2}
                                     style={{
                                         margin: 0,
                                         color: '#f8fafc',
@@ -545,7 +595,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                     }}
                                 >
                                     AI Game Review Analyzer
-                                </Title>
+                                </h2>
 
                                 <div
                                     style={{
@@ -556,13 +606,14 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         flexWrap: 'wrap',
                                     }}
                                 >
-                                    <Text
+                                    <p
                                         className="ui-copy-muted"
                                         style={{
                                             color: '#cbd5e1',
                                             fontSize: subtitleFontSize,
                                             fontWeight: 500,
                                             lineHeight: 1.5,
+                                            margin: 0,
                                             whiteSpace: 'normal',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
@@ -570,7 +621,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         }}
                                     >
                                         Turn raw player feedback into actionable game insight.
-                                    </Text>
+                                    </p>
                                 </div>
 
                                 <div
@@ -592,7 +643,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                             flexShrink: 0,
                                         }}
                                     />
-                                    <Text
+                                    <span
                                         className="ui-kicker"
                                         style={{
                                             color: '#fec2b3',
@@ -604,7 +655,7 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                                         }}
                                     >
                                         Steam-ready demo
-                                    </Text>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -623,11 +674,20 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
                         ) : null}
                     </div>
 
-                    {!showInlineBadges ? <div>{badgeCluster}</div> : null}
+                    {!showInlineBadges ? (
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: isTabletLandscape ? 'center' : 'flex-start',
+                            }}
+                        >
+                            {badgeCluster}
+                        </div>
+                    ) : null}
 
                     {renderNavRail(false)}
                 </div>
-            </Header>
+            </header>
 
             <div
                 ref={compactTriggerRef}
@@ -637,26 +697,29 @@ function AppHeader({dataSourceMode, currentPage, onNavigate}: AppHeaderProps) {
 
             <AnimatePresence>
                 {isStickyCompact ? (
-                    <motion.div
-                        initial={{opacity: 0, y: -18, scale: 0.985}}
-                        animate={{opacity: 1, y: 0, scale: 1}}
-                        exit={{opacity: 0, y: -14, scale: 0.985}}
-                        transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}
+                    <div
                         style={{
                             position: 'fixed',
                             top: isMobile ? 8 : 10,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: 'min(980px, calc(100vw - 24px))',
-                            maxWidth: 'calc(100vw - 24px)',
+                            left: isMobile ? 12 : '50%',
+                            right: isMobile ? 12 : 'auto',
+                            transform: isMobile ? 'none' : 'translateX(-50%)',
+                            width: isMobile ? 'auto' : 'min(980px, calc(100vw - 24px))',
+                            maxWidth: isMobile ? 'none' : 'calc(100vw - 24px)',
                             zIndex: 120,
                             pointerEvents: 'none',
                         }}
                     >
-                        <div style={{pointerEvents: 'auto'}}>
-                            {renderNavRail(true, true)}
-                        </div>
-                    </motion.div>
+                        <motion.div
+                            initial={{opacity: 0, y: -18, scale: 0.985}}
+                            animate={{opacity: 1, y: 0, scale: 1}}
+                            exit={{opacity: 0, y: -14, scale: 0.985}}
+                            transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}
+                            style={{pointerEvents: 'auto'}}
+                        >
+                            {renderNavRail(true)}
+                        </motion.div>
+                    </div>
                 ) : null}
             </AnimatePresence>
         </>

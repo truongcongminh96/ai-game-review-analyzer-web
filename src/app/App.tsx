@@ -1,5 +1,4 @@
-import {Col, Layout, Row, Space} from 'antd';
-import {lazy, Suspense, useState} from 'react';
+import {lazy, Suspense, useEffect, useRef, useState} from 'react';
 import EmptyBlock from '../components/common/EmptyBlock';
 import ErrorBlock from '../components/common/ErrorBlock';
 import LoadingBlock from '../components/common/LoadingBlock';
@@ -20,8 +19,6 @@ const SourceReviewPage = lazy(() => import('../pages/SourceReviewPage.tsx'));
 const ResultGrid = lazy(() => import('../components/results/ResultGrid'));
 const LearningJourneyPage = lazy(() => import('../pages/LearningJourneyPage.tsx'));
 
-const {Content} = Layout;
-
 type AnalysisContext = {
     game: GameOption;
     reviewLimit: number;
@@ -33,6 +30,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState<AppPage>('home');
     const [limit, setLimit] = useState(DEFAULT_REVIEW_LIMIT);
     const [analysisContext, setAnalysisContext] = useState<AnalysisContext | null>(null);
+    const resultSectionRef = useRef<HTMLDivElement | null>(null);
     const {query, selectedGame, suggestions, handleQueryChange, handleSelect} = useGameSearch();
     const {result, loading, error, runAnalysis} = useAnalyzeReviews();
     const dataSourceMode = env.mockMode ? 'mock' : 'live';
@@ -48,8 +46,29 @@ function App() {
         }
     };
 
+    useEffect(() => {
+        if (currentPage !== 'home' || loading || !result) {
+            return undefined;
+        }
+
+        if (typeof window === 'undefined' || window.innerWidth >= 992) {
+            return undefined;
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            resultSectionRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        }, 180);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [currentPage, loading, result]);
+
     const homeContent = (
-        <Space orientation="vertical" size={24} style={{width: '100%'}}>
+        <div className="app-section-stack">
             <MotionReveal y={20} blur={12}>
                 <AppHero/>
             </MotionReveal>
@@ -69,49 +88,55 @@ function App() {
             </MotionReveal>
 
             {error ? (
-                <MotionReveal delay={0.04} y={18} blur={8}>
+                <MotionReveal delay={0.04} y={18} blur={8} trigger="mount">
                     <ErrorBlock message={error}/>
                 </MotionReveal>
             ) : null}
 
             {loading ? (
-                <MotionReveal delay={0.04} y={18} blur={8}>
+                <MotionReveal delay={0.04} y={18} blur={8} trigger="mount">
                     <LoadingBlock/>
                 </MotionReveal>
             ) : null}
 
             {!loading && result ? (
-                <MotionReveal delay={0.06}>
-                    <Suspense fallback={<LoadingBlock/>}>
-                        <ResultGrid
-                            result={result}
-                            dataSourceMode={dataSourceMode}
-                            analysisContext={analysisContext}
-                        />
-                    </Suspense>
+                <MotionReveal
+                    delay={0.06}
+                    trigger="mount"
+                    style={{scrollMarginTop: 108}}
+                >
+                    <div ref={resultSectionRef}>
+                        <Suspense fallback={<LoadingBlock/>}>
+                            <ResultGrid
+                                result={result}
+                                dataSourceMode={dataSourceMode}
+                                analysisContext={analysisContext}
+                            />
+                        </Suspense>
+                    </div>
                 </MotionReveal>
             ) : null}
 
             {!loading && !result ? (
-                <MotionReveal delay={0.12} y={22}>
-                    <Row gutter={[16, 16]}>
-                        <Col xs={24} lg={16}>
+                <MotionReveal delay={0.12} y={22} trigger="mount">
+                    <div className="home-support-grid">
+                        <div>
                             <EmptyBlock
                                 title="Ready to analyze player feedback"
                                 description="Search for a Steam game, choose the review sample size, and generate an AI-powered insight report in seconds."
                             />
-                        </Col>
-                        <Col xs={24} lg={8}>
+                        </div>
+                        <div>
                             <BackendShowcase/>
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
                 </MotionReveal>
             ) : null}
-        </Space>
+        </div>
     );
 
     return (
-        <Layout className="app-shell">
+        <div className="app-shell">
             <AmbientBackdrop/>
             <CinematicIntro/>
 
@@ -121,7 +146,7 @@ function App() {
                 onNavigate={setCurrentPage}
             />
 
-            <Content
+            <main
                 className="app-content"
                 style={{
                     padding: '32px 24px 56px',
@@ -141,8 +166,8 @@ function App() {
                         <LearningJourneyPage/>
                     </Suspense>
                 )}
-            </Content>
-        </Layout>
+            </main>
+        </div>
     );
 }
 

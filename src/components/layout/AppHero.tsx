@@ -1,17 +1,14 @@
-import {Card, Col, Row, Space, Typography} from 'antd';
 import {motion} from 'framer-motion';
 import HeroGameShowcase from "./HeroGameShowcase.tsx";
 import {ApiOutlined, RobotOutlined, ReadOutlined} from '@ant-design/icons';
-import HudOverlay from '../motion/HudOverlay';
-import {MotionReveal, MotionStagger} from '../motion/Reveal';
+import {MotionStagger} from '../motion/Reveal';
 import {hoverLiftTransition, revealVariant} from '../../motion/animations';
 
 function AppHero() {
-    const {Paragraph, Title, Text} = Typography;
     const heroHeadline = 'Turn raw player reviews into actionable game insight';
 
     return (
-        <Card
+        <section
             className="glass-card hud-shell hud-angled-shell app-hero-card"
             style={{
                 borderRadius: 28,
@@ -19,17 +16,14 @@ function AppHero() {
                 background:
                     'radial-gradient(circle at top right, rgba(255,90,54,0.14), transparent 26%), radial-gradient(circle at 0 100%, rgba(94,231,255,0.10), transparent 28%), linear-gradient(180deg, rgba(8,11,18,0.92), rgba(13,18,29,0.82))',
             }}
-            styles={{
-                body: {padding: 32}
-            }}
         >
-            <HudOverlay scanDelay={0.2} />
-            <Row gutter={[32, 32]} align="middle">
-                <Col xs={24} lg={14}>
+            <HeroGameShowcase
+                mode="background"
+                overlay={
                     <MotionStagger staggerChildren={0.08}>
-                        <Space orientation="vertical" size={14} style={{width: '100%'}}>
+                        <div className="app-hero-copy">
                             <motion.div variants={revealVariant(0, 20, 8)}>
-                                <Space wrap size={[10, 10]}>
+                                <div style={{display: 'flex', flexWrap: 'wrap', gap: 10}}>
                                     <motion.div
                                         whileHover={{y: -2, scale: 1.02}}
                                         transition={hoverLiftTransition}
@@ -59,7 +53,7 @@ function AppHero() {
                                             <span>Mock + API Ready</span>
                                         </div>
                                     </motion.div>
-                                </Space>
+                                </div>
                             </motion.div>
 
                             <motion.div variants={revealVariant(0, 20, 8)}>
@@ -69,9 +63,8 @@ function AppHero() {
                                     </span>
                                     <div className="ui-title-stack">
                                         <span className="ui-kicker">AI Review Ops</span>
-                                        <Title
+                                        <h1
                                             className="ui-title-tight"
-                                            level={1}
                                             style={{
                                                 margin: 0,
                                                 color: '#f8fafc',
@@ -85,29 +78,29 @@ function AppHero() {
                                             <span className="hero-glitch-text" data-text={heroHeadline}>
                                                 {heroHeadline}
                                             </span>
-                                        </Title>
+                                        </h1>
                                     </div>
                                 </div>
                             </motion.div>
 
                             <motion.div variants={revealVariant(0, 18, 8)}>
-                                <Paragraph
+                                <p
                                     className="ui-copy-muted"
                                     style={{
                                         fontSize: 16,
-                                        color: '#cbd5e1',
-                                        marginBottom: 0,
-                                        maxWidth: 640,
+                                        color: '#d9e4ef',
+                                        margin: 0,
+                                        maxWidth: 720,
                                     }}
                                 >
                                     Analyze Steam feedback to spot sentiment, praised systems,
                                     recurring complaints, and AI summaries in a dashboard built for
                                     demos, portfolios, and product reviews.
-                                </Paragraph>
+                                </p>
                             </motion.div>
 
                             <motion.div variants={revealVariant(0, 18, 8)}>
-                                <Space wrap size={[12, 12]}>
+                                <div style={{display: 'flex', flexWrap: 'wrap', gap: 12}}>
                                     <motion.div
                                         whileHover={{y: -2, scale: 1.02}}
                                         transition={hoverLiftTransition}
@@ -117,11 +110,11 @@ function AppHero() {
                                             style={{
                                                 padding: '10px 14px',
                                                 borderRadius: 14,
-                                                background: 'rgba(94, 231, 255, 0.10)',
-                                                border: '1px solid rgba(94, 231, 255, 0.24)',
+                                                background: 'rgba(94, 231, 255, 0.12)',
+                                                border: '1px solid rgba(94, 231, 255, 0.28)',
                                             }}
                                         >
-                                            <Text style={{color: '#d6f9ff'}}>Sentiment detection</Text>
+                                            <span style={{color: '#d6f9ff'}}>Sentiment detection</span>
                                         </div>
                                     </motion.div>
 
@@ -134,11 +127,11 @@ function AppHero() {
                                             style={{
                                                 padding: '10px 14px',
                                                 borderRadius: 14,
-                                                background: 'rgba(255, 90, 54, 0.10)',
-                                                border: '1px solid rgba(255, 90, 54, 0.22)',
+                                                background: 'rgba(255, 90, 54, 0.12)',
+                                                border: '1px solid rgba(255, 90, 54, 0.26)',
                                             }}
                                         >
-                                            <Text style={{color: '#ffd7c9'}}>Praise & complaint mining</Text>
+                                            <span style={{color: '#ffd7c9'}}>Praise & complaint mining</span>
                                         </div>
                                     </motion.div>
 
@@ -151,26 +144,20 @@ function AppHero() {
                                             style={{
                                                 padding: '10px 14px',
                                                 borderRadius: 14,
-                                                background: 'rgba(255, 122, 24, 0.10)',
-                                                border: '1px solid rgba(255, 122, 24, 0.22)',
+                                                background: 'rgba(255, 122, 24, 0.12)',
+                                                border: '1px solid rgba(255, 122, 24, 0.24)',
                                             }}
                                         >
-                                            <Text style={{color: '#fed7aa'}}>Insight-ready report</Text>
+                                            <span style={{color: '#fed7aa'}}>Insight-ready report</span>
                                         </div>
                                     </motion.div>
-                                </Space>
+                                </div>
                             </motion.div>
-                        </Space>
+                        </div>
                     </MotionStagger>
-                </Col>
-
-                <Col xs={24} lg={10}>
-                    <MotionReveal delay={0.16} y={24} blur={12}>
-                        <HeroGameShowcase/>
-                    </MotionReveal>
-                </Col>
-            </Row>
-        </Card>
+                }
+            />
+        </section>
     );
 }
 

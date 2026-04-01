@@ -1,21 +1,15 @@
-import {Card, Skeleton, Space, Tag, Typography} from 'antd';
 import HudOverlay from '../motion/HudOverlay';
 
 function LoadingBlock() {
-    const {Text, Title} = Typography;
+    const skeletonWidths = ['42%', '100%', '92%', '96%', '88%', '94%', '90%'];
 
     return (
-        <Card
+        <section
             className="glass-card loading-card hud-shell hud-angled-shell"
-            style={{borderRadius: 24}}
-            styles={{
-                body: {
-                    padding: 28,
-                },
-            }}
+            style={{borderRadius: 24, padding: 28}}
         >
             <HudOverlay reticlePosition="bottom-left" scanDelay={0.32} />
-            <Space orientation="vertical" size={20} style={{width: '100%'}}>
+            <div style={{display: 'flex', flexDirection: 'column', gap: 20, width: '100%'}}>
                 <div className="analyze-radar" aria-hidden="true">
                     <div className="analyze-radar-ring analyze-radar-ring-outer" />
                     <div className="analyze-radar-ring analyze-radar-ring-inner" />
@@ -25,11 +19,12 @@ function LoadingBlock() {
                     <div className="analyze-radar-core" />
                 </div>
 
-                <Tag
+                <span
                     className="hud-chip"
                     style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
                         width: 'fit-content',
-                        margin: 0,
                         borderRadius: 999,
                         padding: '6px 12px',
                         border: '1px solid rgba(255,90,54,0.18)',
@@ -39,32 +34,42 @@ function LoadingBlock() {
                     }}
                 >
                     Inference Pipeline Active
-                </Tag>
+                </span>
 
                 <div className="hud-divider">
-                    <Space orientation="vertical" size={6}>
-                        <Title level={4} style={{margin: 0, color: '#f8fafc'}}>
+                    <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+                        <h4 style={{margin: 0, color: '#f8fafc', fontSize: 26}}>
                             Analyzing player feedback
-                        </Title>
-                        <Text
+                        </h4>
+                        <p
                             className="ui-copy-muted"
                             style={{
                                 color: '#94a3b8',
                                 fontSize: 15,
+                                margin: 0,
                             }}
                         >
                             Generating AI insight report from sampled Steam reviews...
-                        </Text>
-                    </Space>
+                        </p>
+                    </div>
                 </div>
 
-                <Skeleton
-                    active
-                    title={{width: '42%'}}
-                    paragraph={{rows: 6, width: ['100%', '92%', '96%', '88%', '94%', '90%']}}
-                />
-            </Space>
-        </Card>
+                <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
+                    {skeletonWidths.map((width, index) => (
+                        <div
+                            key={`${width}-${index}`}
+                            style={{
+                                width,
+                                height: index === 0 ? 18 : 14,
+                                borderRadius: 999,
+                                background:
+                                    'linear-gradient(90deg, rgba(51,65,85,0.35) 25%, rgba(71,85,105,0.55) 37%, rgba(51,65,85,0.35) 63%)',
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
     );
 }
 

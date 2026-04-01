@@ -1,4 +1,3 @@
-import {Card, Col, Row, Space, Tag, Typography} from 'antd';
 import {
     ControlOutlined,
     FileSearchOutlined,
@@ -34,10 +33,8 @@ function SearchPanel({
                          onLimitChange,
                          onAnalyze,
                      }: SearchPanelProps) {
-    const {Paragraph, Text, Title} = Typography;
-
     return (
-        <Card
+        <section
             className="glass-card hud-shell hud-angled-shell search-panel-card"
             style={{
                 borderRadius: 28,
@@ -45,13 +42,9 @@ function SearchPanel({
                 background:
                     'radial-gradient(circle at top left, rgba(255,90,54,0.14), transparent 24%), radial-gradient(circle at bottom right, rgba(94,231,255,0.10), transparent 26%), linear-gradient(180deg, rgba(8,11,18,0.92), rgba(13,18,29,0.84))',
             }}
-            styles={{
-                body: {padding: 0}
-            }}
         >
             <HudOverlay scanDelay={0.35} />
-            <Row gutter={0}>
-                <Col xs={24} lg={11}>
+            <div className="search-panel-grid">
                     <div
                         className="hud-panel hud-angled-panel search-panel-side"
                         style={{
@@ -62,12 +55,13 @@ function SearchPanel({
                                 'linear-gradient(180deg, rgba(13,18,29,0.78), rgba(8,11,18,0.52))',
                         }}
                     >
-                        <Space orientation="vertical" size={14} style={{width: '100%'}}>
-                            <Tag
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 14, width: '100%'}}>
+                            <span
                                 className="hud-chip"
                                 style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
                                     width: 'fit-content',
-                                    marginInlineEnd: 0,
                                     borderRadius: 999,
                                     padding: '6px 12px',
                                     border: '1px solid rgba(255,90,54,0.24)',
@@ -76,7 +70,7 @@ function SearchPanel({
                                 }}
                             >
                                 Review Console
-                            </Tag>
+                            </span>
 
                             <div className="ui-title-row">
                                 <span className="ui-icon-badge ui-icon-badge-ember">
@@ -84,20 +78,19 @@ function SearchPanel({
                                 </span>
                                 <div className="ui-title-stack">
                                     <span className="ui-kicker">Input Console</span>
-                                    <Title
+                                    <h3
                                         className="ui-title-tight"
-                                        level={3}
-                                        style={{margin: 0, color: '#f8fafc'}}
+                                        style={{margin: 0, color: '#f8fafc', fontSize: 32}}
                                     >
                                         Analyze a Steam game
-                                    </Title>
+                                    </h3>
                                 </div>
                             </div>
 
-                            <Paragraph
+                            <p
                                 className="ui-copy-muted"
                                 style={{
-                                    marginBottom: 0,
+                                    margin: 0,
                                     color: '#cbd5e1',
                                     fontSize: 16,
                                     lineHeight: 1.7,
@@ -105,13 +98,14 @@ function SearchPanel({
                             >
                                 Search by title or paste a Steam App ID to generate an AI insight
                                 report from recent reviews.
-                            </Paragraph>
+                            </p>
 
-                            <Space wrap size={[8, 8]}>
-                                <Tag
+                            <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
+                                <span
                                 className="hud-chip"
                                 style={{
-                                    marginInlineEnd: 0,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
                                     borderRadius: 999,
                                     background: 'rgba(94,231,255,0.10)',
                                     color: '#d6f9ff',
@@ -120,11 +114,12 @@ function SearchPanel({
                                 }}
                             >
                                     Sentiment
-                                </Tag>
-                                <Tag
+                                </span>
+                                <span
                                 className="hud-chip"
                                 style={{
-                                    marginInlineEnd: 0,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
                                     borderRadius: 999,
                                     background: 'rgba(255,90,54,0.10)',
                                     color: '#ffd7c9',
@@ -133,11 +128,12 @@ function SearchPanel({
                                 }}
                             >
                                     Praise Mining
-                                </Tag>
-                                <Tag
+                                </span>
+                                <span
                                 className="hud-chip"
                                 style={{
-                                    marginInlineEnd: 0,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
                                     borderRadius: 999,
                                     background: 'rgba(255,122,24,0.10)',
                                     color: '#fed7aa',
@@ -146,8 +142,8 @@ function SearchPanel({
                                 }}
                             >
                                     Complaint Detection
-                                </Tag>
-                            </Space>
+                                </span>
+                            </div>
 
                             <div
                                 className="hud-panel hud-angled-panel search-panel-preview"
@@ -162,7 +158,7 @@ function SearchPanel({
                                 }}
                             >
                                 {selectedGame ? (
-                                    <Space orientation="vertical" size={10} style={{width: '100%'}}>
+                                    <div style={{display: 'flex', flexDirection: 'column', gap: 10, width: '100%'}}>
                                         <img
                                             className="selected-game-cover"
                                             src={selectedGame.coverUrl || buildSteamHeaderImage(selectedGame.appId)}
@@ -183,9 +179,9 @@ function SearchPanel({
                                             }}
                                         />
 
-                                        <Space orientation="vertical" size={4}>
-                                            <Text style={{color: '#94a3b8'}}>Selected game</Text>
-                                            <Text
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
+                                            <span style={{color: '#94a3b8'}}>Selected game</span>
+                                            <span
                                                 style={{
                                                     color: '#f8fafc',
                                                     fontSize: 16,
@@ -193,29 +189,27 @@ function SearchPanel({
                                                 }}
                                             >
                                                 {selectedGame.label}
-                                            </Text>
-                                            <Text style={{color: '#5ee7ff'}}>
+                                            </span>
+                                            <span style={{color: '#5ee7ff'}}>
                                                 Steam App ID: #{selectedGame.appId}
-                                            </Text>
-                                        </Space>
-                                    </Space>
+                                            </span>
+                                        </div>
+                                    </div>
                                 ) : (
-                                    <Space orientation="vertical" size={4}>
-                                        <Text style={{color: '#94a3b8'}}>Quick examples</Text>
-                                        <Text style={{color: '#e2e8f0'}}>
+                                    <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
+                                        <span style={{color: '#94a3b8'}}>Quick examples</span>
+                                        <span style={{color: '#e2e8f0'}}>
                                             Elden Ring, Hades, Wukong
-                                        </Text>
-                                        <Text style={{color: '#94a3b8'}}>
+                                        </span>
+                                        <span style={{color: '#94a3b8'}}>
                                             You can also paste a numeric Steam App ID directly.
-                                        </Text>
-                                    </Space>
+                                        </span>
+                                    </div>
                                 )}
                             </div>
-                        </Space>
+                        </div>
                     </div>
-                </Col>
 
-                <Col xs={24} lg={13}>
                     <div
                         className="hud-panel hud-angled-panel search-panel-main"
                         style={{
@@ -224,12 +218,14 @@ function SearchPanel({
                                 'linear-gradient(180deg, rgba(18,24,36,0.24), rgba(8,11,18,0.12))',
                         }}
                     >
-                        <Space orientation="vertical" size={18} style={{width: '100%'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 18, width: '100%'}}>
                             <div>
-                                <Text
+                                <label
                                     className="ui-field-label"
                                     style={{
-                                        display: 'block',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 8,
                                         marginBottom: 8,
                                         color: '#cbd5e1',
                                         fontWeight: 600,
@@ -237,7 +233,7 @@ function SearchPanel({
                                 >
                                     <SearchOutlined />
                                     Game title or Steam App ID
-                                </Text>
+                                </label>
                                 <GameAutocomplete
                                     value={gameQuery}
                                     options={gameOptions}
@@ -247,10 +243,12 @@ function SearchPanel({
                             </div>
 
                             <div>
-                                <Text
+                                <label
                                     className="ui-field-label"
                                     style={{
-                                        display: 'block',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 8,
                                         marginBottom: 8,
                                         color: '#cbd5e1',
                                         fontWeight: 600,
@@ -258,7 +256,7 @@ function SearchPanel({
                                 >
                                     <ControlOutlined />
                                     Review sample size
-                                </Text>
+                                </label>
                                 <ReviewLimitInput value={limit} onChange={onLimitChange}/>
                             </div>
 
@@ -272,25 +270,32 @@ function SearchPanel({
                                     border: '1px solid rgba(255,255,255,0.08)',
                                 }}
                             >
-                                <Space orientation="vertical" size={6}>
-                                    <Text className="ui-field-label" style={{color: '#f8fafc'}}>
+                                <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
+                                    <span
+                                        className="ui-field-label"
+                                        style={{
+                                            color: '#f8fafc',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                        }}
+                                    >
                                         <FileSearchOutlined />
                                         Analysis output
-                                    </Text>
-                                    <Text style={{color: '#b6c2d3'}}>
+                                    </span>
+                                    <p style={{color: '#b6c2d3', margin: 0}}>
                                         The report will include sentiment distribution, praised
                                         features, recurring complaints, and an AI-generated
                                         summary.
-                                    </Text>
-                                </Space>
+                                    </p>
+                                </div>
                             </div>
 
                             <AnalyzeButton loading={loading} onClick={onAnalyze}/>
-                        </Space>
+                        </div>
                     </div>
-                </Col>
-            </Row>
-        </Card>
+            </div>
+        </section>
     );
 }
 

@@ -1,4 +1,4 @@
-import {InputNumber, Space, Typography} from 'antd';
+import {InputNumber} from 'antd';
 
 type ReviewLimitInputProps = {
     value: number;
@@ -7,18 +7,15 @@ type ReviewLimitInputProps = {
 
 function ReviewLimitInput({value, onChange}: ReviewLimitInputProps) {
     return (
-        <Space orientation="vertical" size={4} style={{width: '100%'}}>
-            <Typography.Text strong>Review limit</Typography.Text>
-            <InputNumber
-                min={5}
-                max={100}
-                step={5}
-                size="large"
-                style={{width: '100%'}}
-                value={value}
-                onChange={(nextValue) => onChange(Number(nextValue) || 0)}
-            />
-        </Space>
+        <InputNumber
+            min={5}
+            max={100}
+            step={5}
+            size="large"
+            style={{width: '100%'}}
+            value={value}
+            onChange={(nextValue) => onChange(Number(nextValue) || 0)}
+        />
     );
 }
 
