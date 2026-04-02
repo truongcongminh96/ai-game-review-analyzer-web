@@ -21,6 +21,14 @@ type AdvancedInsightsPanelProps = {
 
 const confidencePercent = (value: number) => `${Math.round(value * 100)}%`;
 
+const formatBatchSizes = (batchSizes: number[] | undefined) => {
+    if (!Array.isArray(batchSizes) || batchSizes.length === 0) {
+        return null;
+    }
+
+    return batchSizes.join(' / ');
+};
+
 const formatEvidenceMeta = (evidence: AnalyzeEvidenceItem) =>
     [
         evidence.voted_up ? 'Recommended' : 'Not recommended',
@@ -187,6 +195,7 @@ function AdvancedInsightsPanel({report}: AdvancedInsightsPanelProps) {
     const [compareData, setCompareData] = useState<AnalyzeCompareResponse | null>(null);
     const [compareError, setCompareError] = useState<string | null>(null);
     const [compareLoading, setCompareLoading] = useState(false);
+    const actualBatchSizes = formatBatchSizes(report.debug?.batch_sizes);
 
     const handleCompare = async () => {
         try {
@@ -297,9 +306,105 @@ function AdvancedInsightsPanel({report}: AdvancedInsightsPanelProps) {
                             >
                                 status {report.status}
                             </Tag>
+                            {report.queue_debug ? (
+                                <Tag
+                                    className="hud-chip"
+                                    style={{
+                                        margin: 0,
+                                        borderRadius: 999,
+                                        padding: '6px 12px',
+                                        border: '1px solid rgba(255,122,24,0.24)',
+                                        background: 'rgba(255,122,24,0.10)',
+                                        color: '#fed7aa',
+                                    }}
+                                >
+                                    est. {report.queue_debug.estimated_batch_count} batches
+                                </Tag>
+                            ) : null}
+                            {report.debug ? (
+                                <Tag
+                                    className="hud-chip"
+                                    style={{
+                                        margin: 0,
+                                        borderRadius: 999,
+                                        padding: '6px 12px',
+                                        border: '1px solid rgba(153,176,112,0.24)',
+                                        background: 'rgba(70,88,44,0.22)',
+                                        color: '#d9e3b4',
+                                    }}
+                                >
+                                    actual {report.debug.batch_count} batches
+                                </Tag>
+                            ) : null}
                         </Space>
                     </div>
                 </div>
+
+                {report.queue_debug || report.debug ? (
+                    <Row gutter={[16, 16]}>
+                        {report.queue_debug ? (
+                            <Col xs={24} lg={12}>
+                                <div
+                                    className="hud-panel hud-angled-panel"
+                                    style={{
+                                        height: '100%',
+                                        padding: 18,
+                                        borderRadius: 20,
+                                        border: '1px solid rgba(255,122,24,0.18)',
+                                        background:
+                                            'linear-gradient(180deg, rgba(66,33,16,0.60), rgba(15,23,42,0.94))',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 10,
+                                    }}
+                                >
+                                    <Text style={{color: '#fed7aa', fontWeight: 700}}>
+                                        Queue estimate
+                                    </Text>
+                                    <Text style={{color: '#f8fafc'}}>
+                                        {report.queue_debug.estimated_batch_count} AI batches across{' '}
+                                        {report.queue_debug.estimated_review_fetch_pages} Steam fetch pages
+                                    </Text>
+                                    <Text style={{color: '#94a3b8'}}>
+                                        Limits {report.queue_debug.batch_size_limit} reviews/batch and{' '}
+                                        {report.queue_debug.batch_char_limit.toLocaleString()} chars/batch
+                                    </Text>
+                                </div>
+                            </Col>
+                        ) : null}
+
+                        {report.debug ? (
+                            <Col xs={24} lg={12}>
+                                <div
+                                    className="hud-panel hud-angled-panel"
+                                    style={{
+                                        height: '100%',
+                                        padding: 18,
+                                        borderRadius: 20,
+                                        border: '1px solid rgba(153,176,112,0.18)',
+                                        background:
+                                            'linear-gradient(180deg, rgba(46,58,30,0.62), rgba(15,23,42,0.96))',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 10,
+                                    }}
+                                >
+                                    <Text style={{color: '#d9e3b4', fontWeight: 700}}>
+                                        Execution debug
+                                    </Text>
+                                    <Text style={{color: '#f8fafc'}}>
+                                        {report.debug.batch_count} actual AI batches
+                                        {actualBatchSizes ? ` • sizes ${actualBatchSizes}` : ''}
+                                    </Text>
+                                    <Text style={{color: '#94a3b8'}}>
+                                        Limits {report.debug.batch_size_limit} reviews/batch and{' '}
+                                        {report.debug.batch_char_limit.toLocaleString()} chars/batch
+                                    </Text>
+                                </div>
+                            </Col>
+                        ) : null}
+                    </Row>
+                ) : null}
 
                 <Row gutter={[16, 16]}>
                     <Col xs={24} lg={8}>

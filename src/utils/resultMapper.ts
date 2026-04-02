@@ -135,6 +135,26 @@ export const normalizePercent = (value: number | undefined, fallback: number) =>
     return Math.max(0, Math.min(100, Math.round(scaledValue)));
 };
 
+const resolveReviewCount = (payload: AnalyzeApiResponse | null | undefined) => {
+    if (
+        typeof payload?.overview?.review_count === 'number' &&
+        !Number.isNaN(payload.overview.review_count)
+    ) {
+        return payload.overview.review_count;
+    }
+
+    if (typeof payload?.review_count === 'number' && !Number.isNaN(payload.review_count)) {
+        return payload.review_count;
+    }
+
+    return undefined;
+};
+
+const resolveSentimentValue = (
+    payload: AnalyzeApiResponse | null | undefined,
+    key: keyof StandardAnalyzeResult['sentiment']
+) => payload?.overview?.sentiment?.[key] ?? payload?.sentiment?.[key];
+
 const normalizeSentimentFromCounts = (
     value: number | undefined,
     reviewCount: number | undefined,
@@ -153,32 +173,35 @@ const normalizeSentimentFromCounts = (
     return Math.max(0, Math.min(100, Math.round((value / reviewCount) * 100)));
 };
 
-const mapSentiment = (payload: AnalyzeApiResponse | null | undefined) => ({
-    positive:
-        typeof payload?.overview?.review_count === 'number' && payload.overview.review_count > 0
-            ? normalizeSentimentFromCounts(
-                  payload?.overview?.sentiment?.positive,
-                  payload?.overview?.review_count,
-                  DEFAULT_SENTIMENT.positive
-              )
-            : normalizePercent(payload?.sentiment?.positive, DEFAULT_SENTIMENT.positive),
-    neutral:
-        typeof payload?.overview?.review_count === 'number' && payload.overview.review_count > 0
-            ? normalizeSentimentFromCounts(
-                  payload?.overview?.sentiment?.neutral,
-                  payload?.overview?.review_count,
-                  DEFAULT_SENTIMENT.neutral
-              )
-            : normalizePercent(payload?.sentiment?.neutral, DEFAULT_SENTIMENT.neutral),
-    negative:
-        typeof payload?.overview?.review_count === 'number' && payload.overview.review_count > 0
-            ? normalizeSentimentFromCounts(
-                  payload?.overview?.sentiment?.negative,
-                  payload?.overview?.review_count,
-                  DEFAULT_SENTIMENT.negative
-              )
-            : normalizePercent(payload?.sentiment?.negative, DEFAULT_SENTIMENT.negative),
-});
+const mapSentiment = (payload: AnalyzeApiResponse | null | undefined) => {
+    const reviewCount = resolveReviewCount(payload);
+
+    if (typeof reviewCount === 'number' && reviewCount > 0) {
+        return {
+            positive: normalizeSentimentFromCounts(
+                resolveSentimentValue(payload, 'positive'),
+                reviewCount,
+                DEFAULT_SENTIMENT.positive
+            ),
+            neutral: normalizeSentimentFromCounts(
+                resolveSentimentValue(payload, 'neutral'),
+                reviewCount,
+                DEFAULT_SENTIMENT.neutral
+            ),
+            negative: normalizeSentimentFromCounts(
+                resolveSentimentValue(payload, 'negative'),
+                reviewCount,
+                DEFAULT_SENTIMENT.negative
+            ),
+        };
+    }
+
+    return {
+        positive: normalizePercent(resolveSentimentValue(payload, 'positive'), DEFAULT_SENTIMENT.positive),
+        neutral: normalizePercent(resolveSentimentValue(payload, 'neutral'), DEFAULT_SENTIMENT.neutral),
+        negative: normalizePercent(resolveSentimentValue(payload, 'negative'), DEFAULT_SENTIMENT.negative),
+    };
+};
 
 const mapCommonFields = (
     payload: AnalyzeApiResponse | null | undefined,
@@ -238,4 +261,3 @@ export const mapAnalyzeResult = (
     mode === 'advanced'
         ? mapAdvancedAnalyzeResult(payload, fallbackGameTitle)
         : mapStandardAnalyzeResult(payload, fallbackGameTitle);
-

@@ -159,6 +159,7 @@ const submitV2Analysis = async (
         status: queuedResponse.status,
         stage: queuedResponse.current_stage,
         progressPercent: queuedResponse.progress_percent,
+        queueDebug: queuedResponse.queue_debug,
         message: buildProgressMessage(
             queuedResponse.current_stage,
             queuedResponse.progress_percent,
@@ -177,6 +178,8 @@ const submitV2Analysis = async (
             status: runDetail.status,
             stage: runDetail.current_stage,
             progressPercent: runDetail.progress_percent ?? null,
+            queueDebug: runDetail.queue_debug ?? queuedResponse.queue_debug,
+            debug: runDetail.debug,
             message: buildProgressMessage(
                 runDetail.current_stage,
                 runDetail.progress_percent,
@@ -186,7 +189,12 @@ const submitV2Analysis = async (
         });
 
         if (runDetail.status === 'success') {
-            return runDetail;
+            return {
+                ...runDetail,
+                queue_debug: runDetail.queue_debug ?? queuedResponse.queue_debug,
+                request: runDetail.request ?? queuedResponse.request,
+                links: runDetail.links ?? queuedResponse.links,
+            };
         }
 
         if (runDetail.status === 'failed') {

@@ -23,6 +23,8 @@ export type AnalysisProgress = {
     runId?: string;
     status?: AnalysisStatus;
     stage?: AnalysisStage;
+    queueDebug?: AnalyzeQueueDebug;
+    debug?: AnalyzeRunDebug;
 };
 
 type BaseAnalyzeResult = {
@@ -73,20 +75,39 @@ export type AnalyzeInsightItem = {
     sample_evidence?: AnalyzeEvidenceItem[];
 };
 
+export type AnalyzeQueueDebug = {
+    estimated_batch_count: number;
+    estimated_review_fetch_pages: number;
+    batch_size_limit: number;
+    batch_char_limit: number;
+};
+
+export type AnalyzeRunDebug = {
+    batch_count: number;
+    batch_size_limit: number;
+    batch_char_limit: number;
+    batch_sizes?: number[];
+};
+
+export type AnalyzeRunRequest = {
+    app_id: string;
+    limit: number;
+    language: string;
+};
+
+export type AnalyzeRunLinks = {
+    self: string;
+    history: string;
+};
+
 export type AnalyzeV2QueuedResponse = {
     run_id: string;
     status: AnalysisStatus;
     current_stage: AnalysisStage;
     progress_percent: number;
-    request: {
-        app_id: string;
-        limit: number;
-        language: string;
-    };
-    links: {
-        self: string;
-        history: string;
-    };
+    queue_debug?: AnalyzeQueueDebug;
+    request: AnalyzeRunRequest;
+    links: AnalyzeRunLinks;
 };
 
 export type AnalyzeGameView = {
@@ -115,6 +136,10 @@ export type AnalyzeRunDetail = {
     error_message?: string;
     game: AnalyzeGameView;
     overview: AnalyzeOverview;
+    queue_debug?: AnalyzeQueueDebug;
+    debug?: AnalyzeRunDebug;
+    request?: AnalyzeRunRequest;
+    links?: AnalyzeRunLinks;
     praises: AnalyzeInsightItem[];
     issues: AnalyzeInsightItem[];
     topics: AnalyzeInsightItem[];
@@ -161,6 +186,7 @@ type LegacyAnalyzeApiResponse = {
     game_title?: string;
     praisedFeatures?: string[];
     praised_features?: string[];
+    review_count?: number;
     topics?: string[] | AnalyzeInsightItem[];
     sentiment?: Partial<SentimentBreakdown>;
     summary?: string;

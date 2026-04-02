@@ -104,6 +104,8 @@ function App() {
                     <LoadingBlock
                         description={progress?.message}
                         progressPercent={progress?.progressPercent}
+                        queueDebug={progress?.queueDebug}
+                        debug={progress?.debug}
                     />
                 </MotionReveal>
             ) : null}

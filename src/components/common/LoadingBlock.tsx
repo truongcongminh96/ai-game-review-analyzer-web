@@ -1,14 +1,26 @@
+import type {AnalyzeQueueDebug, AnalyzeRunDebug} from '../../types/analyze';
 import HudOverlay from '../motion/HudOverlay';
 
 type LoadingBlockProps = {
     description?: string;
     progressPercent?: number | null;
+    queueDebug?: AnalyzeQueueDebug;
+    debug?: AnalyzeRunDebug;
 };
 
-function LoadingBlock({description, progressPercent}: LoadingBlockProps) {
+const buildBatchSizePreview = (batchSizes: number[] | undefined) => {
+    if (!Array.isArray(batchSizes) || batchSizes.length === 0) {
+        return null;
+    }
+
+    return batchSizes.join(' / ');
+};
+
+function LoadingBlock({description, progressPercent, queueDebug, debug}: LoadingBlockProps) {
     const skeletonWidths = ['42%', '100%', '92%', '96%', '88%', '94%', '90%'];
     const resolvedDescription =
         description ?? 'Generating AI insight report from sampled Steam reviews...';
+    const actualBatchSizes = buildBatchSizePreview(debug?.batch_sizes);
 
     return (
         <section
@@ -26,24 +38,7 @@ function LoadingBlock({description, progressPercent}: LoadingBlockProps) {
                     <div className="analyze-radar-core" />
                 </div>
 
-                <span
-                    className="hud-chip"
-                    style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        width: 'fit-content',
-                        borderRadius: 999,
-                        padding: '6px 12px',
-                        border: '1px solid rgba(255,90,54,0.18)',
-                        background: 'rgba(255,90,54,0.10)',
-                        color: '#ffd7c9',
-                        fontWeight: 700,
-                    }}
-                >
-                    Inference Pipeline Active
-                </span>
-
-                {typeof progressPercent === 'number' ? (
+                <div style={{display: 'flex', flexWrap: 'wrap', gap: 10}}>
                     <span
                         className="hud-chip"
                         style={{
@@ -52,15 +47,90 @@ function LoadingBlock({description, progressPercent}: LoadingBlockProps) {
                             width: 'fit-content',
                             borderRadius: 999,
                             padding: '6px 12px',
-                            border: '1px solid rgba(94,231,255,0.22)',
-                            background: 'rgba(94,231,255,0.12)',
-                            color: '#d6f9ff',
+                            border: '1px solid rgba(255,90,54,0.18)',
+                            background: 'rgba(255,90,54,0.10)',
+                            color: '#ffd7c9',
                             fontWeight: 700,
                         }}
                     >
-                        Progress {progressPercent}%
+                        Inference Pipeline Active
                     </span>
-                ) : null}
+
+                    {typeof progressPercent === 'number' ? (
+                        <span
+                            className="hud-chip"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                width: 'fit-content',
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                border: '1px solid rgba(94,231,255,0.22)',
+                                background: 'rgba(94,231,255,0.12)',
+                                color: '#d6f9ff',
+                                fontWeight: 700,
+                            }}
+                        >
+                            Progress {progressPercent}%
+                        </span>
+                    ) : null}
+
+                    {queueDebug ? (
+                        <>
+                            <span
+                                className="hud-chip"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    width: 'fit-content',
+                                    borderRadius: 999,
+                                    padding: '6px 12px',
+                                    border: '1px solid rgba(255,122,24,0.20)',
+                                    background: 'rgba(255,122,24,0.10)',
+                                    color: '#fed7aa',
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Est. {queueDebug.estimated_batch_count} AI batches
+                            </span>
+                            <span
+                                className="hud-chip"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    width: 'fit-content',
+                                    borderRadius: 999,
+                                    padding: '6px 12px',
+                                    border: '1px solid rgba(117,148,144,0.20)',
+                                    background: 'rgba(41,58,57,0.22)',
+                                    color: '#bdd2cc',
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Est. {queueDebug.estimated_review_fetch_pages} Steam pages
+                            </span>
+                        </>
+                    ) : null}
+
+                    {debug ? (
+                        <span
+                            className="hud-chip"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                width: 'fit-content',
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                border: '1px solid rgba(153,176,112,0.22)',
+                                background: 'rgba(70,88,44,0.22)',
+                                color: '#d9e3b4',
+                                fontWeight: 700,
+                            }}
+                        >
+                            Actual {debug.batch_count} batches{actualBatchSizes ? ` • ${actualBatchSizes}` : ''}
+                        </span>
+                    ) : null}
+                </div>
 
                 <div className="hud-divider">
                     <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>

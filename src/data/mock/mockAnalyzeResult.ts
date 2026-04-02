@@ -323,11 +323,36 @@ const MOCK_CATALOG: Record<string, MockCatalogEntry> = {
 const buildLegacyMockResponse = (entry: MockCatalogEntry): AnalyzeApiResponse => ({
     gameTitle: entry.title,
     summary: entry.summary,
+    review_count: entry.advanced.reviewCount,
     praised_features: entry.praisedFeatures,
     common_issues: entry.commonIssues,
     topics: entry.topics,
-    sentiment: entry.sentimentPercent,
+    sentiment: toSentimentCounts(entry.sentimentPercent, entry.advanced.reviewCount),
 });
+
+const buildQueueDebug = (reviewCount: number) => ({
+    estimated_batch_count: Math.max(1, Math.ceil(reviewCount / 50)),
+    estimated_review_fetch_pages: Math.max(1, Math.ceil(reviewCount / 100)),
+    batch_size_limit: 50,
+    batch_char_limit: 14000,
+});
+
+const buildRunDebug = (reviewCount: number) => {
+    const batchSizeLimit = 50;
+    const batchCount = Math.max(1, Math.ceil(reviewCount / batchSizeLimit));
+    const batchSizes = Array.from({length: batchCount}, (_, index) => {
+        const remaining = reviewCount - index * batchSizeLimit;
+
+        return Math.min(batchSizeLimit, Math.max(remaining, 0));
+    }).filter((size) => size > 0);
+
+    return {
+        batch_count: batchSizes.length || 1,
+        batch_size_limit: batchSizeLimit,
+        batch_char_limit: 14000,
+        batch_sizes: batchSizes.length ? batchSizes : [reviewCount],
+    };
+};
 
 const toSentimentCounts = (
     sentimentPercent: {positive: number; neutral: number; negative: number},
@@ -371,6 +396,8 @@ const buildAdvancedMockResponse = (entry: MockCatalogEntry): AnalyzeRunDetail =>
         summary: entry.advanced.currentSummary,
         sentiment: toSentimentCounts(entry.sentimentPercent, entry.advanced.reviewCount),
     },
+    queue_debug: buildQueueDebug(entry.advanced.reviewCount),
+    debug: buildRunDebug(entry.advanced.reviewCount),
     praises: entry.advanced.praises,
     issues: entry.advanced.issues,
     topics: entry.advanced.topics,
@@ -524,4 +551,3 @@ export const getMockCompareAnalysisRuns = (
         ],
     };
 };
-
