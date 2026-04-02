@@ -121,8 +121,8 @@ function SourceReviewPage() {
                     >
                         This walkthrough now reflects the newer backend structure from the latest
                         source snapshot: runtime config, health-aware HTTP delivery, use case
-                        orchestration, Steam + Ollama integrations, optional persistence, and the
-                        migration/schema layer that stores analysis runs.
+                        orchestration, split Standard and Advanced Ollama paths, optional
+                        persistence, and the migration/schema layer that stores analysis runs.
                     </Paragraph>
 
                     <div
@@ -193,7 +193,7 @@ function SourceReviewPage() {
                                 color: '#67e8f9',
                             }}
                         >
-                            Go Backend v2
+                            Go Backend Standard + Advanced
                         </Tag>
 
                         <Tag
