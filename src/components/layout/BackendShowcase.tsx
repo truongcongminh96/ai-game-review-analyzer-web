@@ -1,4 +1,10 @@
-import {ApiOutlined, BarChartOutlined, CodeOutlined} from '@ant-design/icons';
+import {
+    ApiOutlined,
+    BarChartOutlined,
+    CodeOutlined,
+    ExperimentOutlined,
+    ThunderboltOutlined,
+} from '@ant-design/icons';
 import HudOverlay from '../motion/HudOverlay';
 
 function BackendShowcase() {
@@ -48,8 +54,8 @@ function BackendShowcase() {
                         lineHeight: 1.8,
                     }}
                 >
-                    The new source base is wired to the Steam analyze endpoint and
-                    normalizes the response before rendering the UI.
+                    Standard routes to the fast synchronous API, while Advanced routes to the async
+                    evidence-backed pipeline with history and comparison support.
                 </p>
 
                 <div style={{display: 'flex', flexWrap: 'wrap', gap: 10}}>
@@ -70,6 +76,68 @@ function BackendShowcase() {
                             {game.label} #{game.appId}
                         </span>
                     ))}
+                </div>
+
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: 12,
+                    }}
+                >
+                    <div
+                        className="hud-panel hud-angled-panel"
+                        style={{
+                            padding: 16,
+                            borderRadius: 18,
+                            border: '1px solid rgba(94,231,255,0.18)',
+                            background:
+                                'linear-gradient(180deg, rgba(18,39,51,0.72), rgba(6,10,18,0.72))',
+                        }}
+                    >
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+                            <span style={{color: '#d6f9ff', fontWeight: 700}}>
+                                <ThunderboltOutlined /> Standard
+                            </span>
+                            <span style={{color: '#cbd5e1'}}>Fast analysis with instant results</span>
+                            <span
+                                style={{
+                                    color: '#5ee7ff',
+                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                                    fontSize: 13,
+                                }}
+                            >
+                                POST /steam/analyze
+                            </span>
+                        </div>
+                    </div>
+
+                    <div
+                        className="hud-panel hud-angled-panel"
+                        style={{
+                            padding: 16,
+                            borderRadius: 18,
+                            border: '1px solid rgba(255,122,24,0.18)',
+                            background:
+                                'linear-gradient(180deg, rgba(61,33,17,0.72), rgba(6,10,18,0.72))',
+                        }}
+                    >
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
+                            <span style={{color: '#fed7aa', fontWeight: 700}}>
+                                <ExperimentOutlined /> Advanced (Beta)
+                            </span>
+                            <span style={{color: '#cbd5e1'}}>Deep insights with evidence and history</span>
+                            <span
+                                style={{
+                                    color: '#ffb59d',
+                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                                    fontSize: 13,
+                                }}
+                            >
+                                POST /v2/steam/analyze
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <div
@@ -98,7 +166,18 @@ function BackendShowcase() {
                                     fontSize: 14,
                                 }}
                             >
-                                POST /steam/analyze
+                                Standard -&gt; POST /steam/analyze
+                            </span>
+                            <span
+                                style={{
+                                    display: 'block',
+                                    color: '#cbd5e1',
+                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                                    fontSize: 14,
+                                    marginTop: 6,
+                                }}
+                            >
+                                Advanced -&gt; POST /v2/steam/analyze -&gt; GET /v2/analysis-runs/{'{run_id}'}
                             </span>
                         </div>
 
@@ -111,7 +190,7 @@ function BackendShowcase() {
                                 Payload
                             </span>
                             <span style={{color: '#ffb59d'}}>
-                                {`{ appId, limit, language }`}
+                                Standard: {'{ appId, limit, language }'} | Advanced: {'{ appId, limit, language } -> { run_id, status }'}
                             </span>
                         </div>
 
@@ -124,7 +203,10 @@ function BackendShowcase() {
                                 Output
                             </span>
                             <span style={{color: '#cbd5e1'}}>
-                                summary, sentiment, praised_features, common_issues, topics
+                                Standard: summary, sentiment, praised_features, common_issues, topics
+                            </span>
+                            <span style={{display: 'block', color: '#cbd5e1', marginTop: 6}}>
+                                Advanced: overview, praises, issues, topics, evidence, history, compare
                             </span>
                         </div>
                     </div>

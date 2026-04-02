@@ -1,12 +1,14 @@
 import {Button} from 'antd';
 import {RocketOutlined} from '@ant-design/icons';
+import type {AnalysisMode} from '../../types/analyze';
 
 type AnalyzeButtonProps = {
     loading: boolean;
+    mode: AnalysisMode;
     onClick: () => void | Promise<void>;
 };
 
-function AnalyzeButton({loading, onClick}: AnalyzeButtonProps) {
+function AnalyzeButton({loading, mode, onClick}: AnalyzeButtonProps) {
     return (
         <Button
             type="primary"
@@ -29,7 +31,7 @@ function AnalyzeButton({loading, onClick}: AnalyzeButtonProps) {
                 textTransform: 'uppercase',
             }}
         >
-            Generate AI Insight Report
+            {mode === 'advanced' ? 'Generate Advanced Insight Report' : 'Generate AI Insight Report'}
         </Button>
     );
 }

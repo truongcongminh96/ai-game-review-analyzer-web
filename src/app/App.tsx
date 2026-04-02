@@ -11,6 +11,7 @@ import CinematicIntro from '../components/motion/CinematicIntro';
 import {MotionReveal} from '../components/motion/Reveal';
 import SearchPanel from '../components/search/SearchPanel';
 import {useAnalyzeReviews} from '../hooks/useAnalyzeReviews';
+import type {AnalysisMode} from '../types/analyze';
 import {useGameSearch} from '../hooks/useGameSearch';
 import type {GameOption} from '../types/game';
 import {DEFAULT_REVIEW_LIMIT} from '../utils/constants';
@@ -22,6 +23,7 @@ const LearningJourneyPage = lazy(() => import('../pages/LearningJourneyPage.tsx'
 type AnalysisContext = {
     game: GameOption;
     reviewLimit: number;
+    mode: AnalysisMode;
 };
 
 type AppPage = 'home' | 'source-review' | 'learning-journey';
@@ -29,19 +31,21 @@ type AppPage = 'home' | 'source-review' | 'learning-journey';
 function App() {
     const [currentPage, setCurrentPage] = useState<AppPage>('home');
     const [limit, setLimit] = useState(DEFAULT_REVIEW_LIMIT);
+    const [analysisMode, setAnalysisMode] = useState<AnalysisMode>(env.defaultAnalysisMode);
     const [analysisContext, setAnalysisContext] = useState<AnalysisContext | null>(null);
     const resultSectionRef = useRef<HTMLDivElement | null>(null);
     const {query, selectedGame, suggestions, handleQueryChange, handleSelect} = useGameSearch();
-    const {result, loading, error, runAnalysis} = useAnalyzeReviews();
+    const {result, loading, error, progress, runAnalysis} = useAnalyzeReviews();
     const dataSourceMode = env.mockMode ? 'mock' : 'live';
 
     const handleAnalyze = async () => {
-        const analyzedResult = await runAnalysis(selectedGame, limit);
+        const analyzedResult = await runAnalysis(selectedGame, limit, analysisMode);
 
         if (analyzedResult && selectedGame) {
             setAnalysisContext({
                 game: selectedGame,
                 reviewLimit: limit,
+                mode: analysisMode,
             });
         }
     };
@@ -79,10 +83,12 @@ function App() {
                     gameOptions={suggestions}
                     selectedGame={selectedGame}
                     limit={limit}
+                    analysisMode={analysisMode}
                     loading={loading}
                     onGameChange={handleQueryChange}
                     onGameSelect={handleSelect}
                     onLimitChange={setLimit}
+                    onAnalysisModeChange={setAnalysisMode}
                     onAnalyze={handleAnalyze}
                 />
             </MotionReveal>
@@ -95,7 +101,10 @@ function App() {
 
             {loading ? (
                 <MotionReveal delay={0.04} y={18} blur={8} trigger="mount">
-                    <LoadingBlock/>
+                    <LoadingBlock
+                        description={progress?.message}
+                        progressPercent={progress?.progressPercent}
+                    />
                 </MotionReveal>
             ) : null}
 

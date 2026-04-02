@@ -1,7 +1,14 @@
 import HudOverlay from '../motion/HudOverlay';
 
-function LoadingBlock() {
+type LoadingBlockProps = {
+    description?: string;
+    progressPercent?: number | null;
+};
+
+function LoadingBlock({description, progressPercent}: LoadingBlockProps) {
     const skeletonWidths = ['42%', '100%', '92%', '96%', '88%', '94%', '90%'];
+    const resolvedDescription =
+        description ?? 'Generating AI insight report from sampled Steam reviews...';
 
     return (
         <section
@@ -36,6 +43,25 @@ function LoadingBlock() {
                     Inference Pipeline Active
                 </span>
 
+                {typeof progressPercent === 'number' ? (
+                    <span
+                        className="hud-chip"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            width: 'fit-content',
+                            borderRadius: 999,
+                            padding: '6px 12px',
+                            border: '1px solid rgba(94,231,255,0.22)',
+                            background: 'rgba(94,231,255,0.12)',
+                            color: '#d6f9ff',
+                            fontWeight: 700,
+                        }}
+                    >
+                        Progress {progressPercent}%
+                    </span>
+                ) : null}
+
                 <div className="hud-divider">
                     <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
                         <h4 style={{margin: 0, color: '#f8fafc', fontSize: 26}}>
@@ -49,7 +75,7 @@ function LoadingBlock() {
                                 margin: 0,
                             }}
                         >
-                            Generating AI insight report from sampled Steam reviews...
+                            {resolvedDescription}
                         </p>
                     </div>
                 </div>

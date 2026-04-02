@@ -1,9 +1,12 @@
 import {
     ControlOutlined,
+    ExperimentOutlined,
     FileSearchOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
+import type {AnalysisMode} from '../../types/analyze';
 import type {GameOption} from '../../types/game';
+import AnalysisModeSwitch from './AnalysisModeSwitch';
 import AnalyzeButton from './AnalyzeButton';
 import GameAutocomplete from './GameAutocomplete';
 import ReviewLimitInput from './ReviewLimitInput';
@@ -15,10 +18,12 @@ type SearchPanelProps = {
     gameOptions: GameOption[];
     selectedGame: GameOption | null;
     limit: number;
+    analysisMode: AnalysisMode;
     loading: boolean;
     onGameChange: (value: string) => void;
     onGameSelect: (value: string) => void;
     onLimitChange: (value: number) => void;
+    onAnalysisModeChange: (mode: AnalysisMode) => void;
     onAnalyze: () => void | Promise<void>;
 };
 
@@ -27,12 +32,16 @@ function SearchPanel({
                          gameOptions,
                          selectedGame,
                          limit,
+                         analysisMode,
                          loading,
                          onGameChange,
                          onGameSelect,
                          onLimitChange,
+                         onAnalysisModeChange,
                          onAnalyze,
                      }: SearchPanelProps) {
+    const isAdvanced = analysisMode === 'advanced';
+
     return (
         <section
             className="glass-card hud-shell hud-angled-shell search-panel-card"
@@ -260,6 +269,11 @@ function SearchPanel({
                                 <ReviewLimitInput value={limit} onChange={onLimitChange}/>
                             </div>
 
+                            <AnalysisModeSwitch
+                                value={analysisMode}
+                                onChange={onAnalysisModeChange}
+                            />
+
                             <div
                                 className="hud-panel hud-angled-panel search-panel-output"
                                 style={{
@@ -280,18 +294,22 @@ function SearchPanel({
                                             gap: 8,
                                         }}
                                     >
-                                        <FileSearchOutlined />
-                                        Analysis output
+                                        {isAdvanced ? <ExperimentOutlined /> : <FileSearchOutlined />}
+                                        {isAdvanced ? 'Advanced output' : 'Analysis output'}
                                     </span>
                                     <p style={{color: '#b6c2d3', margin: 0}}>
-                                        The report will include sentiment distribution, praised
-                                        features, recurring complaints, and an AI-generated
-                                        summary.
+                                        {isAdvanced
+                                            ? 'Deeper insights with AI reasoning, evidence samples, confidence scores, and history-aware comparison.'
+                                            : 'Fast analysis with instant sentiment distribution, praised features, recurring complaints, and an AI-generated summary.'}
                                     </p>
                                 </div>
                             </div>
 
-                            <AnalyzeButton loading={loading} onClick={onAnalyze}/>
+                            <AnalyzeButton
+                                loading={loading}
+                                mode={analysisMode}
+                                onClick={onAnalyze}
+                            />
                         </div>
                     </div>
             </div>

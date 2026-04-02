@@ -38,5 +38,5 @@ export const VALIDATION_MESSAGES = {
     missingGame: 'Please select a Steam game title or paste a valid app id.',
     invalidLimit: 'Review limit must be greater than 0.',
     backendUnavailable:
-        'Unable to analyze reviews right now. Check that the API server is running on http://localhost:8080/steam/analyze.',
+        'Unable to analyze reviews right now. Check that the API server is running and that the configured API version is available.',
 };

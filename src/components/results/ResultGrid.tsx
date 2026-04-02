@@ -4,23 +4,28 @@ import {
     CompassOutlined,
     DashboardOutlined,
     DatabaseOutlined,
+    ExperimentOutlined,
     ProfileOutlined,
-    TagsOutlined,
+    ThunderboltOutlined,
 } from '@ant-design/icons';
 import {Col, Row, Space, Tag, Typography} from 'antd';
-import type {AnalyzeResult} from '../../types/analyze';
+import type {
+    AnalysisMode,
+    AnalyzeResult,
+} from '../../types/analyze';
 import type {GameOption} from '../../types/game';
-import SectionCard from '../common/SectionCard';
 import HudOverlay from '../motion/HudOverlay';
-import InsightList from './InsightList';
+import AdvancedResultView from './AdvancedResultView';
 import SentimentChart from './SentimentChart';
 import SentimentProgress from './SentimentProgress';
 import SentimentStatCards from './SentimentStatCards';
+import StandardResultView from './StandardResultView';
 import SummaryPanel from './SummaryPanel';
 
 type AnalysisContext = {
     game: GameOption;
     reviewLimit: number;
+    mode: AnalysisMode;
 };
 
 type ResultGridProps = {
@@ -37,6 +42,12 @@ type MetadataItem = {
 
 function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) {
     const {Paragraph, Text, Title} = Typography;
+    const isAdvancedMode = result.mode === 'advanced';
+    const advancedResult = result.mode === 'advanced' ? result : null;
+    const standardResult = result.mode === 'standard' ? result : null;
+    const topicCount = result.topics.length;
+    const praiseCount = advancedResult ? advancedResult.praises.length : standardResult?.praisedFeatures.length ?? 0;
+    const issueCount = advancedResult ? advancedResult.issues.length : standardResult?.commonComplaints.length ?? 0;
 
     const sentimentEntries = [
         {label: 'Positive', value: result.sentiment.positive},
@@ -55,8 +66,15 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
                   background: 'rgba(122,92,38,0.22)',
                   color: '#e8c98a',
               }
+            : isAdvancedMode
+              ? {
+                    label: 'Advanced Beta',
+                    border: '1px solid rgba(255,122,24,0.24)',
+                    background: 'rgba(92,54,16,0.22)',
+                    color: '#fed7aa',
+                }
             : {
-                  label: 'Live API',
+                  label: 'Standard',
                   border: '1px solid rgba(153,176,112,0.24)',
                   background: 'rgba(70,88,44,0.22)',
                   color: '#d9e3b4',
@@ -75,6 +93,13 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
                   label: 'Release Year',
                   value: String(analysisContext.game.releaseYear),
                   icon: <CalendarOutlined />,
+              }
+            : null,
+        analysisContext
+            ? {
+                  label: 'Mode',
+                  value: isAdvancedMode ? 'Advanced (Beta)' : 'Standard',
+                  icon: isAdvancedMode ? <ExperimentOutlined /> : <ThunderboltOutlined />,
               }
             : null,
         analysisContext
@@ -103,21 +128,21 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
         },
         {
             label: 'Topic grid',
-            value: `${result.topics.length || 0} detected`,
+            value: `${topicCount || 0} detected`,
             border: '1px solid rgba(117,148,144,0.20)',
             background: 'rgba(41,58,57,0.22)',
             color: '#bdd2cc',
         },
         {
             label: 'Praise lanes',
-            value: `${result.praisedFeatures.length} tracked`,
+            value: `${praiseCount} tracked`,
             border: '1px solid rgba(191,151,83,0.20)',
             background: 'rgba(94,67,28,0.22)',
             color: '#e2c88e',
         },
         {
             label: 'Pain lanes',
-            value: `${result.commonComplaints.length} tracked`,
+            value: `${issueCount} tracked`,
             border: '1px solid rgba(176,104,88,0.20)',
             background: 'rgba(78,40,35,0.24)',
             color: '#e3b0a3',
@@ -156,8 +181,9 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
                                     maxWidth: 820,
                                 }}
                             >
-                                AI-generated insight report based on sampled Steam reviews and
-                                normalized backend data.
+                                {isAdvancedMode
+                                    ? 'Advanced report with queued analysis, evidence-backed signal extraction, and comparison-ready run history.'
+                                    : 'AI-generated insight report based on sampled Steam reviews and normalized backend data.'}
                             </Paragraph>
                         </div>
 
@@ -236,65 +262,11 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
                 </Col>
             </Row>
 
-            <Row gutter={[16, 16]}>
-                <Col xs={24}>
-                    <SectionCard
-                        title="Key Topics"
-                        kicker="Recon Tags"
-                        icon={<TagsOutlined />}
-                        iconTone="hot"
-                        className="result-section-tone-hot"
-                    >
-                        <Space orientation="vertical" size={18} style={{width: '100%'}}>
-                            <Text className="ui-copy-muted" style={{marginBottom: 0}}>
-                                Recurring discussion clusters extracted from the sampled review set.
-                            </Text>
-
-                            {result.topics.length ? (
-                                <div className="result-topic-wrap">
-                                    {result.topics.map((topic) => (
-                                        <Tag
-                                            className="hud-chip result-topic-chip"
-                                            key={topic}
-                                            style={{
-                                                marginInlineEnd: 0,
-                                                padding: '10px 16px',
-                                                borderRadius: 999,
-                                                border: '1px solid rgba(126,145,99,0.22)',
-                                                background:
-                                                    'linear-gradient(135deg, rgba(74,88,48,0.30), rgba(112,87,42,0.18))',
-                                                color: '#d8e1b1',
-                                                boxShadow: '0 10px 22px rgba(58,69,36,0.18)',
-                                            }}
-                                        >
-                                            {topic}
-                                        </Tag>
-                                    ))}
-                                </div>
-                            ) : (
-                                <Text style={{color: '#94a3b8'}}>No topics available.</Text>
-                            )}
-                        </Space>
-                    </SectionCard>
-                </Col>
-            </Row>
-
-            <Row gutter={[16, 16]}>
-                <Col xs={24} lg={12}>
-                    <InsightList
-                        title="Most Loved"
-                        items={result.praisedFeatures}
-                        variant="love"
-                    />
-                </Col>
-                <Col xs={24} lg={12}>
-                    <InsightList
-                        title="Most Complained"
-                        items={result.commonComplaints}
-                        variant="complaint"
-                    />
-                </Col>
-            </Row>
+            {advancedResult ? (
+                <AdvancedResultView result={advancedResult} />
+            ) : (
+                standardResult ? <StandardResultView result={standardResult} /> : null
+            )}
         </Space>
     );
 }

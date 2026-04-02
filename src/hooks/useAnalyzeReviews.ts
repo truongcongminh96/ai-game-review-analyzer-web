@@ -1,6 +1,10 @@
 import {useState} from 'react';
 import {analyzeReviews} from '../services/api.ts';
-import type {AnalyzeResult} from '../types/analyze';
+import type {
+    AnalysisMode,
+    AnalysisProgress,
+    AnalyzeResult,
+} from '../types/analyze';
 import type {GameOption} from '../types/game';
 import {VALIDATION_MESSAGES} from '../utils/constants';
 import {mapAnalyzeResult} from '../utils/resultMapper';
@@ -9,8 +13,13 @@ export const useAnalyzeReviews = () => {
     const [result, setResult] = useState<AnalyzeResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [progress, setProgress] = useState<AnalysisProgress | null>(null);
 
-    const runAnalysis = async (game: GameOption | null, limit: number) => {
+    const runAnalysis = async (
+        game: GameOption | null,
+        limit: number,
+        mode: AnalysisMode = 'standard'
+    ) => {
         if (!game) {
             setError(VALIDATION_MESSAGES.missingGame);
             return null;
@@ -24,16 +33,32 @@ export const useAnalyzeReviews = () => {
         try {
             setLoading(true);
             setError(null);
+            setProgress({
+                message:
+                mode === 'advanced'
+                        ? 'Preparing advanced analysis pipeline'
+                        : 'Preparing standard analysis request',
+                progressPercent: null,
+            });
 
-            const data = await analyzeReviews(game.appId, limit);
-            const mappedResult = mapAnalyzeResult(data, game.label);
+            const data = await analyzeReviews(game.appId, limit, {
+                mode,
+                onProgress: setProgress,
+            });
+            const mappedResult = mapAnalyzeResult(data, game.label, mode);
 
             setResult(mappedResult);
+            setProgress(null);
 
             return mappedResult;
         } catch (err) {
             console.error(err);
-            setError(VALIDATION_MESSAGES.backendUnavailable);
+            setProgress(null);
+            setError(
+                err instanceof Error && err.message.trim()
+                    ? err.message
+                    : VALIDATION_MESSAGES.backendUnavailable
+            );
 
             return null;
         } finally {
@@ -45,6 +70,7 @@ export const useAnalyzeReviews = () => {
         result,
         loading,
         error,
+        progress,
         runAnalysis,
     };
 };

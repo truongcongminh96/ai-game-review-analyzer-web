@@ -1,0 +1,37 @@
+# AGENTS.md
+These instructions apply to the entire repository.
+- React 19 + TypeScript + Vite frontend for analyzing Steam game reviews.
+- Primary app shell lives in `src/app/App.tsx`.
+- UI uses Ant Design, Framer Motion, Axios, and Recharts.
+- The app supports both live API mode and local mock mode.
+- Install dependencies: `npm install`
+- Start dev server: `npm run dev`
+- Build production bundle: `npm run build`
+- Run lint: `npm run lint`
+- Preview build: `npm run preview`
+- `src/app/` contains top-level app composition.
+- `src/components/` holds feature and shared UI pieces.
+- `src/pages/` contains full-page views.
+- `src/hooks/` contains UI and data-flow hooks.
+- `src/services/api.ts` handles analysis requests and mock/live switching.
+- `src/utils/resultMapper.ts` normalizes backend response shapes.
+- `src/data/mock/` contains mock games and mock analysis responses.
+- `src/data/sourceFiles.ts` powers the curated source review experience.
+- Keep changes small, focused, and consistent with the current structure.
+- Prefer functional React components and existing hook-based patterns.
+- Preserve the repository's formatting style, including import formatting and 4-space indentation.
+- Reuse existing shared components before introducing new abstractions.
+- Avoid renaming or moving files unless the task clearly requires it.
+- Keep mock-mode support intact when changing analysis flows.
+- When changing API-facing types or mapping logic, update related types, hooks, and UI consumers together.
+- Maintain the current cinematic/dashboard presentation style.
+- Prefer existing `components/common`, `components/layout`, and `components/motion` building blocks.
+- Keep responsive behavior in mind, especially for the home page result flow.
+- Run the most relevant checks for the files you change.
+- Use `npm run lint` for code-style validation.
+- Use `npm run build` when changes affect app wiring, types, or production output.
+- Runtime env values are defined through Vite env vars.
+- Important variables: `VITE_API_BASE_URL`, `VITE_DEFAULT_REVIEW_LANGUAGE`, `VITE_MOCK_MODE`.
+- If the backend is unavailable, prefer `VITE_MOCK_MODE=true` for local UI work.
+- Mention any skipped validation or environment assumptions in the final handoff.
+- If you add files that generate output or dependencies, keep `.gitignore` aligned.

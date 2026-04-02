@@ -74,7 +74,7 @@ export const learningCourses: LearningCourse[] = [
         providerMark: 'upGrad',
         title: 'Generative AI Mastery Certificate for Managerial Excellence',
         partner: 'In collaboration with Microsoft',
-        progress: 99,
+        progress: 100,
         duration: '20 Hours',
         modules: '2 Courses',
         status: 'Almost completed',
