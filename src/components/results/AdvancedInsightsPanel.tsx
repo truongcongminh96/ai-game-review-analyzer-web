@@ -1,10 +1,11 @@
 import {
     BranchesOutlined,
+    EyeOutlined,
     ExperimentOutlined,
     HistoryOutlined,
     RiseOutlined,
 } from '@ant-design/icons';
-import {Button, Col, Row, Space, Tag, Typography} from 'antd';
+import {Button, Col, Row, Space, Tag, Tooltip, Typography} from 'antd';
 import {useState} from 'react';
 import {compareAnalysisRuns, getGameHistory} from '../../services/api';
 import type {
@@ -13,10 +14,12 @@ import type {
     AnalyzeInsightItem,
     AnalyzeRunDetail,
 } from '../../types/analyze';
+import EvidenceTooltipContent from './EvidenceTooltipContent';
 import SectionCard from '../common/SectionCard';
 
 type AdvancedInsightsPanelProps = {
     report: AnalyzeRunDetail;
+    onSelectInsight?: (item: AnalyzeInsightItem) => void;
 };
 
 const confidencePercent = (value: number) => `${Math.round(value * 100)}%`;
@@ -70,7 +73,8 @@ const renderInsightCard = (
         border: string;
         background: string;
         accent: string;
-    }
+    },
+    onSelectInsight?: (item: AnalyzeInsightItem) => void
 ) => {
     const {Paragraph, Text, Title} = Typography;
 
@@ -92,105 +96,160 @@ const renderInsightCard = (
     }
 
     const sample = item.sample_evidence?.[0];
-
-    return (
-        <div
-            className="hud-panel hud-angled-panel"
+    const canInspectEvidence = Boolean(onSelectInsight) && item.evidence_count > 0;
+    const cardButton = (
+        <button
+            type="button"
+            className="result-evidence-trigger"
+            onClick={canInspectEvidence ? () => onSelectInsight?.(item) : undefined}
+            disabled={!canInspectEvidence}
+            aria-label={canInspectEvidence ? `Open full evidence for ${item.label}` : undefined}
             style={{
                 height: '100%',
-                padding: 18,
-                borderRadius: 20,
-                border: tone.border,
-                background: tone.background,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 14,
+                width: '100%',
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                textAlign: 'left',
+                cursor: canInspectEvidence ? 'pointer' : 'default',
             }}
         >
-            <div style={{display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'}}>
-                <span
-                    style={{
-                        color: tone.accent,
-                        fontSize: 12,
-                        fontWeight: 700,
-                        letterSpacing: '0.14em',
-                        textTransform: 'uppercase',
-                    }}
-                >
-                    {title}
-                </span>
-                <Space wrap size={[8, 8]}>
-                    <Tag
-                        className="hud-chip"
-                        style={{
-                            margin: 0,
-                            borderRadius: 999,
-                            padding: '4px 10px',
-                            border: tone.border,
-                            background: 'rgba(15,23,42,0.32)',
-                            color: '#f8fafc',
-                            fontWeight: 700,
-                        }}
-                    >
-                        Confidence {confidencePercent(item.confidence)}
-                    </Tag>
-                    <Tag
-                        className="hud-chip"
-                        style={{
-                            margin: 0,
-                            borderRadius: 999,
-                            padding: '4px 10px',
-                            border: tone.border,
-                            background: 'rgba(15,23,42,0.32)',
-                            color: tone.accent,
-                            fontWeight: 700,
-                        }}
-                    >
-                        {item.evidence_count} evidence
-                    </Tag>
-                </Space>
-            </div>
-
             <div>
-                <Title level={4} className="ui-title-tight" style={{margin: 0, color: '#f8fafc'}}>
-                    {item.label}
-                </Title>
-                <Paragraph style={{margin: '10px 0 0', color: '#cbd5e1'}}>
-                    {item.summary}
-                </Paragraph>
-            </div>
-
-            {typeof item.severity === 'number' ? (
-                <span style={{color: '#fca5a5', fontWeight: 700}}>
-                    Severity {item.severity}/5
-                </span>
-            ) : null}
-
-            {sample ? (
                 <div
+                    className="hud-panel hud-angled-panel result-evidence-trigger-card"
                     style={{
+                        height: '100%',
+                        padding: 18,
                         borderRadius: 18,
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        background: 'rgba(15,23,42,0.46)',
-                        padding: 14,
+                        border: tone.border,
+                        background: tone.background,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 14,
+                        boxShadow: canInspectEvidence
+                            ? '0 14px 28px rgba(2, 6, 23, 0.18)'
+                            : 'none',
                     }}
                 >
-                    <Text style={{display: 'block', color: '#94a3b8', marginBottom: 8}}>
-                        Sample evidence
-                    </Text>
-                    <Paragraph style={{margin: 0, color: '#f8fafc', fontSize: 15, lineHeight: 1.7}}>
-                        “{sample.quote}”
-                    </Paragraph>
-                    <Text style={{display: 'block', marginTop: 10, color: '#94a3b8'}}>
-                        {formatEvidenceMeta(sample)}
-                    </Text>
+                    <div style={{display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'}}>
+                        <span
+                            style={{
+                                color: tone.accent,
+                                fontSize: 12,
+                                fontWeight: 700,
+                                letterSpacing: '0.14em',
+                                textTransform: 'uppercase',
+                            }}
+                        >
+                            {title}
+                        </span>
+                        <Space wrap size={[8, 8]}>
+                            <Tag
+                                className="hud-chip"
+                                style={{
+                                    margin: 0,
+                                    borderRadius: 999,
+                                    padding: '4px 10px',
+                                    border: tone.border,
+                                    background: 'rgba(15,23,42,0.32)',
+                                    color: '#f8fafc',
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Confidence {confidencePercent(item.confidence)}
+                            </Tag>
+                            <Tag
+                                className="hud-chip"
+                                style={{
+                                    margin: 0,
+                                    borderRadius: 999,
+                                    padding: '4px 10px',
+                                    border: tone.border,
+                                    background: 'rgba(15,23,42,0.32)',
+                                    color: tone.accent,
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Stored evidence {item.evidence_count}
+                            </Tag>
+                        </Space>
+                    </div>
+
+                    <div>
+                        <Title level={4} className="ui-title-tight" style={{margin: 0, color: '#f8fafc'}}>
+                            {item.label}
+                        </Title>
+                        <Paragraph style={{margin: '10px 0 0', color: '#cbd5e1'}}>
+                            {item.summary}
+                        </Paragraph>
+                    </div>
+
+                    {typeof item.severity === 'number' ? (
+                        <span style={{color: '#fca5a5', fontWeight: 700}}>
+                            Severity {item.severity}/5
+                        </span>
+                    ) : null}
+
+                    {sample ? (
+                        <div
+                            style={{
+                                borderRadius: 18,
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                background: 'rgba(15,23,42,0.46)',
+                                padding: 14,
+                            }}
+                        >
+                            <Text style={{display: 'block', color: '#94a3b8', marginBottom: 8}}>
+                                Sample evidence
+                            </Text>
+                            <Paragraph style={{margin: 0, color: '#f8fafc', fontSize: 15, lineHeight: 1.7}}>
+                                “{sample.quote}”
+                            </Paragraph>
+                            <Text style={{display: 'block', marginTop: 10, color: '#94a3b8'}}>
+                                {formatEvidenceMeta(sample)}
+                            </Text>
+                        </div>
+                    ) : null}
+
+                    {canInspectEvidence ? (
+                        <Text
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 8,
+                                color: tone.accent,
+                                fontWeight: 700,
+                            }}
+                        >
+                            <EyeOutlined />
+                            Open full evidence
+                        </Text>
+                    ) : null}
                 </div>
-            ) : null}
-        </div>
+            </div>
+        </button>
+    );
+
+    return canInspectEvidence ? (
+        <Tooltip
+            title={
+                <EvidenceTooltipContent
+                    evidenceCount={item.evidence_count}
+                    kind={item.kind}
+                />
+            }
+            overlayClassName={`result-evidence-tooltip result-evidence-tooltip-${item.kind}`}
+            mouseEnterDelay={0.2}
+            placement="top"
+        >
+            {cardButton}
+        </Tooltip>
+    ) : (
+        cardButton
     );
 };
 
-function AdvancedInsightsPanel({report}: AdvancedInsightsPanelProps) {
+function AdvancedInsightsPanel({report, onSelectInsight}: AdvancedInsightsPanelProps) {
     const {Paragraph, Text} = Typography;
     const [compareData, setCompareData] = useState<AnalyzeCompareResponse | null>(null);
     const [compareError, setCompareError] = useState<string | null>(null);
@@ -413,7 +472,7 @@ function AdvancedInsightsPanel({report}: AdvancedInsightsPanelProps) {
                             background:
                                 'linear-gradient(180deg, rgba(46,58,30,0.66), rgba(15,23,42,0.96))',
                             accent: '#d9e3b4',
-                        })}
+                        }, onSelectInsight)}
                     </Col>
                     <Col xs={24} lg={8}>
                         {renderInsightCard('Top Issue', report.issues[0], {
@@ -421,7 +480,7 @@ function AdvancedInsightsPanel({report}: AdvancedInsightsPanelProps) {
                             background:
                                 'linear-gradient(180deg, rgba(77,37,33,0.66), rgba(15,23,42,0.96))',
                             accent: '#fda4af',
-                        })}
+                        }, onSelectInsight)}
                     </Col>
                     <Col xs={24} lg={8}>
                         {renderInsightCard('Top Topic', report.topics[0], {
@@ -429,7 +488,7 @@ function AdvancedInsightsPanel({report}: AdvancedInsightsPanelProps) {
                             background:
                                 'linear-gradient(180deg, rgba(22,53,62,0.66), rgba(15,23,42,0.96))',
                             accent: '#d6f9ff',
-                        })}
+                        }, onSelectInsight)}
                     </Col>
                 </Row>
 

@@ -29,7 +29,7 @@ export const env = {
     apiBaseUrl: import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:8080',
     apiVersion: normalizeApiVersion(import.meta.env.VITE_API_VERSION),
     apiPollIntervalMs: normalizeNumber(import.meta.env.VITE_API_POLL_INTERVAL_MS, 1500),
-    apiPollTimeoutMs: normalizeNumber(import.meta.env.VITE_API_POLL_TIMEOUT_MS, 300000),
+    apiPollTimeoutMs: normalizeNumber(import.meta.env.VITE_API_POLL_TIMEOUT_MS, 900000),
     defaultAnalysisMode: normalizeAnalysisMode(
         import.meta.env.VITE_DEFAULT_ANALYSIS_MODE,
         defaultAnalysisMode

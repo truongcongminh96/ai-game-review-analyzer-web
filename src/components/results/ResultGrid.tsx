@@ -17,8 +17,6 @@ import type {GameOption} from '../../types/game';
 import HudOverlay from '../motion/HudOverlay';
 import AdvancedResultView from './AdvancedResultView';
 import SentimentChart from './SentimentChart';
-import SentimentProgress from './SentimentProgress';
-import SentimentStatCards from './SentimentStatCards';
 import StandardResultView from './StandardResultView';
 import SummaryPanel from './SummaryPanel';
 
@@ -245,20 +243,12 @@ function ResultGrid({result, dataSourceMode, analysisContext}: ResultGridProps) 
                 </Space>
             </div>
 
-            <SentimentStatCards sentiment={result.sentiment}/>
-
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={12}>
-                    <SummaryPanel title={result.gameTitle} summary={result.summary} />
+                    <SummaryPanel summary={result.summary} />
                 </Col>
                 <Col xs={24} lg={12}>
                     <SentimentChart sentiment={result.sentiment} />
-                </Col>
-            </Row>
-
-            <Row gutter={[16, 16]}>
-                <Col xs={24}>
-                    <SentimentProgress sentiment={result.sentiment} />
                 </Col>
             </Row>
 

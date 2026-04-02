@@ -3,8 +3,10 @@ import type {
     AnalyzeApiResponse,
     AnalyzeCompareResponse,
     AnalyzeEvidenceItem,
+    AnalyzeEvidenceResponse,
     AnalyzeGameHistory,
     AnalyzeHistoryItem,
+    AnalyzeInsightKind,
     AnalyzeInsightItem,
     AnalyzeRunDetail,
 } from '../../types/analyze';
@@ -55,17 +57,21 @@ const createEvidence = (
     reviewId: string,
     votedUp: boolean,
     helpfulVotes: number,
-    playtimeHours: number
+    playtimeHours: number,
+    reviewText?: string,
+    reviewedAt = '2026-04-02T09:00:00.000Z'
 ): AnalyzeEvidenceItem => ({
     review_id: reviewId,
     quote,
-    review_text: quote,
+    review_text:
+        reviewText ??
+        `${quote} The rest of the review expands on this point with more session-specific context from the player.`,
     voted_up: votedUp,
     language: 'english',
     helpful_votes: helpfulVotes,
     funny_votes: 0,
     playtime_hours: playtimeHours,
-    reviewed_at: '2026-04-02T09:00:00.000Z',
+    reviewed_at: reviewedAt,
 });
 
 const createInsightItem = (
@@ -462,6 +468,21 @@ const findMockEntryByRunId = (runId: string) =>
             entry.advanced.currentRunId === runId || entry.advanced.previousRunId === runId
     ) ?? FALLBACK_ENTRY;
 
+const getMockInsightItems = (
+    entry: MockCatalogEntry,
+    kind: AnalyzeInsightKind
+) => {
+    if (kind === 'praise') {
+        return entry.advanced.praises;
+    }
+
+    if (kind === 'issue') {
+        return entry.advanced.issues;
+    }
+
+    return entry.advanced.topics;
+};
+
 export const getMockAnalyzeApiResponse = (
     appId: string,
     mode: AnalysisMode = 'standard'
@@ -549,5 +570,25 @@ export const getMockCompareAnalysisRuns = (
             {label: 'Narrative Confidence', change: 'improved'},
             {label: 'Pacing Complaints', change: 'stable'},
         ],
+    };
+};
+
+export const getMockAnalysisRunEvidence = (
+    runId: string,
+    kind: AnalyzeInsightKind,
+    label: string
+): AnalyzeEvidenceResponse => {
+    const entry = findMockEntryByRunId(runId);
+    const insight = getMockInsightItems(entry, kind).find(
+        (item) => item.label.toLowerCase() === label.trim().toLowerCase()
+    );
+    const items = insight?.sample_evidence ?? [];
+
+    return {
+        run_id: runId,
+        kind,
+        label,
+        total: items.length,
+        items,
     };
 };

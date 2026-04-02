@@ -33,6 +33,8 @@ type BaseAnalyzeResult = {
     sentiment: SentimentBreakdown;
 };
 
+export type AnalyzeInsightKind = 'praise' | 'issue' | 'topic';
+
 export type StandardAnalyzeResult = BaseAnalyzeResult & {
     mode: 'standard';
     praisedFeatures: string[];
@@ -66,13 +68,27 @@ export type AnalyzeEvidenceItem = {
 
 export type AnalyzeInsightItem = {
     id: string;
-    kind: 'praise' | 'issue' | 'topic';
+    kind: AnalyzeInsightKind;
     label: string;
     summary: string;
     severity?: number;
     confidence: number;
     evidence_count: number;
     sample_evidence?: AnalyzeEvidenceItem[];
+};
+
+export type AnalyzeEvidenceQuery = {
+    runId: string;
+    kind: AnalyzeInsightKind;
+    label: string;
+};
+
+export type AnalyzeEvidenceResponse = {
+    run_id?: string;
+    kind?: AnalyzeInsightKind;
+    label?: string;
+    total?: number;
+    items: AnalyzeEvidenceItem[];
 };
 
 export type AnalyzeQueueDebug = {

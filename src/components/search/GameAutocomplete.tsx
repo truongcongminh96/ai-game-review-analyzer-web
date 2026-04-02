@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {AutoComplete, Input} from 'antd';
-import {SearchOutlined} from '@ant-design/icons';
+import {LoadingOutlined, RadarChartOutlined, SearchOutlined} from '@ant-design/icons';
 import {useReducedMotion} from 'framer-motion';
 import type {GameOption} from '../../types/game';
 import {buildSteamCapsuleImage} from '../../utils/steam';
@@ -22,6 +22,7 @@ function GameAutocomplete({
     const basePlaceholder = 'Search a Steam game...';
     const [typedLength, setTypedLength] = useState(reduceMotion ? basePlaceholder.length : 0);
     const [cursorVisible, setCursorVisible] = useState(true);
+    const [isScanning, setIsScanning] = useState(false);
 
     useEffect(() => {
         if (reduceMotion || typedLength >= basePlaceholder.length) {
@@ -47,62 +48,79 @@ function GameAutocomplete({
         return () => window.clearInterval(timer);
     }, [reduceMotion, value]);
 
+    useEffect(() => {
+        const normalizedValue = value.trim();
+
+        if (!normalizedValue) {
+            const resetTimer = window.setTimeout(() => {
+                setIsScanning(false);
+            }, 0);
+
+            return () => window.clearTimeout(resetTimer);
+        }
+
+        const startTimer = window.setTimeout(() => {
+            setIsScanning(true);
+        }, 0);
+
+        const timer = window.setTimeout(() => {
+            setIsScanning(false);
+        }, reduceMotion ? 0 : 240);
+
+        return () => {
+            window.clearTimeout(startTimer);
+            window.clearTimeout(timer);
+        };
+    }, [reduceMotion, value]);
+
     const placeholder = reduceMotion
         ? `${basePlaceholder} or paste the app id`
         : `${basePlaceholder.slice(0, typedLength)}${cursorVisible ? '|' : ' '}`;
+    const normalizedValue = value.trim();
+    const emptyTitle = !normalizedValue
+        ? 'Awaiting Search Input'
+        : isScanning
+            ? 'Scanning Steam Registry'
+            : 'No Match Detected';
+    const emptyCopy = !normalizedValue
+        ? 'Type a game title or paste a Steam App ID to open the live lookup channel.'
+        : isScanning
+            ? 'Query signature received. Matching title aliases and App IDs against the local game registry.'
+            : 'No matching title or App ID was found in the current suggestion set. Try a broader title or paste the numeric app id.';
+    const emptyKicker = !normalizedValue
+        ? 'Idle channel'
+        : isScanning
+            ? 'Lookup in progress'
+            : 'Zero signal';
+    const emptyIcon = isScanning ? <LoadingOutlined spin /> : !normalizedValue ? <SearchOutlined /> : <RadarChartOutlined />;
 
     return (
         <AutoComplete
             size="large"
+            className="search-console-autocomplete"
+            classNames={{
+                popup: {
+                    root: 'search-console-dropdown',
+                },
+            }}
             style={{width: '100%'}}
             options={options.map((option) => ({
                 value: option.appId,
                 label: (
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 12,
-                        }}
-                    >
+                    <div className="search-console-option">
                         <img
                             src={option.coverUrl || buildSteamCapsuleImage(option.appId)}
                             alt={option.label}
-                            style={{
-                                width: 92,
-                                height: 34,
-                                objectFit: 'cover',
-                                borderRadius: 8,
-                                border: '1px solid rgba(148,163,184,0.14)',
-                                flexShrink: 0,
-                                background: 'rgba(15,23,42,0.8)',
-                            }}
+                            className="search-console-option__cover"
                             onError={(event) => {
                                 event.currentTarget.src =
                                     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="184" height="69" viewBox="0 0 184 69"><rect width="184" height="69" rx="10" fill="%230f172a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-size="14" font-family="Arial">No Cover</text></svg>';
                             }}
                         />
 
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2,
-                                minWidth: 0,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    color: '#e2e8f0',
-                                    fontWeight: 600,
-                                    lineHeight: 1.3,
-                                }}
-                            >
-                                {option.label}
-                            </span>
-                            <span style={{color: '#67e8f9', fontSize: 13}}>
-                                Steam App ID: #{option.appId}
-                            </span>
+                        <div className="search-console-option__meta">
+                            <span className="search-console-option__label">{option.label}</span>
+                            <span className="search-console-option__id">Steam App ID: #{option.appId}</span>
                         </div>
                     </div>
                 ),
@@ -110,17 +128,28 @@ function GameAutocomplete({
             value={value}
             onSelect={onSelect}
             onChange={onChange}
+            notFoundContent={
+                <div className={`search-console-empty${isScanning ? ' search-console-empty-loading' : ''}`}>
+                    <div className="search-console-empty__badge">
+                        <span className="search-console-empty__icon">{emptyIcon}</span>
+                        <span>{emptyKicker}</span>
+                    </div>
+                    <div className="search-console-empty__title">{emptyTitle}</div>
+                    <p className="search-console-empty__copy">{emptyCopy}</p>
+                    <div className="search-console-empty__rail" />
+                </div>
+            }
             showSearch={{
                 filterOption: false,
             }}
         >
             <Input
                 size="large"
+                className="search-console-input"
                 prefix={<SearchOutlined style={{color: '#60a5fa'}} />}
                 placeholder={value ? '' : placeholder}
                 style={{
-                    height: 54,
-                    borderRadius: 18,
+                    height: 64,
                     fontSize: 16,
                 }}
             />

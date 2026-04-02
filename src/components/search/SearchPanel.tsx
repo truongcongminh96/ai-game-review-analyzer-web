@@ -243,12 +243,21 @@ function SearchPanel({
                                     <SearchOutlined />
                                     Game title or Steam App ID
                                 </label>
-                                <GameAutocomplete
-                                    value={gameQuery}
-                                    options={gameOptions}
-                                    onChange={onGameChange}
-                                    onSelect={onGameSelect}
-                                />
+                                <div className="search-console-shell hud-panel hud-angled-panel">
+                                    <div className="search-console-head">
+                                        <span className="search-console-channel">Lookup Channel 01</span>
+                                        <span className="search-console-status">Title / App ID Link</span>
+                                    </div>
+
+                                    <div className="search-console-core">
+                                        <GameAutocomplete
+                                            value={gameQuery}
+                                            options={gameOptions}
+                                            onChange={onGameChange}
+                                            onSelect={onGameSelect}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             <div>

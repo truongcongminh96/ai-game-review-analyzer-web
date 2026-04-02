@@ -1,14 +1,13 @@
-import {MessageOutlined, RobotOutlined} from '@ant-design/icons';
+import {RobotOutlined} from '@ant-design/icons';
 import {Space, Tag, Typography} from 'antd';
 import SectionCard from '../common/SectionCard';
 
 type SummaryPanelProps = {
-    title: string;
     summary: string;
 };
 
-function SummaryPanel({title, summary}: SummaryPanelProps) {
-    const {Paragraph, Text} = Typography;
+function SummaryPanel({summary}: SummaryPanelProps) {
+    const {Paragraph} = Typography;
 
     return (
         <SectionCard
@@ -44,15 +43,6 @@ function SummaryPanel({title, summary}: SummaryPanelProps) {
                 }}
             >
                 <Space orientation="vertical" size={14} style={{width: '100%'}}>
-                    <Text className="ui-field-label" style={{marginBottom: 0}}>
-                        <MessageOutlined />
-                        Mission Brief
-                    </Text>
-
-                    <Text className="ui-copy-muted" style={{fontSize: 14}}>
-                        Insight summary for <span style={{color: '#f8fafc'}}>{title}</span>
-                    </Text>
-
                     <Paragraph
                         className="ui-copy-strong"
                         style={{

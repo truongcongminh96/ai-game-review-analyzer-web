@@ -2,6 +2,7 @@ import axios from 'axios';
 import {env} from '../config/env';
 import {
     getMockAnalyzeApiResponse,
+    getMockAnalysisRunEvidence,
     getMockCompareAnalysisRuns,
     getMockGameHistory,
 } from '../data/mock/mockAnalyzeResult';
@@ -11,6 +12,9 @@ import type {
     AnalysisStage,
     AnalyzeApiResponse,
     AnalyzeCompareResponse,
+    AnalyzeEvidenceItem,
+    AnalyzeEvidenceQuery,
+    AnalyzeEvidenceResponse,
     AnalyzeGameHistory,
     AnalyzeV2QueuedResponse,
 } from '../types/analyze';
@@ -22,6 +26,88 @@ type AnalyzeReviewsOptions = {
 
 type ApiErrorResponse = {
     error?: string;
+};
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null;
+
+const coerceEvidenceItem = (value: unknown): AnalyzeEvidenceItem | null => {
+    if (!isPlainObject(value) || typeof value.quote !== 'string') {
+        return null;
+    }
+
+    return {
+        review_id:
+            typeof value.review_id === 'string'
+                ? value.review_id
+                : typeof value.id === 'string'
+                  ? value.id
+                  : 'unknown-review',
+        quote: value.quote,
+        review_text: typeof value.review_text === 'string' ? value.review_text : undefined,
+        voted_up: typeof value.voted_up === 'boolean' ? value.voted_up : false,
+        language: typeof value.language === 'string' ? value.language : 'english',
+        helpful_votes: typeof value.helpful_votes === 'number' ? value.helpful_votes : 0,
+        funny_votes: typeof value.funny_votes === 'number' ? value.funny_votes : 0,
+        playtime_hours: typeof value.playtime_hours === 'number' ? value.playtime_hours : 0,
+        reviewed_at: typeof value.reviewed_at === 'string' ? value.reviewed_at : undefined,
+    };
+};
+
+const sanitizeEvidenceItems = (value: unknown) => {
+    if (!Array.isArray(value)) {
+        return [] as AnalyzeEvidenceItem[];
+    }
+
+    return value
+        .map(coerceEvidenceItem)
+        .filter((item): item is AnalyzeEvidenceItem => item !== null);
+};
+
+const normalizeEvidenceResponse = (
+    payload: unknown,
+    fallback: AnalyzeEvidenceQuery
+): AnalyzeEvidenceResponse => {
+    if (Array.isArray(payload)) {
+        const items = sanitizeEvidenceItems(payload);
+
+        return {
+            run_id: fallback.runId,
+            kind: fallback.kind,
+            label: fallback.label,
+            total: items.length,
+            items,
+        };
+    }
+
+    if (!isPlainObject(payload)) {
+        return {
+            run_id: fallback.runId,
+            kind: fallback.kind,
+            label: fallback.label,
+            total: 0,
+            items: [],
+        };
+    }
+
+    const items = sanitizeEvidenceItems(payload.items ?? payload.evidence);
+    const total =
+        typeof payload.total === 'number'
+            ? payload.total
+            : typeof payload.total_count === 'number'
+              ? payload.total_count
+              : items.length;
+
+    return {
+        run_id: typeof payload.run_id === 'string' ? payload.run_id : fallback.runId,
+        kind:
+            payload.kind === 'praise' || payload.kind === 'issue' || payload.kind === 'topic'
+                ? payload.kind
+                : fallback.kind,
+        label: typeof payload.label === 'string' ? payload.label : fallback.label,
+        total,
+        items,
+    };
 };
 
 const ANALYSIS_STAGE_LABELS: Record<AnalysisStage, string> = {
@@ -147,6 +233,19 @@ const buildV2FailureMessage = (payload: AnalyzeApiResponse) => {
     return 'Analysis run failed. The backend did not provide an error message.';
 };
 
+const buildV2TimeoutMessage = (payload: AnalyzeApiResponse, fallbackRunId: string) => {
+    const stageLabel = payload.current_stage
+        ? ANALYSIS_STAGE_LABELS[payload.current_stage] ?? payload.current_stage
+        : 'processing';
+    const progressLabel =
+        typeof payload.progress_percent === 'number' && !Number.isNaN(payload.progress_percent)
+            ? ` at ${payload.progress_percent}%`
+            : '';
+    const runId = payload.run_id ?? fallbackRunId;
+
+    return `Analysis is still running during ${stageLabel}${progressLabel} [run ${runId.slice(0, 8)}]. Increase VITE_API_POLL_TIMEOUT_MS if your local backend needs more time, then retry or wait for the run to finish.`;
+};
+
 const submitV2Analysis = async (
     appId: string,
     limit: number,
@@ -204,7 +303,37 @@ const submitV2Analysis = async (
         await sleep(env.apiPollIntervalMs);
     }
 
-    throw new Error('Analysis timed out while waiting for API v2 to complete.');
+    const finalRunDetail = await getV2RunDetail(queuedResponse.run_id);
+
+    emitProgress(options, {
+        runId: finalRunDetail.run_id,
+        status: finalRunDetail.status,
+        stage: finalRunDetail.current_stage,
+        progressPercent: finalRunDetail.progress_percent ?? null,
+        queueDebug: finalRunDetail.queue_debug ?? queuedResponse.queue_debug,
+        debug: finalRunDetail.debug,
+        message: buildProgressMessage(
+            finalRunDetail.current_stage,
+            finalRunDetail.progress_percent,
+            finalRunDetail.run_id,
+            'advanced'
+        ),
+    });
+
+    if (finalRunDetail.status === 'success') {
+        return {
+            ...finalRunDetail,
+            queue_debug: finalRunDetail.queue_debug ?? queuedResponse.queue_debug,
+            request: finalRunDetail.request ?? queuedResponse.request,
+            links: finalRunDetail.links ?? queuedResponse.links,
+        };
+    }
+
+    if (finalRunDetail.status === 'failed') {
+        throw new Error(buildV2FailureMessage(finalRunDetail));
+    }
+
+    throw new Error(buildV2TimeoutMessage(finalRunDetail, queuedResponse.run_id));
 };
 
 export const analyzeReviews = async (
@@ -260,4 +389,33 @@ export const compareAnalysisRuns = async (runA: string, runB: string) => {
     });
 
     return response.data;
+};
+
+export const getAnalysisRunEvidence = async (
+    runId: string,
+    kind: AnalyzeEvidenceQuery['kind'],
+    label: string
+) => {
+    const query: AnalyzeEvidenceQuery = {
+        runId,
+        kind,
+        label,
+    };
+
+    if (env.mockMode) {
+        return Promise.resolve<AnalyzeEvidenceResponse>(getMockAnalysisRunEvidence(runId, kind, label));
+    }
+
+    try {
+        const response = await axios.get<unknown>(`${env.apiBaseUrl}/v2/analysis-runs/${runId}/evidence`, {
+            params: {
+                kind,
+                label,
+            },
+        });
+
+        return normalizeEvidenceResponse(response.data, query);
+    } catch (error) {
+        throw new Error(resolveApiErrorMessage(error, 'Unable to load evidence right now.'));
+    }
 };

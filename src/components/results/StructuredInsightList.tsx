@@ -1,7 +1,8 @@
 import type {ReactElement} from 'react';
-import {BulbOutlined, RadarChartOutlined, WarningOutlined} from '@ant-design/icons';
-import {Space, Tag, Typography} from 'antd';
+import {BulbOutlined, EyeOutlined, RadarChartOutlined, WarningOutlined} from '@ant-design/icons';
+import {Space, Tag, Tooltip, Typography} from 'antd';
 import type {AnalyzeInsightItem} from '../../types/analyze';
+import EvidenceTooltipContent from './EvidenceTooltipContent';
 import SectionCard from '../common/SectionCard';
 
 type StructuredInsightVariant = 'praise' | 'issue' | 'topic';
@@ -10,6 +11,7 @@ type StructuredInsightListProps = {
     title: string;
     items: AnalyzeInsightItem[];
     variant: StructuredInsightVariant;
+    onSelectInsight?: (item: AnalyzeInsightItem) => void;
 };
 
 const VARIANT_THEME: Record<
@@ -72,7 +74,7 @@ const VARIANT_THEME: Record<
     },
 };
 
-function StructuredInsightList({title, items, variant}: StructuredInsightListProps) {
+function StructuredInsightList({title, items, variant, onSelectInsight}: StructuredInsightListProps) {
     const {Paragraph, Text, Title} = Typography;
     const theme = VARIANT_THEME[variant];
 
@@ -115,82 +117,165 @@ function StructuredInsightList({title, items, variant}: StructuredInsightListPro
             }
         >
             <Space direction="vertical" size={14} style={{width: '100%'}}>
-                {items.slice(0, 4).map((item) => (
-                    <div
-                        key={item.id}
-                        className="hud-panel hud-angled-panel"
-                        style={{
-                            borderRadius: 20,
-                            padding: 18,
-                            border: theme.cardBorder,
-                            background: theme.cardBackground,
-                        }}
-                    >
-                        <div
+                {items.slice(0, 4).map((item) => {
+                    const canInspectEvidence = Boolean(onSelectInsight) && item.evidence_count > 0;
+                    const cardButton = (
+                        <button
+                            key={item.id}
+                            type="button"
+                            className="result-evidence-trigger"
+                            onClick={canInspectEvidence ? () => onSelectInsight?.(item) : undefined}
+                            disabled={!canInspectEvidence}
+                            aria-label={
+                                canInspectEvidence
+                                    ? `Open full evidence for ${item.label}`
+                                    : undefined
+                            }
                             style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                gap: 12,
-                                alignItems: 'flex-start',
-                                flexWrap: 'wrap',
+                                width: '100%',
+                                padding: 0,
+                                border: 'none',
+                                background: 'transparent',
+                                textAlign: 'left',
+                                cursor: canInspectEvidence ? 'pointer' : 'default',
                             }}
                         >
-                            <div>
-                                <Title level={4} className="ui-title-tight" style={{margin: 0}}>
-                                    {item.label}
-                                </Title>
-                                <Paragraph
+                            <div
+                                className="hud-panel hud-angled-panel result-evidence-trigger-card"
+                                style={{
+                                    borderRadius: 20,
+                                    padding: 18,
+                                    border: theme.cardBorder,
+                                    background: theme.cardBackground,
+                                    boxShadow: canInspectEvidence
+                                        ? '0 14px 28px rgba(2, 6, 23, 0.18)'
+                                        : 'none',
+                                }}
+                            >
+                                <div
                                     style={{
-                                        margin: '10px 0 0',
-                                        color: '#cbd5e1',
-                                        fontSize: 14,
-                                        lineHeight: 1.75,
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        gap: 12,
+                                        alignItems: 'flex-start',
+                                        flexWrap: 'wrap',
                                     }}
                                 >
-                                    {item.summary}
-                                </Paragraph>
-                            </div>
+                                    <div>
+                                        <Title level={4} className="ui-title-tight" style={{margin: 0}}>
+                                            {item.label}
+                                        </Title>
+                                        <Paragraph
+                                            style={{
+                                                margin: '10px 0 0',
+                                                color: '#cbd5e1',
+                                                fontSize: 14,
+                                                lineHeight: 1.75,
+                                            }}
+                                        >
+                                            {item.summary}
+                                        </Paragraph>
+                                    </div>
 
-                            <Space wrap size={[8, 8]}>
-                                <Tag
-                                    className="hud-chip"
+                                    <Space wrap size={[8, 8]}>
+                                        <Tag
+                                            className="hud-chip"
+                                            style={{
+                                                margin: 0,
+                                                borderRadius: 999,
+                                                padding: '4px 10px',
+                                                border: theme.chipBorder,
+                                                background: 'rgba(15,23,42,0.32)',
+                                                color: theme.accent,
+                                                fontWeight: 700,
+                                            }}
+                                        >
+                                            {Math.round(item.confidence * 100)}% confidence
+                                        </Tag>
+
+                                        {typeof item.severity === 'number' ? (
+                                            <Tag
+                                                className="hud-chip"
+                                                style={{
+                                                    margin: 0,
+                                                    borderRadius: 999,
+                                                    padding: '4px 10px',
+                                                    border: theme.chipBorder,
+                                                    background: 'rgba(15,23,42,0.32)',
+                                                    color: '#fca5a5',
+                                                    fontWeight: 700,
+                                                }}
+                                            >
+                                                Severity {item.severity}/5
+                                            </Tag>
+                                        ) : null}
+                                    </Space>
+                                </div>
+
+                                <div
                                     style={{
-                                        margin: 0,
-                                        borderRadius: 999,
-                                        padding: '4px 10px',
-                                        border: theme.chipBorder,
-                                        background: 'rgba(15,23,42,0.32)',
-                                        color: theme.accent,
-                                        fontWeight: 700,
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        gap: 12,
+                                        alignItems: 'center',
+                                        flexWrap: 'wrap',
                                     }}
                                 >
-                                    {Math.round(item.confidence * 100)}% confidence
-                                </Tag>
-
-                                {typeof item.severity === 'number' ? (
                                     <Tag
                                         className="hud-chip"
                                         style={{
                                             margin: 0,
                                             borderRadius: 999,
-                                            padding: '4px 10px',
+                                            padding: '6px 12px',
                                             border: theme.chipBorder,
-                                            background: 'rgba(15,23,42,0.32)',
-                                            color: '#fca5a5',
+                                            background: theme.chipBackground,
+                                            color: theme.chipColor,
                                             fontWeight: 700,
                                         }}
                                     >
-                                        Severity {item.severity}/5
+                                        Stored evidence {item.evidence_count}
                                     </Tag>
-                                ) : null}
-                            </Space>
-                        </div>
 
-                        <Text style={{color: '#94a3b8'}}>
-                            {item.evidence_count} evidence references
-                        </Text>
-                    </div>
-                ))}
+                                    {canInspectEvidence ? (
+                                        <Text
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: 8,
+                                                color: theme.accent,
+                                                fontWeight: 700,
+                                            }}
+                                        >
+                                            <EyeOutlined />
+                                            Open full evidence
+                                        </Text>
+                                    ) : null}
+                                </div>
+                            </div>
+                        </button>
+                    );
+
+                    return canInspectEvidence ? (
+                        <Tooltip
+                            key={item.id}
+                            title={
+                                <EvidenceTooltipContent
+                                    evidenceCount={item.evidence_count}
+                                    kind={variant}
+                                />
+                            }
+                            overlayClassName={`result-evidence-tooltip result-evidence-tooltip-${variant}`}
+                            mouseEnterDelay={0.2}
+                            placement="top"
+                        >
+                            {cardButton}
+                        </Tooltip>
+                    ) : (
+                        <div key={item.id}>
+                            {cardButton}
+                        </div>
+                    );
+                })}
             </Space>
         </SectionCard>
     );
